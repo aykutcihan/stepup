@@ -1,0 +1,816 @@
+# StepUp — Product Vision
+
+**Version:** 1.0  
+**Date:** 2026-04-21  
+**Owner:** Developer (Solo Project)  
+**Status:** Living document — will evolve throughout development  
+
+---
+
+## Executive Summary
+
+StepUp is a web-based employee onboarding management system designed to streamline the process of integrating new team members into an organization.
+
+The system provides a structured workflow for assigning, tracking, completing, and approving onboarding tasks while maintaining clear audit trails, automated notifications, and real-time progress visibility for all parties involved.
+
+**Target Users:** Organizations of any size that onboard new employees and want to replace email chains, spreadsheets, and ad-hoc processes with a transparent, auditable, and standardized system.
+
+---
+
+## Vision Statement
+
+> "Enable organizations to onboard new employees efficiently — with clear task ownership, transparent progress tracking, and zero steps falling through the cracks."
+
+---
+
+## The Problem We're Solving
+
+### Current State (Without StepUp)
+
+Organizations typically manage onboarding through:
+
+- **Email chains** — difficult to track, easy to lose, no audit trail
+- **Spreadsheets** — manual updates, no automation, prone to human error
+- **Ad-hoc processes** — inconsistent across departments, depends on who you ask
+- **Verbal instructions** — nothing documented, knowledge lost when people leave
+
+**Pain Points:**
+
+- New employees don't know what they need to do or in what order
+- Managers lose track of which tasks are pending or overdue
+- HR has no visibility into onboarding progress across the organization
+- No standardized process across departments
+- Documents get lost or submitted to the wrong person
+- Time wasted on follow-up emails and status checks
+- No record of who approved what and when
+
+### Future State (With StepUp)
+
+- Self-service portal for employees to view and complete their onboarding tasks
+- Automated task assignment from department-specific templates
+- Real-time progress visibility for all parties
+- Email notifications at each workflow stage
+- Complete audit trail of all actions
+- Standardized onboarding process across the organization
+- Dashboard for managers and HR admins
+
+---
+
+## User Roles
+
+### 1. Employee
+
+**Who:** Any new employee joining the organization
+
+**Capabilities:**
+- View assigned onboarding plan and task list
+- Mark tasks as completed
+- Upload required documents per task
+- Add comments or questions to tasks
+- Track own onboarding progress
+- Receive email notifications on task assignments and status changes
+
+**Use Case Examples:**
+- "I need to complete my employment contract and upload it"
+- "I need to finish the company policy training"
+- "I need to request access to the development environment"
+
+---
+
+### 2. Manager / Team Lead
+
+**Who:** Direct managers, team leads, department heads
+
+**Capabilities:**
+- View onboarding plans of all direct reports
+- Approve or return completed tasks with feedback
+- Assign tasks manually outside of templates
+- Set or adjust task deadlines
+- View team-wide onboarding progress dashboard
+- Add comments and feedback to tasks
+- Receive email notifications for completed tasks awaiting approval
+
+**Decision Criteria:**
+- Task completed correctly and completely
+- Required documents uploaded and valid
+- Quality of work meets department standards
+
+---
+
+### 3. HR Admin
+
+**Who:** HR administrators, people operations team
+
+**Capabilities:**
+- Create and manage onboarding templates per department
+- Register new employees and assign onboarding plans
+- View system-wide onboarding progress
+- Manage user accounts and roles
+- Generate reports and analytics
+- Export data to CSV / PDF
+- View full audit trail
+- Manage system configuration
+
+**Responsibilities:**
+- Template management
+- User management
+- Compliance and audit
+- Reporting and analytics
+
+---
+
+## Core Workflow
+
+StepUp implements a three-step workflow:
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│    STEP 1:      │     │    STEP 2:      │     │    STEP 3:      │
+│    Assign       │ ──► │    Complete     │ ──► │    Approve      │
+│                 │     │                 │     │                 │
+│ HR creates plan │     │ Employee works  │     │ Manager reviews │
+│ from template.  │     │ on tasks and    │     │ and approves or │
+│ Tasks auto-     │     │ marks them      │     │ returns tasks   │
+│ assigned.       │     │ complete.       │     │ with feedback.  │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+```
+
+---
+
+## Workflow States
+
+### Task States
+
+| State | Description | Who Can Act |
+|---|---|---|
+| **Not Started** | Task assigned, not yet worked on | Employee |
+| **In Progress** | Employee has started the task | Employee |
+| **Completed** | Marked done by employee | Manager |
+| **Approved** | Verified and approved by manager | — (terminal) |
+| **Returned** | Sent back with feedback | Employee |
+| **Overdue** | Deadline passed, not completed | System (auto) |
+| **Cancelled** | Task removed from plan | HR Admin |
+
+### Onboarding Plan States
+
+| State | Description |
+|---|---|
+| **Active** | Plan in progress |
+| **Completed** | All tasks approved |
+| **On Hold** | Paused by HR or Manager |
+| **Cancelled** | Plan cancelled |
+
+### State Transition Rules
+
+- `Not Started` → `In Progress` — employee starts working
+- `In Progress` → `Completed` — employee marks done
+- `Completed` → `Approved` — manager approves
+- `Completed` → `Returned` — manager returns with feedback
+- `Returned` → `In Progress` — employee revises and resubmits
+- Any non-terminal state → `Overdue` — system auto-marks when deadline passes
+- `Overdue` → `In Progress` — employee can still complete after deadline
+
+Invalid transitions return HTTP 400 with a descriptive error message.
+
+---
+
+## Key Features (MVP)
+
+### For Employees
+
+**1. Onboarding Dashboard**
+- View all assigned tasks in one place
+- Progress indicator (e.g. "8 of 12 tasks completed")
+- Color-coded status: green = approved, amber = in progress, red = overdue
+- Deadline visibility for each task
+
+**2. Task Completion**
+- Mark task as in progress or completed
+- Upload documents per task (PDF, DOCX, PNG — max 10MB)
+- Add comments or questions
+- View manager feedback on returned tasks
+
+**3. Notifications**
+- Email on new task assignment
+- Email on task approved or returned
+- Email reminder 2 days before deadline
+
+---
+
+### For Managers
+
+**1. Team Dashboard**
+- Overview of all direct reports' onboarding progress
+- Count of tasks awaiting approval
+- Overdue task alerts
+
+**2. Task Review**
+- View full task details and uploaded documents
+- Approve with optional comment
+- Return with mandatory feedback
+- View employee's task history
+
+**3. Notifications**
+- Email when employee completes a task awaiting approval
+- Daily digest of pending approvals (optional)
+
+---
+
+### For HR Admins
+
+**1. Template Management**
+- Create onboarding templates per department
+- Add tasks with title, description, deadline rules (e.g. "due 3 days after start")
+- Set task order and dependencies (optional)
+- Mark tasks as required or optional
+- Clone and modify existing templates
+
+**2. Onboarding Plan Management**
+- Register new employee and generate plan from template
+- Assign manager to employee
+- Adjust plan after creation if needed
+
+**3. User Management**
+- Create, edit, deactivate user accounts
+- Assign roles (Employee, Manager, HR Admin)
+- Manage department structure
+
+**4. Reporting & Analytics**
+- Average onboarding completion time per department
+- Task completion rates
+- Bottleneck identification (which tasks take longest)
+- Overdue task reports
+- Export to CSV and PDF
+
+**5. Audit Trail**
+- Complete history of all actions in the system
+- Who did what, when, on which entity
+- Search and filter capabilities
+- Cannot be modified or deleted
+
+---
+
+## Non-Functional Requirements
+
+### Performance
+- Page load time < 2 seconds
+- API response time < 500ms for standard operations
+- Support 100 concurrent users (initial target)
+- Paginated list endpoints (default page size: 20)
+
+### Security
+- Role-based access control (RBAC) enforced on every endpoint
+- JWT authentication with short-lived access tokens (15 min) and refresh tokens (7 days)
+- Refresh tokens stored in database, revocable
+- HttpOnly cookies — no tokens in localStorage
+- HTTPS for all communications (GCP Cloud Run provides this automatically)
+- Input validation and sanitization on all endpoints (Pydantic)
+- SQL injection prevention via SQLAlchemy ORM
+- XSS protection via Content Security Policy headers
+- Rate limiting on authentication endpoints (5 requests/minute)
+- CORS restricted to frontend domain only
+- Secrets managed via GCP Secret Manager — no `.env` files in repository
+- File upload validation: MIME type check, size limit (10MB), allowed types only
+- OWASP ZAP security scan before final release
+
+### Reliability
+- 99% uptime during business hours
+- Health check endpoint at `/health`
+- Graceful error handling — no stack traces exposed to client
+- Request ID on every request for traceability in logs
+- Automated daily database backups (GCP Cloud SQL)
+
+### Usability
+- Mobile-responsive design (Tailwind CSS, mobile-first)
+- Consistent UI patterns using shadcn/ui component library
+- Loading states on all async operations
+- Empty states with helpful guidance
+- Error messages that are human-readable
+- Confirmation dialogs for destructive actions
+- Toast notifications for user actions
+
+### Maintainability
+- Clean architecture: Router → Service → Repository → Model
+- Soft delete on all entities (`deleted_at` timestamp)
+- Alembic migrations for all schema changes — no manual DB edits
+- ADR documents for all major technical decisions
+- Automated tests (unit, integration, E2E)
+- CI/CD pipeline — tests run on every PR, merge blocked on failure
+- Code linting enforced (Ruff for Python, ESLint for TypeScript)
+
+---
+
+## Technical Stack
+
+| Layer | Technology | Reason |
+|---|---|---|
+| **Backend** | Python 3.11 + FastAPI | Async support, automatic Swagger, Pydantic validation |
+| **ORM** | SQLAlchemy 2.0 (async) | Type-safe queries, async support |
+| **Migrations** | Alembic | Industry standard for SQLAlchemy |
+| **Database** | PostgreSQL 15 | Relational integrity, full-text search, proven reliability |
+| **Auth** | python-jose + passlib (bcrypt) | JWT handling, secure password hashing |
+| **Email** | SendGrid | Reliable delivery, free tier sufficient for MVP |
+| **File Storage** | GCP Cloud Storage | Native GCP integration, scalable |
+| **Scheduler** | APScheduler | Deadline checks, notification jobs |
+| **Rate Limiting** | slowapi | FastAPI-native rate limiting |
+| **Frontend** | React 18 + TypeScript | Type safety, component ecosystem |
+| **Routing** | React Router v6 | Standard React routing |
+| **Server State** | React Query (TanStack) | API cache, loading/error states |
+| **Client State** | Zustand | Lightweight, sufficient for auth + UI state |
+| **Forms** | React Hook Form + Zod | Type-safe form validation |
+| **UI Components** | shadcn/ui + Tailwind CSS | Pre-built accessible components |
+| **HTTP Client** | Axios | Interceptors for auth token handling |
+| **Date Handling** | date-fns | Lightweight, tree-shakeable |
+| **Monorepo** | Turborepo + pnpm | Fast builds, single repo management |
+| **Containerization** | Docker + docker-compose | Consistent dev environment |
+| **CI/CD** | GitHub Actions | Automated test + deploy pipeline |
+| **Deployment** | GCP Cloud Run (BE) + Firebase Hosting (FE) | Scalable, pay-per-use |
+| **Database Hosting** | GCP Cloud SQL | Managed PostgreSQL, automated backups |
+| **Secrets** | GCP Secret Manager | Secure environment variable management |
+| **Project Management** | GitHub Projects | Sprint board, issues, PR tracking |
+| **Testing (BE)** | pytest + httpx | Unit and integration tests |
+| **Testing (FE)** | Vitest + React Testing Library | Component and unit tests |
+| **Testing (E2E)** | Playwright | End-to-end browser automation |
+| **Linting (BE)** | Ruff | Fast Python linter |
+| **Linting (FE)** | ESLint + Prettier | Code style consistency |
+
+---
+
+## Architecture
+
+### Monorepo Structure
+
+```
+stepup/
+├── apps/
+│   ├── backend/                  # FastAPI application
+│   │   ├── app/
+│   │   │   ├── api/              # Routers (controllers)
+│   │   │   │   ├── v1/                # API versioning — /api/v1/
+│   │   │   │   │   ├── auth.py
+│   │   │   │   │   ├── users.py
+│   │   │   │   │   ├── templates.py
+│   │   │   │   │   ├── plans.py
+│   │   │   │   │   └── tasks.py
+│   │   │   │   └── router.py          # Mounts all v1 routes under /api/v1
+│   │   │   ├── services/         # Business logic
+│   │   │   │   ├── auth_service.py
+│   │   │   │   ├── task_service.py
+│   │   │   │   ├── notification_service.py
+│   │   │   │   └── audit_service.py
+│   │   │   ├── repositories/     # Database queries
+│   │   │   ├── models/           # SQLAlchemy models
+│   │   │   ├── schemas/          # Pydantic schemas
+│   │   │   ├── core/             # Config, security, dependencies
+│   │   │   │   ├── exceptions.py      # All custom exception classes
+│   │   │   │   ├── constants.py       # No magic strings or numbers
+│   │   │   │   ├── responses.py       # Standard API response wrapper
+│   │   │   │   └── error_handlers.py  # Global FastAPI exception handler
+│   │   │   └── workers/          # APScheduler jobs
+│   │   ├── tests/
+│   │   │   ├── unit/
+│   │   │   ├── integration/
+│   │   │   └── conftest.py
+│   │   ├── alembic/              # Database migrations
+│   │   ├── Dockerfile
+│   │   └── pyproject.toml
+│   │
+│   └── frontend/                 # React application
+│       ├── src/
+│       │   ├── components/       # Reusable UI components
+│       │   ├── pages/            # Route-based pages
+│       │   │   ├── hr/           # HR Admin pages
+│       │   │   ├── manager/      # Manager pages
+│       │   │   └── employee/     # Employee pages
+│       │   ├── hooks/            # Custom React hooks
+│       │   ├── services/         # API call functions
+│       │   ├── store/            # Zustand stores
+│       │   ├── types/            # TypeScript types
+│       │   ├── constants/        # No magic strings or numbers
+│       │   │   ├── routes.ts          # All route paths
+│       │   │   ├── apiEndpoints.ts    # All API endpoint strings
+│       │   │   └── errorMessages.ts   # error_code → human readable message
+│       │   └── utils/            # Helper functions
+│       ├── tests/
+│       │   ├── unit/
+│       │   └── e2e/              # Playwright tests
+│       ├── Dockerfile
+│       └── package.json
+│
+├── packages/
+│   └── shared-types/             # Shared TypeScript types
+│
+├── docs/
+│   ├── adr/                      # Architecture Decision Records
+│   │   ├── ADR-001-fastapi.md
+│   │   ├── ADR-002-gcp-stack.md
+│   │   ├── ADR-003-state-management.md
+│   │   ├── ADR-004-jwt-httonly-cookie.md
+│   │   └── ADR-005-monorepo-turborepo.md
+│   └── product-vision.md         # This document
+│
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                # Run tests on every PR
+│       └── deploy.yml            # Deploy to GCP on merge to main
+│
+├── docker-compose.yml            # Local development
+├── turbo.json                    # Turborepo config
+├── pnpm-workspace.yaml
+└── README.md
+```
+
+### Error Handling Strategy
+
+All custom exceptions are defined in a single `core/exceptions.py` module and caught by a global FastAPI exception handler in `core/error_handlers.py`. No scattered try/catch blocks across the codebase.
+
+**Exception hierarchy:**
+```python
+BaseAppError
+├── NotFoundError
+│   ├── TaskNotFoundError
+│   ├── PlanNotFoundError
+│   └── UserNotFoundError
+├── AuthorizationError
+│   ├── InsufficientPermissionsError
+│   └── ResourceOwnershipError
+├── ValidationError
+│   ├── InvalidStateTransitionError
+│   ├── DeadlinePassedError
+│   └── FileTypeNotAllowedError
+└── ConflictError
+    └── OptimisticLockError
+```
+
+**Consistent error response format across all endpoints:**
+```json
+{
+  "success": false,
+  "error_code": "TASK_NOT_FOUND",
+  "message": "Task with id 5 was not found",
+  "request_id": "abc-123-def-456"
+}
+```
+
+The `error_code` field allows the frontend to display localized messages (English / Dutch) without relying on backend message strings. All constants — including error codes, token expiry times, file size limits, pagination defaults — are defined in `core/constants.py`. No magic strings or numbers anywhere in the codebase.
+
+### Frontend Constants Strategy
+
+All magic strings and numbers on the frontend are centralized in `src/constants/`:
+
+```typescript
+// constants/routes.ts
+export const ROUTES = {
+  LOGIN: '/login',
+  EMPLOYEE_DASHBOARD: '/employee/dashboard',
+  MANAGER_DASHBOARD: '/manager/dashboard',
+  HR_DASHBOARD: '/hr/dashboard',
+  PLAN_DETAIL: (planId: string) => `/plans/${planId}`,
+}
+
+// constants/apiEndpoints.ts
+export const API = {
+  AUTH: {
+    LOGIN: '/auth/login',
+    REFRESH: '/auth/refresh',
+    LOGOUT: '/auth/logout',
+  },
+  TASKS: {
+    COMPLETE: (taskId: string) => `/tasks/${taskId}/complete`,
+    APPROVE: (taskId: string) => `/tasks/${taskId}/approve`,
+  },
+}
+
+// constants/errorMessages.ts
+export const ERROR_MESSAGES: Record<string, string> = {
+  TASK_NOT_FOUND: 'This task no longer exists.',
+  INVALID_STATE_TRANSITION: 'This action is not allowed at this stage.',
+  FILE_TYPE_NOT_ALLOWED: 'Only PDF, DOCX, and PNG files are accepted.',
+  OPTIMISTIC_LOCK_ERROR: 'Someone else updated this task. Please refresh.',
+}
+```
+
+The `errorMessages.ts` file maps backend `error_code` values directly to user-facing strings. This makes i18n straightforward — swap the map for Dutch and the entire app speaks Dutch.
+
+---
+
+### Logging Strategy
+
+All application logs are structured JSON and sent to **GCP Cloud Logging**. Every log line includes the `request_id` so a full request trace can be reconstructed from a single ID.
+
+**Log levels:**
+```
+DEBUG   → local development only, never in production
+INFO    → request received, task state changed, email sent
+WARNING → unexpected but handled situation (e.g. overdue task detected)
+ERROR   → unhandled exception, external service failure
+```
+
+**What is logged:**
+```
+✅ Every incoming request (method, path, status, duration, request_id)
+✅ State machine transitions (task_id, old_state, new_state, user_id)
+✅ Email send attempts and outcomes
+✅ File upload events (file_name, size, user_id — no file content)
+✅ Auth events (login, logout, token refresh — no passwords)
+✅ Scheduler job runs (job name, tasks processed, errors)
+```
+
+**What is never logged:**
+```
+❌ Passwords or tokens
+❌ Full file contents
+❌ Personal data beyond user_id (no names, emails in log lines)
+❌ Request/response body content (only metadata)
+```
+
+This approach keeps logs useful for debugging while avoiding PII exposure — important for GDPR compliance in the Netherlands.
+
+---
+
+```
+┌─────────────────────────────────────────────┐
+│                   GCP Project               │
+│                                             │
+│  Firebase Hosting        Cloud Run          │
+│  ┌──────────────┐       ┌──────────────┐   │
+│  │   Frontend   │ ────► │   Backend    │   │
+│  │  (React SPA) │       │  (FastAPI)   │   │
+│  └──────────────┘       └──────┬───────┘   │
+│                                │           │
+│              ┌─────────────────┼──────┐    │
+│              │                 │      │    │
+│    ┌─────────▼──┐    ┌────────▼───┐  │    │
+│    │ Cloud SQL  │    │   Cloud    │  │    │
+│    │ PostgreSQL │    │  Storage   │  │    │
+│    └────────────┘    └────────────┘  │    │
+│                                      │    │
+│    ┌──────────────┐  ┌─────────────┐ │    │
+│    │   Secret     │  │   Cloud     │ │    │
+│    │   Manager    │  │    Build    │ │    │
+│    └──────────────┘  └─────────────┘ │    │
+└─────────────────────────────────────────────┘
+```
+
+### Database Schema (Key Tables)
+
+```
+users               → id, email, password_hash, role, department_id,
+                      manager_id, is_active, deleted_at, created_at
+
+departments         → id, name, deleted_at, created_at
+
+onboarding_templates → id, name, department_id, created_by,
+                       is_active, deleted_at, created_at
+
+template_tasks      → id, template_id, title, description, order,
+                      deadline_days, is_required, deleted_at
+
+onboarding_plans    → id, user_id, template_id, manager_id,
+                      start_date, status, deleted_at, created_at
+
+plan_tasks          → id, plan_id, template_task_id, title,
+                      status, deadline, completed_at,
+                      approved_by, approved_at, version
+
+task_comments       → id, plan_task_id, user_id, content, created_at
+
+task_attachments    → id, plan_task_id, user_id, file_name,
+                      file_url, file_type, file_size, created_at
+
+audit_logs          → id, user_id, action, entity_type, entity_id,
+                      old_value, new_value, request_id, created_at
+
+notifications       → id, user_id, type, content, is_read,
+                      related_entity_type, related_entity_id, created_at
+```
+
+**Key indexes:**
+```sql
+idx_plan_tasks_assigned    ON plan_tasks(plan_id, status)
+idx_plan_tasks_deadline    ON plan_tasks(deadline, status)
+idx_audit_logs_entity      ON audit_logs(entity_type, entity_id)
+idx_notifications_user     ON notifications(user_id, is_read)
+idx_users_email            ON users(email)
+```
+
+---
+
+## Security Approach
+
+### Authentication Flow
+
+```
+1. User submits email + password
+2. Backend verifies credentials (bcrypt)
+3. Backend issues:
+   - Access token (JWT, 15 min) → set as HttpOnly cookie
+   - Refresh token (opaque, 7 days) → set as HttpOnly cookie, stored in DB
+4. Client sends requests — browser attaches cookies automatically
+5. On access token expiry → client calls /auth/refresh
+6. On logout → refresh token deleted from DB, cookies cleared
+```
+
+### Authorization
+
+Every endpoint checks:
+1. Is the user authenticated? (valid JWT)
+2. Does the user's role permit this action?
+3. Does the user own this resource? (e.g. employee can only see own tasks)
+
+### OWASP Coverage
+
+| Risk | Mitigation |
+|---|---|
+| Broken Access Control | RBAC on every endpoint, resource ownership checks |
+| Cryptographic Failures | bcrypt for passwords, HTTPS enforced, HttpOnly cookies |
+| Injection | SQLAlchemy ORM, Pydantic input validation |
+| Insecure Design | Threat modelling per feature, ADR documentation |
+| Security Misconfiguration | GCP Secret Manager, CORS restricted, CSP headers |
+| Vulnerable Components | Dependabot alerts, regular dependency updates |
+| Auth Failures | Rate limiting on login, refresh token rotation |
+| Data Integrity Failures | Optimistic locking on task updates (version column) |
+| Logging Failures | Request ID on all logs, audit trail, no PII in logs |
+| SSRF | File uploads validated by MIME type, no URL fetching |
+
+---
+
+## Testing Strategy
+
+### Unit Tests (pytest / Vitest)
+- All service layer functions
+- State machine transition validation
+- Deadline calculation logic
+- Role permission checks
+- Target: 70%+ coverage on service layer
+
+### Integration Tests (pytest + httpx)
+- All API endpoints
+- Auth flow (login, refresh, logout)
+- Role-based access (employee cannot access manager endpoints)
+- File upload flow
+- Email trigger verification (mocked SendGrid)
+
+### E2E Tests (Playwright)
+Key scenarios:
+```
+1. HR creates template → registers employee → plan auto-generated
+2. Employee logs in → views tasks → completes task → uploads document
+3. Manager logs in → sees pending approval → approves task
+4. Manager returns task → employee receives notification → resubmits
+5. System marks overdue task → employee and manager notified
+```
+
+### CI Integration
+- All tests run on every PR via GitHub Actions
+- PR cannot be merged if tests fail
+- Coverage report posted as PR comment
+- E2E tests run on staging environment after merge to main
+
+---
+
+## Documentation Plan
+
+### README.md
+```
+- Project description + live demo link
+- Screenshots / demo GIF
+- Features list
+- Tech stack table
+- Local setup (docker-compose up)
+- Environment variables reference
+- How to run tests
+- Architecture overview
+- Contributing guide
+```
+
+### API Documentation
+- Auto-generated Swagger at `/docs` (FastAPI)
+- Every endpoint has summary, description, request/response examples
+- Available publicly for demo purposes
+
+### Architecture Decision Records (ADR)
+```
+ADR-001: FastAPI over Django/Flask
+ADR-002: GCP stack selection
+ADR-003: Zustand + React Query over Redux
+ADR-004: HttpOnly cookies over localStorage
+ADR-005: Monorepo with Turborepo
+ADR-006: API versioning with /api/v1/ prefix
+ADR-007: Structured logging to GCP Cloud Logging
+```
+
+---
+
+## Product Roadmap
+
+### Sprint 1–2: Foundation (Weeks 1–4)
+- Monorepo setup (Turborepo + pnpm)
+- Docker + docker-compose local environment
+- GCP project setup (Cloud Run, Cloud SQL, Secret Manager)
+- GitHub Actions CI pipeline
+- Database schema + Alembic migrations
+- Seed data (minimum set)
+- JWT authentication (login, refresh, logout)
+- User management (HR Admin only)
+- Department CRUD
+- Basic protected routes (frontend)
+
+### Sprint 3–4: Core Features (Weeks 5–8)
+- Onboarding template CRUD (HR Admin)
+- Onboarding plan creation from template
+- Task state machine implementation
+- Task completion + document upload
+- Manager approval / return flow
+- Email notifications (SendGrid)
+- APScheduler: overdue task detection + reminder emails
+- Employee dashboard
+- Manager dashboard
+- HR dashboard
+
+### Sprint 5–6: Quality & Polish (Weeks 9–12)
+- Audit trail (complete implementation)
+- Reporting & analytics (HR)
+- CSV / PDF export
+- Soft delete on all entities
+- Pagination on all list endpoints
+- Health check endpoint
+- Request ID logging
+- Optimistic locking (version column on plan_tasks)
+- Redis cache for templates (GCP Memorystore)
+- Full test suite (unit + integration + E2E)
+- OWASP ZAP security scan
+- README + Swagger polish
+- GCP deploy pipeline (GitHub Actions → Cloud Run)
+- Demo seed data (realistic dataset)
+
+### Bonus (If Time Allows)
+- Multi-tenancy (organization_id on all tables)
+- Dutch + English language support (i18n)
+- Webhook system for external integrations
+- Full-text search on tasks and templates (PostgreSQL tsvector)
+
+---
+
+## Out of Scope (Not in MVP)
+
+- Multi-level approval chains (single approver per task only)
+- Native mobile apps (responsive web only)
+- Video or async communication features
+- Integration with external HR systems (BambooHR, Workday, etc.)
+- Slack / Teams notifications (webhook system planned for post-MVP)
+- Recurring onboarding tasks
+- Performance review features
+- Payroll or contract management
+- Single Sign-On (SSO / SAML)
+
+---
+
+## Success Metrics
+
+### Usage
+- Employee completes onboarding plan within expected timeframe
+- Manager approval time < 24 hours per task
+- Zero onboarding tasks lost or forgotten
+
+### Technical
+- API response time < 500ms (p95)
+- Test coverage > 70% on service layer
+- Zero critical security findings in OWASP ZAP scan
+- CI pipeline passes on every merge to main
+
+### Quality
+- No critical bugs in production
+- All endpoints documented in Swagger
+- README enables a new developer to run the project locally in under 10 minutes
+
+---
+
+## Questions & Open Decisions
+
+**Q: Can an employee edit a task after marking it complete?**  
+A: No. Once marked complete, the employee can only wait for manager feedback. If returned, the task goes back to In Progress.
+
+**Q: What happens if the manager account is deactivated?**  
+A: HR Admin must reassign the manager before deactivation. The system blocks deactivation if pending approvals exist.
+
+**Q: Can HR Admin approve tasks instead of the manager?**  
+A: Yes, HR Admin has override capability. All overrides are recorded in the audit trail.
+
+**Q: What happens to active plans if a template is deleted?**  
+A: Templates use soft delete. Active plans are not affected. plan_tasks store a copy of the task title and description at time of plan creation.
+
+**Q: Can a task have sub-tasks?**  
+A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
+
+---
+
+## Document History
+
+| Version | Date | Changes |
+|---|---|---|
+| 1.0 | 2026-04-21 | Initial product vision document |
+| 1.1 | 2026-04-21 | Added error handling strategy, frontend constants, logging strategy, API versioning, removed intern references |
+
+**Review Frequency:** After each sprint  
+**Status:** Living document — will evolve throughout the project
