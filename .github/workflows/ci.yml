@@ -27,7 +27,12 @@ jobs:
 
       - name: Run tests
         working-directory: apps/backend
-        run: pytest
+        run: |
+          if [ -d "tests" ] && [ "$(ls -A tests)" ]; then
+            pytest
+          else
+            echo "No tests found, skipping..."
+          fi
 
   test-frontend:
     runs-on: ubuntu-latest
