@@ -170,33 +170,3 @@ New-Item docs\adr\ADR-007-structured-logging.md -ItemType File
 | pnpm not recognized after install | Added npm path to `$PROFILE` |
 | gh project commands failing | Added `read:project` and `project` scopes via `gh auth refresh` |
 | VS Code terminal pnpm not found | Same `$PROFILE` fix |
-
-## 2026-04-22
-
-### What I did
-
-#### GCP Project Setup (US-008)
-
-**APIs Enabled:**
-- Cloud Run Admin API
-- Cloud SQL Admin API
-- Secret Manager API
-- Cloud Build API
-
-**Cloud SQL:**
-- Instance: stepup-db (PostgreSQL 18)
-- Region: europe-west4 (Netherlands)
-- Public IP: 34.32.215.164
-- Database: stepup_db
-- User: stepup_user
-
-**Secret Manager:**
-- DATABASE_URL
-- JWT_SECRET_KEY
-- SENDGRID_API_KEY
-
-### What I learned
-- GCP APIs are disabled by default — must enable before use
-- Cloud SQL is a managed PostgreSQL on GCP servers
-- Secret Manager stores sensitive values securely
-- Never put secrets in .env files that go to GitHub
