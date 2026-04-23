@@ -200,3 +200,54 @@ New-Item docs\adr\ADR-007-structured-logging.md -ItemType File
 - Cloud SQL is a managed PostgreSQL on GCP servers
 - Secret Manager stores sensitive values securely
 - Never put secrets in .env files that go to GitHub
+
+## 2026-04-23
+
+### What I did
+
+#### Backend Development (US-010)
+
+**Backend skeleton created:**
+- `apps/backend/app/main.py` → FastAPI app, CORS middleware, health check endpoint
+- `apps/backend/requirements.txt` → all dependencies pinned to exact versions
+- `apps/backend/pyproject.toml` → pytest and ruff configuration
+
+**Database configuration:**
+- `apps/backend/app/core/config.py` → Pydantic Settings, reads from .env
+- `apps/backend/app/core/database.py` → async SQLAlchemy engine, session factory, get_db dependency
+- `apps/backend/.env` → local DATABASE_URL (not committed to GitHub)
+
+**Models:**
+- `apps/backend/app/models/base.py` → Base class, TimestampMixin (created_at, updated_at, deleted_at)
+- `apps/backend/app/models/user.py` → User model (id, email, password_hash, first_name, last_name)
+
+**Alembic setup:**
+- `apps/backend/alembic.ini` → Alembic configuration, psycopg2 connection URL
+- `apps/backend/alembic/env.py` → connects Alembic to SQLAlchemy models
+- `apps/backend/alembic/script.py.mako` → migration file template
+
+**First migration:**
+- Generated: `alembic revision --autogenerate -m "create users table"`
+- Applied: `alembic upgrade head`
+- Result: `users` table created in local PostgreSQL
+
+#### Issues & Solutions
+
+| Issue | Solution |
+|---|---|
+| EAP project using port 5432 | Changed stepup db port to 5433 in docker-compose.yml |
+| `ModuleNotFoundError: psycopg2` | Added `psycopg2-binary==2.9.9` to requirements.txt — Alembic needs sync driver |
+| `FileNotFoundError: script.py.mako` | Created missing Alembic template file manually |
+| `sqlalchemy.url` parsed as string | Fixed duplicate `sqlalchemy.url =` in alembic.ini |
+| `asyncpg` build failed on Python 3.14 | Used Docker container with Python 3.11 instead |
+
+### What I learned
+- FastAPI auto-generates Swagger docs at `/docs` — no extra work needed
+- CORS must be configured for frontend to communicate with backend
+- SQLAlchemy 2.0 uses `Mapped` and `mapped_column` for type-safe models
+- Alembic needs a sync driver (psycopg2) even when the app uses async (asyncpg)
+- `target_metadata = Base.metadata` is what connects Alembic to our models
+- Every model must be imported in `alembic/env.py` to be detected
+- `alembic_version` table tracks which migrations have been applied
+- Docker bind mounts allow code changes without rebuilding the image
+- `docker-compose run --rm` starts a temporary container for one-off commands
