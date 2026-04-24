@@ -1,0 +1,10 @@
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "I"]
+
+[tool.ruff.isort]
+known-first-party = ["app"]
