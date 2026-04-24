@@ -1,0 +1,45 @@
+name: "Subtask — DEVOPS"
+description: "DevOps subtask (infrastructure, CI/CD, Docker, GCP)"
+title: "DEVOPS: "
+labels: ["devops"]
+body:
+  - type: input
+    id: parent_us
+    attributes:
+      label: "Parent US"
+      placeholder: "US-029: Upload Attachment to Task"
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: "Scope"
+      placeholder: |
+        - [ ] GCP Cloud Storage bucket config
+        - [ ] New secret added to Secret Manager
+        - [ ] docker-compose updated
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "Acceptance Criteria"
+      placeholder: |
+        - [ ] Infrastructure change works correctly
+        - [ ] CI pipeline passes
+        - [ ] Secrets go to Secret Manager, not .env
+    validations:
+      required: true
+
+  - type: textarea
+    id: definition_of_done
+    attributes:
+      label: "Definition of Done"
+      value: |
+        - [ ] Change applied
+        - [ ] CI pipeline passes
+        - [ ] Documented if necessary
+    validations:
+      required: true

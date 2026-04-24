@@ -1,0 +1,47 @@
+name: "Subtask — BE"
+description: "Backend subtask"
+title: "BE: "
+labels: ["backend"]
+body:
+  - type: input
+    id: parent_us
+    attributes:
+      label: "Parent US"
+      placeholder: "US-001: Invite User with Role"
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: "Scope"
+      placeholder: |
+        - [ ] Model: ...
+        - [ ] Service: ...
+        - [ ] Endpoint: ...
+        - [ ] Update seed
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "Acceptance Criteria"
+      placeholder: |
+        - [ ] Endpoint works and returns correct HTTP status
+        - [ ] RBAC is enforced
+        - [ ] Seed updated
+    validations:
+      required: true
+
+  - type: textarea
+    id: definition_of_done
+    attributes:
+      label: "Definition of Done"
+      value: |
+        - [ ] Code written
+        - [ ] PR opened and reviewed
+        - [ ] CI pipeline passes
+        - [ ] Acceptance criteria met
+    validations:
+      required: true

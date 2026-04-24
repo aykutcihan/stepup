@@ -1,0 +1,44 @@
+name: "Subtask — FE TEST"
+description: "Frontend test subtask (Vitest unit test)"
+title: "FE TEST: "
+labels: ["frontend", "testing"]
+body:
+  - type: input
+    id: parent_us
+    attributes:
+      label: "Parent US"
+      placeholder: "US-001: Invite User with Role"
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: "Scope"
+      placeholder: |
+        - [ ] Component unit test: ...
+        - [ ] Hook test: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "Acceptance Criteria"
+      placeholder: |
+        - [ ] At least 1 component test written
+        - [ ] All tests pass
+        - [ ] User behavior tested (not implementation details)
+    validations:
+      required: true
+
+  - type: textarea
+    id: definition_of_done
+    attributes:
+      label: "Definition of Done"
+      value: |
+        - [ ] Tests written
+        - [ ] All tests pass locally
+        - [ ] CI pipeline passes
+    validations:
+      required: true
