@@ -187,3 +187,23 @@ git push origin develop
 > I never use `git push --force` on shared branches (develop, main).
 > Force push rewrites history and can destroy other people's work.
 > The only safe place for force push is on your own feature branch, before a PR is opened.
+
+---
+
+## gh issue
+
+```powershell
+gh issue view <number>   # show issue details (title, body, labels, assignee)
+gh issue list            # list all issues in the repo
+```
+
+**What it does:** Reads GitHub issues directly from the terminal — no browser needed.
+`view` shows the full issue: description, acceptance criteria, labels, who it's assigned to.
+`list` shows all open issues with their numbers and titles at a glance.
+
+**When I used it:** To check what a US requires before starting work, and to see which issues are still open.
+
+```powershell
+gh issue view 10         # show US-010 details
+gh issue list            # list all open issues in aykutcihan/stepup
+```
