@@ -1,0 +1,44 @@
+name: "Subtask — E2E"
+description: "E2E test subtask (Playwright — critical flow at end of sprint)"
+title: "E2E: "
+labels: ["testing"]
+body:
+  - type: input
+    id: parent_us
+    attributes:
+      label: "Parent US / Sprint"
+      placeholder: "Sprint 2 — Auth critical flow"
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: "Scope"
+      placeholder: |
+        - [ ] Flow: Login → Dashboard
+        - [ ] Flow: HR creates plan → Employee views plan
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "Acceptance Criteria"
+      placeholder: |
+        - [ ] Playwright test written
+        - [ ] Test passes locally
+        - [ ] CI pipeline passes
+    validations:
+      required: true
+
+  - type: textarea
+    id: definition_of_done
+    attributes:
+      label: "Definition of Done"
+      value: |
+        - [ ] E2E test written
+        - [ ] CI pipeline passes
+        - [ ] Critical flow validated
+    validations:
+      required: true
