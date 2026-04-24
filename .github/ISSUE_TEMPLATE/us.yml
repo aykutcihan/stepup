@@ -1,0 +1,72 @@
+name: "User Story"
+description: "Create a new user story"
+title: "US-XXX: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: "## User Story"
+
+  - type: input
+    id: epic
+    attributes:
+      label: "Parent Epic"
+      placeholder: "Epic 1: Authentication, Authorization & User Management"
+    validations:
+      required: true
+
+  - type: textarea
+    id: user_story
+    attributes:
+      label: "User Story"
+      placeholder: |
+        As a ...
+        I want to ...
+        So that ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "Acceptance Criteria"
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: sub_issues
+    attributes:
+      label: "Sub-issues"
+      value: |
+        - [ ] BE
+        - [ ] BE TEST
+        - [ ] FE
+        - [ ] FE TEST
+        - [ ] DOC
+        <!-- Optional: -->
+        <!-- - [ ] DEVOPS -->
+        <!-- - [ ] E2E -->
+    validations:
+      required: true
+
+  - type: dropdown
+    id: sprint
+    attributes:
+      label: "Sprint"
+      options:
+        - "Sprint 1 — Foundation"
+        - "Sprint 2 — Auth"
+        - "Sprint 3 — User & Department"
+        - "Sprint 4 — Template Management"
+        - "Sprint 5 — Plan & Task Workflow"
+        - "Sprint 6 — Notifications & Scheduler"
+        - "Sprint 7 — Dashboards"
+        - "Sprint 8 — Attachments"
+        - "Sprint 9 — Audit Trail & Reports"
+        - "Sprint 10 — Quality & Polish"
+    validations:
+      required: true

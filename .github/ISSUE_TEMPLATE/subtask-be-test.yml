@@ -1,0 +1,45 @@
+name: "Subtask — BE TEST"
+description: "Backend test subtask (pytest unit + integration)"
+title: "BE TEST: "
+labels: ["backend", "testing"]
+body:
+  - type: input
+    id: parent_us
+    attributes:
+      label: "Parent US"
+      placeholder: "US-001: Invite User with Role"
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: "Scope"
+      placeholder: |
+        - [ ] Unit test: service functions
+        - [ ] Integration test: endpoints
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "Acceptance Criteria"
+      placeholder: |
+        - [ ] At least 1 unit test written
+        - [ ] At least 1 integration test written
+        - [ ] All tests pass
+        - [ ] Coverage 70%+ on service layer
+    validations:
+      required: true
+
+  - type: textarea
+    id: definition_of_done
+    attributes:
+      label: "Definition of Done"
+      value: |
+        - [ ] Tests written
+        - [ ] All tests pass locally
+        - [ ] CI pipeline passes
+    validations:
+      required: true
