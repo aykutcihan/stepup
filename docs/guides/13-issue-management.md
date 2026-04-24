@@ -92,10 +92,11 @@ Open subtasks at the start of the sprint when that US will be worked on.
 
 Example workflow:
 1. Sprint 2 starts
-2. Open subtask issues for US-001, US-002, US-003... (all Sprint 2 USs)
-3. Work on each subtask, close it when done
-4. At the end of Sprint 2, open the E2E issue for Sprint 2
-5. Close the E2E issue when the test passes in CI
+2. Open subtask issues for all Sprint 2 USs using VS Code AI (see below)
+3. Add `subtask` label to all subtask issues
+4. Work on each subtask, close it when done
+5. At the end of the sprint, open the E2E subtask issue
+6. Close the E2E issue when the test passes in CI
 
 ---
 
@@ -120,8 +121,16 @@ Blank issues are disabled — every issue must use a template.
 
 ## How to Push Issues to GitHub
 
-For bulk issue creation (e.g. setting up a new sprint's USs), use the VS Code AI assistant with a prompt that uses the full `gh.exe` path:
+For bulk issue creation, use the VS Code AI assistant with a prompt that uses the full `gh.exe` path.
 
+**Important:** `gh` CLI must be called with its full path in VS Code terminal on Windows:
+```
+C:\Program Files\GitHub CLI\gh.exe
+```
+
+Running `bash setup.sh` does not work because bash on Windows uses its own PATH and cannot find `gh`. Always use VS Code AI with PowerShell and the full `gh.exe` path.
+
+**Prompt structure for VS Code AI:**
 ```
 gh is installed at: C:\Program Files\GitHub CLI\gh.exe
 Repository: aykutcihan/stepup
@@ -133,31 +142,53 @@ Do not ask for confirmation — execute all commands one by one.
 [list of gh issue create commands]
 ```
 
-For single issues, use the GitHub web interface with the issue template chooser — templates are available automatically when creating a new issue.
+For single issues, use the GitHub web interface — templates are available automatically when creating a new issue.
 
 ---
 
 ## How to Open Sprint Subtasks
 
-At the start of each sprint, open subtask issues for all USs in that sprint.
+At the start of each sprint, prepare a prompt for VS Code AI with all subtask issues for that sprint.
 
-Use the VS Code AI assistant with a prompt like:
+Each subtask issue must include:
+- Title format: `BE: US-XXX Description` / `FE TEST: US-XXX Description` etc.
+- Body: Parent US reference, Scope, Acceptance Criteria, Definition of Done
+- Labels: sprint label + subtask type label (backend, frontend, testing, devops, documentation)
 
+After all subtask issues are created:
+
+**Add `subtask` label to all of them:**
 ```
-I need to create subtask issues for Sprint X of the StepUp project.
-gh is installed at: C:\Program Files\GitHub CLI\gh.exe
-Repository: aykutcihan/stepup
-
-For each US below, create the following subtask issues and link them to the parent US as sub-issues.
-
-US-XXX: [title] (parent issue #XX)
-- BE subtask
-- BE TEST subtask
-- FE subtask
-- FE TEST subtask
-- DOC subtask (if applicable)
-- DEVOPS subtask (if applicable)
+Add the label "subtask" to issues #XX, #XX, #XX...
+Use: & "C:\Program Files\GitHub CLI\gh.exe" issue edit NUMBER --repo aykutcihan/stepup --add-label "subtask"
 ```
+
+**Note on sub-issues:** GitHub's sub-issue API is not available on the Free plan. As a workaround, each subtask issue references its parent US in the body. You can also link them manually from the issue sidebar on GitHub.
+
+---
+
+## GitHub Project Board Structure
+
+The project board has three views:
+
+| View | Filter | Purpose |
+|------|--------|---------|
+| `Backlog` | none | All issues across all sprints |
+| `Sprint X — US` | `label:sprint-X -label:subtask` | Current sprint — US and Epic issues only (clean working view) |
+| `Sprint X — Full` | `label:sprint-X` | Current sprint — US + all subtask issues |
+
+**Working view:** Always use `Sprint X — US` during development. It shows only 9–12 items (Epics + USs + E2E) — no noise from subtasks.
+
+**How to set a filter in GitHub Projects:**
+1. Open the view
+2. Click the filter bar at the top
+3. Type the filter (e.g. `label:sprint-2 -label:subtask`)
+4. Press Enter
+5. Click Save
+
+**When a new sprint starts:**
+- Create two new views: `Sprint X — US` and `Sprint X — Full`
+- Update filters with the new sprint label
 
 ---
 
