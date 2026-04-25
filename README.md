@@ -8,7 +8,34 @@ StepUp streamlines the process of onboarding new employees — structured task a
 
 ## Status
 
-🚧 **In active development** — Sprint 1 in progress
+🚧 **In active development** — Sprint 1 complete, Sprint 2 (Auth) next
+
+| Sprint | Theme | Status |
+|---|---|---|
+| Sprint 1 | Infrastructure | ✅ Complete |
+| Sprint 2 | Authentication & Authorization | ⏳ Next |
+| Sprint 3 | User & Department Management | — |
+| Sprint 4 | Onboarding Template Management | — |
+| Sprint 5 | Onboarding Plan & Task Workflow | — |
+| Sprint 6 | Notifications & Email | — |
+| Sprint 7 | Dashboards | — |
+| Sprint 8 | Attachments | — |
+| Sprint 9 | Audit Trail & Reports | — |
+| Sprint 10 | Quality & Polish | — |
+
+Sprint progress is tracked on the [StepUp Board](https://github.com/users/aykutcihan/projects/5).
+
+---
+
+## Sprint 1 — What's Done
+
+| US | Description |
+|---|---|
+| US-006 | Monorepo setup (Turborepo + pnpm) |
+| US-007 | Docker + docker-compose local environment |
+| US-008 | GCP project (Cloud Run, Cloud SQL, Secret Manager) |
+| US-009 | GitHub Actions CI pipeline |
+| US-010 | Database schema + Alembic initial migration |
 
 ---
 
@@ -19,7 +46,7 @@ StepUp streamlines the process of onboarding new employees — structured task a
 | **Backend** | Python 3.11, FastAPI, SQLAlchemy 2.0, Alembic |
 | **Database** | PostgreSQL 15 |
 | **Frontend** | React 18, TypeScript, Tailwind CSS, shadcn/ui |
-| **Infrastructure** | Docker, GCP Cloud Run, GCP Cloud SQL |
+| **Infrastructure** | Docker, GCP Cloud Run, GCP Cloud SQL, GCP Secret Manager |
 | **CI/CD** | GitHub Actions |
 | **Package Manager** | pnpm (monorepo with Turborepo) |
 
@@ -31,14 +58,17 @@ StepUp streamlines the process of onboarding new employees — structured task a
 stepup/
   apps/
     backend/          # FastAPI application
-    frontend/         # React application
+      app/
+        core/         # Config, database connection
+        models/       # SQLAlchemy models
+      alembic/        # Database migrations
   packages/
     shared-types/     # Shared TypeScript types
   docs/
     product-vision.md # Full product specification
-    setup-log.md      # Development log
-    guides/           # Learning notes and technical guides
+    guides/           # Technical guides (Docker, Git, FastAPI, Alembic, etc.)
     adr/              # Architecture Decision Records
+    scrum/            # Sprint planning and retrospectives
   docker-compose.yml
   turbo.json
 ```
@@ -78,6 +108,8 @@ docker-compose up
 | Frontend | http://localhost:3000 |
 | Database | localhost:5433 |
 
+> Port 5433 is used instead of the default 5432 (conflict with local PostgreSQL).
+
 ### Useful Commands
 
 ```bash
@@ -101,31 +133,21 @@ docker-compose build backend
 
 ## Documentation
 
-Full technical documentation is in the [`docs/`](./docs/) folder:
-
 | Document | Description |
 |---|---|
-| [`product-vision.md`](./docs/product-vision.md) | Full product specification, user roles, workflows, architecture |
-| [`setup-log.md`](./docs/setup-log.md) | Day-by-day development log |
-| [`guides/`](./docs/guides/) | Technical guides (FastAPI, Docker, Alembic, etc.) |
-| [`adr/`](./docs/adr/) | Architecture Decision Records |
+| [`docs/product-vision.md`](./docs/product-vision.md) | Full product specification, user roles, workflows, architecture |
+| [`docs/scrum/`](./docs/scrum/) | Sprint goals, refinement notes, reviews, retrospectives |
+| [`docs/guides/`](./docs/guides/) | Technical guides (FastAPI, Docker, Git, Alembic, SQLAlchemy, etc.) |
+| [`docs/adr/`](./docs/adr/) | Architecture Decision Records |
 
 ---
 
-## GitHub Projects
-
-Sprint progress is tracked on the [StepUp Board](https://github.com/users/aykutcihan/projects/5).
-
----
-
-## Contributing
-
-This is a solo learning project. Branch strategy:
+## Branch Strategy
 
 ```
-main      → production (stable)
+main      → production (stable, merged at sprint end)
 develop   → integration branch
-feature/  → one branch per issue
+feature/  → one branch per issue (feature/us-001-invite-user)
 fix/      → bug fixes
 ```
 
