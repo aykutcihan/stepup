@@ -3,18 +3,21 @@
 *To be filled at the end of Sprint 2.*
 
 ## Sprint Goal
-Auth flow is fully working. HR Admin can invite users by email with a role. Invited users can register via a secure token link. All users can log in and log out. Sessions stay active via token refresh. RBAC is enforced on all routes. Deactivated users lose access immediately.
+Auth flow is fully working. HR Admin can invite users, invited users can register via invitation link, all users can log in and log out securely, RBAC is enforced across all routes, and deactivated users lose access immediately.
 
 ## Sprint Goal Achieved?
 
 ## Completed User Stories
 
-| US | Title | Points | Status | Notes |
-|----|-------|--------|--------|-------|
-| US-001 | User Invitation & Registration | 5 | | |
-| US-002 | Login, Logout & Token Refresh | 5 | | |
-| US-003 | Access Control & Security | 3 | | |
-| E2E | Sprint 2: Login and role-based routing | — | | |
+| US | Title | Status | Notes |
+|----|-------|--------|-------|
+| US-001 | Invite User with Role | | |
+| US-002 | Register via Invitation | | |
+| US-003 | User Login & Logout | | |
+| US-004 | Token Refresh | | |
+| US-005 | Enforce Role-Based Access Control | | |
+| US-006 | Invitation Expiration | | |
+| US-007 | Force Logout for Deactivated Users | | |
 
 ## Incomplete User Stories
 
@@ -22,8 +25,8 @@ Auth flow is fully working. HR Admin can invite users by email with a role. Invi
 |----|-------|--------|----------|
 
 ## Metrics
-- Points planned: 13
-- Points completed:
-- Points carried over:
+- USs planned: 7
+- USs completed:
+- USs carried over:
 
 ## Notes
