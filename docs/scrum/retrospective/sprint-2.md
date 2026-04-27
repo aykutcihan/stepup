@@ -1,12 +1,29 @@
-# Sprint 2 — Retrospective
+# Sprint 2 — Review
 
 *To be filled at the end of Sprint 2.*
 
-### What Went Well
+## Sprint Goal
+Auth flow is fully working. HR Admin can invite users by email with a role. Invited users can register via a secure token link. All users can log in and log out. Sessions stay active via token refresh. RBAC is enforced on all routes. Deactivated users lose access immediately.
 
-### What Needs Improvement
-- Board became too large (80+ items in one view) — added `subtask` label and sprint-based views filtered by `-label:subtask`
-- Feature branches had no remote tracking — branches stayed local only. Rule: always push branch to remote immediately after first commit (`git push origin branch-name`)
-- Feature branches were not merged to develop — discovered via `git log --oneline` and `ls docs/`. Rule: at the end of each sprint, verify develop is up to date with `git log --oneline`
+## Sprint Goal Achieved?
 
-### Next Steps
+## Completed User Stories
+
+| US | Title | Points | Status | Notes |
+|----|-------|--------|--------|-------|
+| US-001 | User Invitation & Registration | 5 | | |
+| US-002 | Login, Logout & Token Refresh | 5 | | |
+| US-003 | Access Control & Security | 3 | | |
+| E2E | Sprint 2: Login and role-based routing | — | | |
+
+## Incomplete User Stories
+
+| US | Title | Reason | Moved to |
+|----|-------|--------|----------|
+
+## Metrics
+- Points planned: 13
+- Points completed:
+- Points carried over:
+
+## Notes
