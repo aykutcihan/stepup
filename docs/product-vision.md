@@ -5,7 +5,7 @@
 **Owner:** Developer (Solo Project)  
 **Status:** Living document — will evolve throughout development  
 
----
+--- 
 
 ## Executive Summary
 
