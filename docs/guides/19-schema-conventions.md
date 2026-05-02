@@ -50,6 +50,21 @@ class UserUpdate(BaseModel):
 
 ---
 
+## Create vs Response — Why Two Classes
+
+`Create` and `Response` are always separate because the client and the server
+control different fields.
+
+| Who sets it | Where it lives |
+|-------------|---------------|
+| Client sends | `Create` — email, role |
+| System generates | `Response` only — id, expires_at, created_at |
+
+The client must never be able to supply `id` or `expires_at` directly.
+Keeping them in separate schemas enforces this at the validation layer.
+
+---
+
 ## Response Schemas
 
 `Response` schemas define exactly what the client receives.
@@ -65,7 +80,29 @@ class InvitationResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 ```
 
-`from_attributes=True` allows the schema to be built directly from a SQLAlchemy model instance.
+### from_attributes=True
+
+SQLAlchemy returns data as Python objects — you access fields with dot notation (`obj.email`).
+Pydantic by default expects a dictionary (`obj["email"]`).
+
+`from_attributes=True` tells Pydantic to read attributes using dot notation instead,
+so it can consume a SQLAlchemy model instance directly.
+
+Without it:
+```python
+# TypeError — Pydantic cannot read a SQLAlchemy object
+return InvitationResponse(db_invitation)
+```
+
+With it:
+```python
+# Pydantic reads db_invitation.id, db_invitation.email, etc. automatically
+return InvitationResponse.model_validate(db_invitation)
+```
+
+`model_validate()` is the method used to build a schema from a SQLAlchemy instance.
+FastAPI also calls this automatically when you set `response_model=InvitationResponse`
+on an endpoint.
 
 ---
 
