@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.router import api_router
 
 app = FastAPI(
     title="StepUp API",
@@ -21,3 +22,5 @@ app.add_middleware(
 @app.get("/health")
 async def health_check():
     return {"status": "ok", "service": "stepup-backend"}
+
+app.include_router(api_router, prefix="/api/v1")
