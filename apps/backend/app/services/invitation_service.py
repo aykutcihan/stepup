@@ -5,6 +5,8 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enums.user_role import UserRole
+from app.errors import NotFoundError, ValidationError
+from app.errors import messages
 from app.models.invitation import Invitation
 from app.repositories.invitation_repository import InvitationRepository
 from app.services.email_service import EmailService
@@ -44,12 +46,12 @@ class InvitationService:
         invitation = await invitation_repository.get_by_token(db, token)
 
         if invitation is None:
-            raise ValueError("Invalid invitation token")
+            raise NotFoundError(*messages.INVITATION_NOT_FOUND)
 
         if invitation.expires_at < datetime.now(timezone.utc):
-            raise ValueError("Invitation token has expired")
+            raise ValidationError(*messages.INVITATION_EXPIRED)
 
         if invitation.used_at is not None:
-            raise ValueError("Invitation has already been used")
+            raise ValidationError(*messages.INVITATION_ALREADY_USED)
 
         return invitation
