@@ -7,6 +7,4 @@ class UserRepository:
 
     async def create(self, db: AsyncSession, user: User) -> User:
         db.add(user)
-        await db.commit()
-        await db.refresh(user)
         return user

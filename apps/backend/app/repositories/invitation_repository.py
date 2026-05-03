@@ -8,15 +8,10 @@ class InvitationRepository:
 
     async def create(self, db: AsyncSession, invitation: Invitation) -> Invitation:
         db.add(invitation)
-        await db.commit()
-        await db.refresh(invitation)
         return invitation
-    
-    from sqlalchemy import select
 
     async def get_by_token(self, db: AsyncSession, token: str) -> Invitation | None:
         result = await db.execute(
             select(Invitation).where(Invitation.token == token)
         )
         return result.scalar_one_or_none()
-
