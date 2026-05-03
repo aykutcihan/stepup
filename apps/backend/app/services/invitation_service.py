@@ -55,3 +55,7 @@ class InvitationService:
             raise ValidationError(*messages.INVITATION_ALREADY_USED)
 
         return invitation
+
+    async def mark_invitation_used(self, db: AsyncSession, invitation: Invitation) -> None:
+        invitation.used_at = datetime.now(timezone.utc)
+        await db.commit()
