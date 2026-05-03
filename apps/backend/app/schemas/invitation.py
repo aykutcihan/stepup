@@ -17,19 +17,4 @@ class InvitationResponse(BaseModel):
     role: UserRole
     expires_at: datetime
 
-class RegisterRequest(BaseModel):
-    token: str
-    first_name: str
-    last_name: str
-    password: str
-
-
-class UserResponse(BaseModel):
-    id: uuid.UUID
-    email: EmailStr
-    role: UserRole
-    first_name: str
-    last_name: str
-
     model_config = ConfigDict(from_attributes=True)
-
