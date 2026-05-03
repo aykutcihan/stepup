@@ -1,21 +1,9 @@
 import uuid
-from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 from app.enums.user_role import UserRole
 
-
-class InvitationCreate(BaseModel):
-    email: EmailStr
-    role: UserRole
-
-
-class InvitationResponse(BaseModel):
-    id: uuid.UUID
-    email: EmailStr
-    role: UserRole
-    expires_at: datetime
 
 class RegisterRequest(BaseModel):
     token: str
@@ -32,4 +20,3 @@ class UserResponse(BaseModel):
     last_name: str
 
     model_config = ConfigDict(from_attributes=True)
-
