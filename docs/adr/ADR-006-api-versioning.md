@@ -30,6 +30,10 @@ router.include_router(auth.router, prefix="/api/v1/auth")
 router.include_router(users.router, prefix="/api/v1/users")
 ```
 
+`v1/` is implemented as a Python package (folder), not just a URL prefix string.
+This allows `v2/` to be added as a sibling folder when breaking changes are needed —
+both versions run simultaneously without affecting existing clients.
+
 ---
 
 ## Alternatives Considered
