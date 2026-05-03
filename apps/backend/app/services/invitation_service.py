@@ -31,6 +31,10 @@ class InvitationService:
         role: UserRole,
         invited_by: uuid.UUID,
     ) -> Invitation:
+        existing_user = await user_repository.get_by_email(db, email)
+        if existing_user:
+            raise ValidationError(*messages.USER_ALREADY_EXISTS)
+
         invitation = Invitation(
             email=email,
             role=role,
