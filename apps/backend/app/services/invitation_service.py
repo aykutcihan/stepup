@@ -38,3 +38,18 @@ class InvitationService:
             role=role.value,
         )
         return invitation
+
+
+    async def validate_invitation(self, db: AsyncSession, token: str) -> Invitation:
+        invitation = await invitation_repository.get_by_token(db, token)
+
+        if invitation is None:
+            raise ValueError("Invalid invitation token")
+
+        if invitation.expires_at < datetime.now(timezone.utc):
+            raise ValueError("Invitation token has expired")
+
+        if invitation.used_at is not None:
+            raise ValueError("Invitation has already been used")
+
+        return invitation
