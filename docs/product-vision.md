@@ -361,11 +361,12 @@ stepup/
 │   │   │   ├── repositories/     # Database queries
 │   │   │   ├── models/           # SQLAlchemy models
 │   │   │   ├── schemas/          # Pydantic schemas
-│   │   │   ├── core/             # Config, security, dependencies
-│   │   │   │   ├── exceptions.py      # All custom exception classes
-│   │   │   │   ├── constants.py       # No magic strings or numbers
-│   │   │   │   ├── responses.py       # Standard API response wrapper
-│   │   │   │   └── error_handlers.py  # Global FastAPI exception handler
+│   │   │   ├── core/             # Config, database, dependencies
+│   │   │   ├── errors/           # Error handling package
+│   │   │   │   ├── __init__.py        # Exception classes
+│   │   │   │   ├── messages.py        # Error code + message constants
+│   │   │   │   └── handlers.py        # FastAPI exception handlers
+│   │   │   ├── enums/            # Shared enum types
 │   │   │   └── workers/          # APScheduler jobs
 │   │   ├── tests/
 │   │   │   ├── unit/
@@ -422,37 +423,36 @@ stepup/
 
 ### Error Handling Strategy
 
-All custom exceptions are defined in a single `core/exceptions.py` module and caught by a global FastAPI exception handler in `core/error_handlers.py`. No scattered try/catch blocks across the codebase.
+All error-related code lives in `app/errors/` — a dedicated package separate from `core/`. No scattered try/catch blocks across the codebase.
+
+```
+app/errors/
+    __init__.py    ← exception classes (BaseAppError, NotFoundError, ValidationError, ...)
+    messages.py    ← error code + message tuples (INVITATION_NOT_FOUND, ...)
+    handlers.py    ← FastAPI exception handlers, registered in main.py
+```
 
 **Exception hierarchy:**
 ```python
 BaseAppError
 ├── NotFoundError
-│   ├── TaskNotFoundError
-│   ├── PlanNotFoundError
-│   └── UserNotFoundError
-├── AuthorizationError
-│   ├── InsufficientPermissionsError
-│   └── ResourceOwnershipError
 ├── ValidationError
-│   ├── InvalidStateTransitionError
-│   ├── DeadlinePassedError
-│   └── FileTypeNotAllowedError
+├── AuthorizationError
 └── ConflictError
-    └── OptimisticLockError
 ```
+
+Subclasses are added as needed — not pre-emptively.
 
 **Consistent error response format across all endpoints:**
 ```json
 {
   "success": false,
-  "error_code": "TASK_NOT_FOUND",
-  "message": "Task with id 5 was not found",
-  "request_id": "abc-123-def-456"
+  "error_code": "INVITATION_NOT_FOUND",
+  "message": "Invitation not found"
 }
 ```
 
-The `error_code` field allows the frontend to display localized messages (English / Dutch) without relying on backend message strings. All constants — including error codes, token expiry times, file size limits, pagination defaults — are defined in `core/constants.py`. No magic strings or numbers anywhere in the codebase.
+The `error_code` field allows the frontend to display localized messages without relying on backend message strings. Error messages are centralized in `app/errors/messages.py` — no magic strings in service or handler code.
 
 ### Frontend Constants Strategy
 
@@ -820,6 +820,7 @@ A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
 |---|---|---|
 | 1.0 | 2026-04-21 | Initial product vision document |
 | 1.1 | 2026-04-21 | Added error handling strategy, frontend constants, logging strategy, API versioning, removed intern references |
+| 1.2 | 2026-05-03 | Updated error handling to app/errors/ package, updated monorepo structure |
 
 **Review Frequency:** After each sprint  
 **Status:** Living document — will evolve throughout the project
