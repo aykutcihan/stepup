@@ -1,8 +1,10 @@
 import uuid
 from sqlalchemy import String
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID
 from app.models.base import Base, TimestampMixin
+from apps.backend.app.enums.user_role import UserRole
 
 
 class User(Base, TimestampMixin):
@@ -31,3 +33,7 @@ class User(Base, TimestampMixin):
         String(100),
         nullable=False,
     )
+    role: Mapped[UserRole] = mapped_column(
+    SAEnum(UserRole, name="user_role"), nullable=False
+)
+
