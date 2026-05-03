@@ -19,8 +19,12 @@ services:
       dockerfile: Dockerfile
     container_name: stepup-backend
     environment:
-      DATABASE_URL: postgresql://stepup:stepup123@db:5432/stepup_db
+      DATABASE_URL: postgresql+asyncpg://stepup:stepup123@db:5432/stepup_db
       SECRET_KEY: dev-secret-key-change-in-production
+      # Local dev placeholders — real values come from GCP Secret Manager in production
+      FRONTEND_URL: http://localhost:3000
+      SENDGRID_API_KEY: dev-placeholder
+      SENDGRID_FROM_EMAIL: noreply@stepup.local
     ports:
       - "8000:8000"
     volumes:
