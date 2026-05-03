@@ -373,6 +373,41 @@ By copying `requirements.txt` first, `pip install` only runs when dependencies c
 
 ---
 
+## Build Context and Python Imports
+
+When Docker builds the backend, `context: ./apps/backend` tells it:
+> "Go into this folder and take everything inside it."
+
+The folder name `apps/backend/` does not go into the container — only its contents do.
+
+```
+Host machine:                Container:
+apps/backend/           →    /app/
+    app/                →        app/
+        models/         →            models/
+        enums/          →            enums/
+    alembic/            →        alembic/
+    requirements.txt    →        requirements.txt
+```
+
+Python starts from `/app` inside the container. It sees `app/` as a package — not `apps/`, not `backend/`.
+
+This is why imports are written as:
+```python
+from app.enums.user_role import UserRole   # correct — /app/app/enums/user_role.py
+from apps.backend.app.enums...             # wrong — no "apps" folder exists in container
+```
+
+The bind mount confirms the same:
+```yaml
+volumes:
+  - ./apps/backend:/app   # apps/backend/ contents → mounted at /app
+```
+
+`apps/backend/` on your machine = `/app` in the container. The name is gone, only the contents matter.
+
+---
+
 ## Common Docker Commands
 
 ```powershell
