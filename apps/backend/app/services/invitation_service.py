@@ -104,3 +104,7 @@ class InvitationService:
         await db.commit()
         await db.refresh(user)
         return user
+    
+    async def get_invitations(self, db: AsyncSession) -> list[Invitation]:
+        return await invitation_repository.get_all(db)
+

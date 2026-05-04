@@ -25,3 +25,14 @@ async def invite_user(
         invited_by=current_user.id,
     )
     return InvitationResponse.model_validate(invitation)
+
+@router.get("/", response_model=list[InvitationResponse], status_code=200)
+async def get_invitations(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
+) -> list[InvitationResponse]:
+    invitations = await invitation_service.get_invitations(db=db)
+    result = []
+    for inv in invitations:
+        result.append(InvitationResponse.model_validate(inv))
+    return result

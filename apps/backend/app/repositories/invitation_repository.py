@@ -15,3 +15,8 @@ class InvitationRepository:
             select(Invitation).where(Invitation.token == token)
         )
         return result.scalar_one_or_none()
+    
+    async def get_all(self, db: AsyncSession) -> list[Invitation]:
+        result = await db.execute(select(Invitation))
+        return list(result.scalars().all())
+
