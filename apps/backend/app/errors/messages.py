@@ -11,3 +11,6 @@ INVALID_CREDENTIALS = ("INVALID_CREDENTIALS", "Invalid email or password")
 INVALID_TOKEN = ("INVALID_TOKEN", "Invalid token")
 TOKEN_EXPIRED = ("TOKEN_EXPIRED", "Token has expired")
 USER_DEACTIVATED = ("USER_DEACTIVATED", "Your account has been deactivated")
+
+# Authorization
+PERMISSION_DENIED = ("PERMISSION_DENIED", "You do not have permission to perform this action")

@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi import status
 
-from app.errors import AuthenticationError, NotFoundError, ValidationError
+from app.errors import AuthenticationError, NotFoundError, PermissionError, ValidationError
 
 
 def register_error_handlers(app: FastAPI) -> None:
@@ -25,5 +25,12 @@ def register_error_handlers(app: FastAPI) -> None:
     async def authentication_error_handler(request: Request, exc: AuthenticationError):
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"success": False, "error_code": exc.code, "message": exc.message},
+        )
+
+    @app.exception_handler(PermissionError)
+    async def permission_error_handler(request: Request, exc: PermissionError):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
             content={"success": False, "error_code": exc.code, "message": exc.message},
         )
