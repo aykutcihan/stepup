@@ -5,3 +5,7 @@ INVITATION_ALREADY_USED = ("INVITATION_ALREADY_USED", "Invitation has already be
 
 # User
 USER_ALREADY_EXISTS = ("USER_ALREADY_EXISTS", "A user with this email already exists")
+
+# Authentication
+INVALID_CREDENTIALS = ("INVALID_CREDENTIALS", "Invalid email or password")
+INVALID_TOKEN = ("INVALID_TOKEN", "Invalid or expired token")

@@ -11,3 +11,7 @@ class NotFoundError(BaseAppError):
 
 class ValidationError(BaseAppError):
     pass
+
+
+class AuthenticationError(BaseAppError):
+    pass
