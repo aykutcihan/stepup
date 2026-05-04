@@ -62,16 +62,15 @@ async def login(
     return {"message": "Login successful"}
 
 
-@router.post("/logout", status_code=status.HTTP_200_OK)
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def logout(
     response: Response,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
-) -> dict:
+) -> None:
     await auth_service.logout(db=db, user_id=current_user.id)
     response.delete_cookie(ACCESS_TOKEN_COOKIE)
     response.delete_cookie(REFRESH_TOKEN_COOKIE)
-    return {"message": "Logout successful"}
 
 
 
