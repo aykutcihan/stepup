@@ -88,7 +88,7 @@ class InvitationService:
     ) -> User:
         invitation = await self.validate_invitation(db, token)
 
-        existing_user = await user_repository.get_by_email(db, email)
+        existing_user = await user_repository.get_by_email(db, invitation.email)
         if existing_user:
             raise ValidationError(*messages.USER_ALREADY_EXISTS)
 
@@ -104,3 +104,36 @@ class InvitationService:
         await db.commit()
         await db.refresh(user)
         return user
+    
+    async def get_invitations(self, db: AsyncSession) -> list[Invitation]:
+        return await invitation_repository.get_all(db)
+
+    
+
+    async def resend_invitation(
+        self,
+        db: AsyncSession,
+        invitation_id: uuid.UUID,
+    ) -> Invitation:
+        invitation = await invitation_repository.get_by_id(db, invitation_id)
+        if not invitation:
+            raise NotFoundError(*messages.INVITATION_NOT_FOUND)
+
+        if invitation.used_at is not None:
+            raise ValidationError(*messages.INVITATION_ALREADY_USED)
+
+        invitation.token = secrets.token_urlsafe(32)
+        invitation.expires_at = datetime.now(timezone.utc) + timedelta(days=INVITATION_EXPIRY_DAYS)
+        await db.commit()
+        await db.refresh(invitation)
+
+        try:
+            await email_service.send_invitation_email(
+                to_email=invitation.email,
+                token=invitation.token,
+                role=invitation.role.value,
+            )
+        except Exception as e:
+            logger.error(f"Failed to resend invitation email to {invitation.email}: {e}")
+
+        return invitation
