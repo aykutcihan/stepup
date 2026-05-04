@@ -73,8 +73,8 @@ feat(us-001): create invitation token model
 feat(us-001): add expiry field to invitation table
 feat(us-001): implement email sending via sendgrid
 feat(us-001): wire invitation service to register endpoint
-test(us-001): add unit tests for token expiry logic
-test(us-001): add integration tests for invite endpoint
+test(be-us-001): add unit tests for invitation service
+test(fe-us-001): add component tests for invite form
 fix(us-001): handle expired token on registration
 fix(auth): resolve null check on missing user session
 refactor(db): extract base model to shared module

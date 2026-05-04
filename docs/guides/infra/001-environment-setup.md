@@ -26,6 +26,7 @@ cp .env.example .env
 | `POSTGRES_PASSWORD` | PostgreSQL password |
 | `POSTGRES_DB` | PostgreSQL database name |
 | `DATABASE_URL` | Full async database connection string |
+| `TEST_DATABASE_URL` | Async connection string for the test database (`stepup_test`) |
 | `FRONTEND_URL` | Frontend base URL (e.g. http://localhost:3000) |
 | `SENDGRID_API_KEY` | SendGrid API key for email delivery |
 | `SENDGRID_FROM_EMAIL` | Sender email address |

@@ -52,10 +52,12 @@ each feature isolated. If something breaks, it does not affect other branches.
 
 **Our branch strategy:**
 ```
-main      → production, never commit directly
-develop   → integration, merge features here first
-feature/  → one branch per issue (feature/us-001-register-user)
-fix/      → one branch per bug fix (fix/pytest-no-tests)
+main        → production, never commit directly
+develop     → integration, merge features here first
+feature/    → one branch per issue (feature/us-001-register-user)
+fix/        → one branch per bug fix (fix/pytest-no-tests)
+test/be-    → backend tests for a user story (test/be-us-001-invitation-service)
+test/fe-    → frontend tests for a user story (test/fe-us-001-invite-form)
 ```
 
 **When I used it:** Every time I start a new issue, I create a feature branch from develop.
