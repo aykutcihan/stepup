@@ -88,7 +88,7 @@ class InvitationService:
     ) -> User:
         invitation = await self.validate_invitation(db, token)
 
-        existing_user = await user_repository.get_by_email(db, email)
+        existing_user = await user_repository.get_by_email(db, invitation.email)
         if existing_user:
             raise ValidationError(*messages.USER_ALREADY_EXISTS)
 
