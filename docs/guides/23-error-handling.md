@@ -1,0 +1,138 @@
+# Error Handling
+
+This guide explains how errors are structured, raised, and returned to the client in this project.
+
+---
+
+## Package Structure
+
+```
+app/errors/
+    __init__.py    ← exception classes
+    messages.py    ← error code and message constants
+    handlers.py    ← FastAPI exception handlers
+```
+
+---
+
+## How It Works
+
+```
+Service raises exception
+        ↓
+Handler catches it
+        ↓
+JSON response returned to client
+```
+
+---
+
+## 1. Exception Classes — `__init__.py`
+
+All custom exceptions inherit from `BaseAppError`.
+
+```python
+class BaseAppError(Exception):
+    def __init__(self, code: str, message: str):
+        self.code = code
+        self.message = message
+        super().__init__(message)
+
+class NotFoundError(BaseAppError):
+    pass
+
+class ValidationError(BaseAppError):
+    pass
+```
+
+Every exception carries two pieces of information:
+- `code` — machine-readable identifier for the frontend
+- `message` — human-readable description for logging and debugging
+
+Import: `from app.errors import NotFoundError, ValidationError`
+
+---
+
+## 2. Error Messages — `messages.py`
+
+All error codes and messages are defined as tuples in one place.
+
+```python
+# Invitation
+INVITATION_NOT_FOUND = ("INVITATION_NOT_FOUND", "Invitation not found")
+INVITATION_EXPIRED = ("INVITATION_EXPIRED", "Invitation token has expired")
+INVITATION_ALREADY_USED = ("INVITATION_ALREADY_USED", "Invitation has already been used")
+
+# User
+USER_ALREADY_EXISTS = ("USER_ALREADY_EXISTS", "A user with this email already exists")
+```
+
+Usage in service:
+
+```python
+from app.errors import messages
+
+raise NotFoundError(*messages.INVITATION_NOT_FOUND)
+# expands to: raise NotFoundError("INVITATION_NOT_FOUND", "Invitation not found")
+```
+
+The `messages.` prefix makes the source immediately visible at the call site.
+
+---
+
+## 3. Handlers — `handlers.py`
+
+Handlers catch exceptions and convert them to HTTP responses.
+
+```python
+@app.exception_handler(NotFoundError)
+async def not_found_handler(request, exc):
+    return JSONResponse(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={"success": False, "error_code": exc.code, "message": exc.message},
+    )
+```
+
+Registered in `main.py`:
+
+```python
+from app.errors.handlers import register_error_handlers
+register_error_handlers(app)
+```
+
+---
+
+## Response Format
+
+Every error response follows this structure:
+
+```json
+{
+  "success": false,
+  "error_code": "INVITATION_NOT_FOUND",
+  "message": "Invitation not found"
+}
+```
+
+| Field | Purpose |
+|-------|---------|
+| `success` | Always `false` on error — frontend can check this |
+| `error_code` | Machine-readable code — frontend maps this to a localized message |
+| `message` | Human-readable — for logging and debugging, not shown to end users |
+
+---
+
+## HTTP Status Codes
+
+| Exception | Status Code |
+|-----------|------------|
+| `NotFoundError` | 404 |
+| `ValidationError` | 400 |
+
+---
+
+## Adding a New Error
+
+1. Add the message tuple to `messages.py` under the relevant domain section
+2. Raise with `raise NotFoundError(*messages.YOUR_NEW_ERROR)` in the service
+3. If a new exception class is needed, add it to `__init__.py` and register a handler in `handlers.py`

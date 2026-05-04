@@ -2,7 +2,7 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
 from app.models.base import Base
-from app.models.user import User  # noqa: F401
+import app.models  # noqa: F401
 
 config = context.config
 fileConfig(config.config_file_name)

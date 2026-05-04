@@ -199,3 +199,4 @@ A US is Done when all of the following are true:
 - All tests pass in CI pipeline
 - PR is reviewed and merged to develop
 - Acceptance criteria in the US issue are all checked off
+- All commits on the branch follow the commit convention (see 02-commit-convention.md)
