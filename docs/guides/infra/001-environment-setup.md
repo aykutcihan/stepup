@@ -31,6 +31,17 @@ cp .env.example .env
 | `SENDGRID_FROM_EMAIL` | Sender email address |
 | `JWT_SECRET_KEY` | Secret key used to sign JWT tokens |
 
+## How Docker Compose resolves variables
+
+When you run `docker compose up`, Docker Compose automatically reads the `.env` file in the same directory and resolves `${VAR_NAME}` references. No import or configuration needed — it works by convention.
+
+The chain:
+```
+.env → Docker Compose → container environment → pydantic Settings
+```
+
+`pydantic-settings` (`BaseSettings`) reads the container's environment variables at startup. If a required variable is missing, the app fails to start immediately — no silent `None` values.
+
 ## Notes
 
 - Never commit `.env` — it is listed in `.gitignore`

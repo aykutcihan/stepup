@@ -4,12 +4,33 @@
 
 Authentication is cookie-based. Tokens are stored in HttpOnly cookies — JavaScript cannot access them.
 
-## Token Types
+## Three Token Types
 
-| Token | Storage | Expiry | Purpose |
-|-------|---------|--------|---------|
+This project uses three distinct tokens — do not confuse them:
+
+| Token | Where stored | Expiry | Purpose |
+|-------|-------------|--------|---------|
+| `invitation_token` | DB — `invitations.token` | 7 days | One-time registration link |
 | `access_token` | HttpOnly cookie | 15 minutes | Authenticate each request |
 | `refresh_token` | HttpOnly cookie + DB | 7 days | Issue new access tokens |
+
+### Invitation Token
+
+Generated when HR Admin invites a user (`secrets.token_urlsafe(32)`). Sent via email as a link. When the user registers, the token is validated and marked as used (`used_at`). It can only be used once — expired or used tokens return a clear error.
+
+Real-world analogy: a one-time activation code sent by SMS when opening a bank account.
+
+### Access Token (JWT)
+
+Generated on login. Stored as HttpOnly cookie — JavaScript cannot read it, browser sends it automatically with every request. `get_current_user` dependency reads and validates it on each protected endpoint.
+
+Real-world analogy: a building access card that expires after 15 minutes.
+
+### Refresh Token
+
+Generated on login alongside the access token. Stored in both the browser (HttpOnly cookie) and the DB (`refresh_tokens` table). When the access token expires, the client calls `POST /auth/refresh` — the old refresh token is deleted and a new pair is issued (rotation). If the refresh token is also expired, the user must log in again.
+
+Real-world analogy: a card renewal document that lets you get a new access card without going to the front desk.
 
 ## Login Flow
 
@@ -57,6 +78,31 @@ Login endpoint is rate limited to 5 requests per minute per IP via `slowapi`.
 The `Limiter` instance is created once in `app/core/limiter.py` and registered on `app.state.limiter` in `main.py`. Endpoints import it from `core/limiter.py` — this ensures a single shared counter across the application.
 
 **Why not import from `main.py` directly?** Importing `limiter` from `main.py` inside a router causes a circular import — `main.py` loads the router, the router loads `auth.py`, `auth.py` tries to import from `main.py` which is not yet fully initialized. Moving `limiter` to `core/limiter.py` breaks the cycle.
+
+## get_current_user vs require_role
+
+`get_current_user` answers: **who is making this request?**
+- Reads `access_token` cookie
+- Decodes JWT → gets `user_id`
+- Fetches user from DB
+- Checks `is_active`
+- Returns the `User` object
+
+`require_role` answers: **is this user allowed to do this?**
+- Internally calls `get_current_user`
+- Checks `user.role` against the allowed roles
+- Raises 403 if not allowed
+
+Usage:
+```python
+# Any authenticated user
+current_user: User = Depends(get_current_user)
+
+# HR Admin only
+current_user: User = Depends(require_role(UserRole.HR_ADMIN))
+```
+
+`require_role` is a factory function — it takes roles as arguments and returns a dependency function. This is a standard FastAPI pattern for parameterized dependencies.
 
 ## Key Files
 

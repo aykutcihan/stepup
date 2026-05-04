@@ -120,3 +120,30 @@ the environment variable is injected by the CI/CD pipeline.
 4. Review the file          → check alembic/versions/ — verify the generated SQL
 5. Apply to database        → alembic upgrade head
 ```
+
+---
+
+## Common Pitfalls
+
+### Empty migration (only `pass` in upgrade)
+
+**Symptom:** `alembic revision --autogenerate` generates a migration file where `upgrade()` contains only `pass`.
+
+**Cause:** The new model was not imported in `app/models/__init__.py`. Alembic compares `Base.metadata` against the DB — if the model is not imported, it is invisible to Alembic.
+
+**Fix:** Add the import to `app/models/__init__.py`:
+```python
+from app.models.refresh_token import RefreshToken  # noqa: F401
+```
+
+### Migration already applied but table missing
+
+**Symptom:** `alembic current` shows the migration as applied but the table does not exist in the DB.
+
+**Cause:** The migration was applied when `upgrade()` was still `pass` (empty). Alembic marked it as done but nothing was created.
+
+**Fix:**
+```bash
+alembic stamp <previous_revision_id>   # rewind the migration record
+alembic upgrade head                   # re-apply with the fixed migration
+```
