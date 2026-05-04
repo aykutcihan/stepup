@@ -8,4 +8,5 @@ USER_ALREADY_EXISTS = ("USER_ALREADY_EXISTS", "A user with this email already ex
 
 # Authentication
 INVALID_CREDENTIALS = ("INVALID_CREDENTIALS", "Invalid email or password")
-INVALID_TOKEN = ("INVALID_TOKEN", "Invalid or expired token")
+INVALID_TOKEN = ("INVALID_TOKEN", "Invalid token")
+TOKEN_EXPIRED = ("TOKEN_EXPIRED", "Token has expired")

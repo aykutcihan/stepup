@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timedelta, timezone
 
-from jose import JWTError, jwt
+from jose import ExpiredSignatureError, JWTError, jwt
 
 from app.core.config import settings
 from app.errors import AuthenticationError
@@ -17,6 +17,8 @@ def create_access_token(user_id: uuid.UUID) -> str:
 def decode_access_token(token: str) -> uuid.UUID:
     try:
         payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+    except ExpiredSignatureError as exc:
+        raise AuthenticationError(*messages.TOKEN_EXPIRED) from exc
     except JWTError as exc:
         raise AuthenticationError(*messages.INVALID_TOKEN) from exc
 
