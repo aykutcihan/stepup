@@ -9,14 +9,12 @@ from app.schemas.user import RegisterRequest, UserResponse
 from app.services.auth_service import AuthService
 from app.services.invitation_service import InvitationService
 from app.errors import AuthenticationError, messages
+from app.core.constants import ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE
 
 
 router = APIRouter()
 invitation_service = InvitationService()
 auth_service = AuthService()
-
-ACCESS_TOKEN_COOKIE = "access_token"
-REFRESH_TOKEN_COOKIE = "refresh_token"
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
