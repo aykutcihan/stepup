@@ -1,3 +1,4 @@
+import secrets
 import uuid
 from datetime import datetime, timedelta, timezone
 
@@ -27,3 +28,7 @@ def decode_access_token(token: str) -> uuid.UUID:
         raise AuthenticationError(*messages.INVALID_TOKEN)
 
     return uuid.UUID(user_id)
+
+
+def create_refresh_token() -> str:
+    return secrets.token_urlsafe(64)
