@@ -1,4 +1,4 @@
-# 11 — SQLAlchemy
+# SQLAlchemy
 
 ## What is SQLAlchemy?
 

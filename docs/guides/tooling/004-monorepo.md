@@ -1,4 +1,4 @@
-# 01 — Monorepo
+# Monorepo
 
 ## What is a Monorepo?
 

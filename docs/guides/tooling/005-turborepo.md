@@ -1,4 +1,4 @@
-# 03 — Turborepo
+# Turborepo
 
 ## What is Turborepo?
 

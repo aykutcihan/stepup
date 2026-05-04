@@ -1,4 +1,4 @@
-# 10 — requirements.txt & pyproject.toml
+# requirements.txt & pyproject.toml
 
 ## What is requirements.txt?
 
@@ -83,6 +83,33 @@ pytest==8.3.3             # test runner
 httpx==0.27.2             # async HTTP client for testing API endpoints
 pytest-asyncio==0.24.0    # run async test functions with pytest
 ```
+
+---
+
+## Common Pitfalls
+
+### passlib + bcrypt version incompatibility
+
+**Symptom:** `ValueError: password cannot be longer than 72 bytes` or `AttributeError: module 'bcrypt' has no attribute '__about__'` when hashing passwords.
+
+**Cause:** `passlib 1.7.4` is incompatible with `bcrypt >= 4.1`. Newer bcrypt versions changed their internal API.
+
+**Fix:** Pin bcrypt to a compatible version in `requirements.txt`:
+```
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+```
+
+### sys.path.append in scripts
+
+When running a standalone script (e.g. `scripts/seed.py`) outside the app context, Python does not know where `app/` is. Adding the parent directory to `sys.path` lets Python find it:
+
+```python
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+```
+
+This is only needed for scripts run directly — inside Docker the `WORKDIR` handles path resolution automatically.
 
 ---
 

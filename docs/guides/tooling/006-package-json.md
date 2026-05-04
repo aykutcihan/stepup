@@ -1,4 +1,4 @@
-# 04 — package.json
+# package.json
 
 ## What is package.json?
 

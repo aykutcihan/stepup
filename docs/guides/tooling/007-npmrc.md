@@ -1,4 +1,4 @@
-# 05 — .npmrc
+# .npmrc
 
 ## What is .npmrc?
 
