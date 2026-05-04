@@ -1,4 +1,4 @@
-# 09 — FastAPI Basics
+# FastAPI Basics
 
 ## What is FastAPI?
 

@@ -31,6 +31,8 @@ All commits in this repository follow a strict format to keep history readable a
 | Scope | Rule | Example |
 |-------|------|---------|
 | `us-XXX` | Work tied to a specific user story — used with `feat`, `fix`, `test` | `feat(us-001):` |
+| `be-us-XXX` | Backend test tied to a user story | `test(be-us-001):` |
+| `fe-us-XXX` | Frontend test tied to a user story | `test(fe-us-001):` |
 | Domain | Not tied to a single US — used with `fix`, `refactor` | `fix(auth):` |
 | *(empty)* | Project-wide changes — used with `docs`, `chore`, `ci` | `docs:` |
 

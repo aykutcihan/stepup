@@ -1,4 +1,4 @@
-# 12 — Alembic
+# Alembic
 
 ## What is Alembic?
 

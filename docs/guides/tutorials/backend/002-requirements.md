@@ -1,4 +1,4 @@
-# 10 — requirements.txt & pyproject.toml
+# requirements.txt & pyproject.toml
 
 ## What is requirements.txt?
 

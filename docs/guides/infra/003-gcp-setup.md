@@ -1,4 +1,4 @@
-# 07 — GCP Setup
+# GCP Setup
 
 ## Why GCP?
 

@@ -1,4 +1,4 @@
-# 02 — pnpm
+# pnpm
 
 ## What is pnpm?
 

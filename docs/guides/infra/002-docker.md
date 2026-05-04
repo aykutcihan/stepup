@@ -1,4 +1,4 @@
-# 06 — Docker
+# Docker
 
 ## The Problem Docker Solves
 
