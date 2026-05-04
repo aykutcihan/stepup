@@ -5,9 +5,9 @@ services:
     image: postgres:15
     container_name: stepup-db
     environment:
-      POSTGRES_USER: stepup
-      POSTGRES_PASSWORD: stepup123
-      POSTGRES_DB: stepup_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5433:5432"
     volumes:
@@ -19,12 +19,11 @@ services:
       dockerfile: Dockerfile
     container_name: stepup-backend
     environment:
-      DATABASE_URL: postgresql+asyncpg://stepup:stepup123@db:5432/stepup_db
-      SECRET_KEY: dev-secret-key-change-in-production
-      # Local dev placeholders — real values come from GCP Secret Manager in production
-      FRONTEND_URL: http://localhost:3000
-      SENDGRID_API_KEY: dev-placeholder
-      SENDGRID_FROM_EMAIL: noreply@stepup.local
+      DATABASE_URL: ${DATABASE_URL}
+      FRONTEND_URL: ${FRONTEND_URL}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     ports:
       - "8000:8000"
     volumes:
