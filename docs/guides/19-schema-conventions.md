@@ -12,6 +12,7 @@ This guide defines how Pydantic schemas are named and structured in this project
 | `Create` | POST request body | When creating a new resource |
 | `Update` | PATCH request body | When partially updating a resource — all fields are `Optional` |
 | `Response` | Data returned to the client | Every endpoint that returns data |
+| `Request` | POST request body for actions | When the operation is an action, not a resource creation (e.g. login, register) |
 
 ---
 
