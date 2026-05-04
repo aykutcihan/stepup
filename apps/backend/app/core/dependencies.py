@@ -1,4 +1,5 @@
-from fastapi import Request
+from fastapi import Depends, Request
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.constants import ACCESS_TOKEN_COOKIE
 from app.core.database import get_db
@@ -7,8 +8,6 @@ from app.errors import AuthenticationError
 from app.errors import messages
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
-from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
 user_repository = UserRepository()
 
@@ -25,4 +24,6 @@ async def get_current_user(
     user = await user_repository.get_by_id(db, user_id)
     if not user:
         raise AuthenticationError(*messages.INVALID_TOKEN)
+    if not user.is_active:
+        raise AuthenticationError(*messages.USER_DEACTIVATED)
     return user
