@@ -74,12 +74,12 @@ async def logout(
 
 
 
-@router.post("/refresh", status_code=status.HTTP_200_OK)
+@router.post("/refresh", status_code=status.HTTP_204_NO_CONTENT)
 async def refresh(
     request: Request,
     response: Response,
     db: AsyncSession = Depends(get_db),
-) -> dict:
+) -> None:
     token = request.cookies.get(REFRESH_TOKEN_COOKIE)
     if not token:
         raise AuthenticationError(*messages.INVALID_TOKEN)
@@ -102,5 +102,4 @@ async def refresh(
         samesite="strict",
         max_age=60 * 60 * 24 * 7,
     )
-    return {"message": "Token refreshed"}
 
