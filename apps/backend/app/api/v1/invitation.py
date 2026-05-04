@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -36,3 +38,15 @@ async def get_invitations(
     for inv in invitations:
         result.append(InvitationResponse.model_validate(inv))
     return result
+
+@router.post("/{invitation_id}/resend", response_model=InvitationResponse, status_code=200)
+async def resend_invitation(
+    invitation_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
+) -> InvitationResponse:
+    invitation = await invitation_service.resend_invitation(
+        db=db,
+        invitation_id=invitation_id,
+    )
+    return InvitationResponse.model_validate(invitation)
