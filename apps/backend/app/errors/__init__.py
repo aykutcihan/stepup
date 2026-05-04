@@ -15,3 +15,7 @@ class ValidationError(BaseAppError):
 
 class AuthenticationError(BaseAppError):
     pass
+
+
+class PermissionError(BaseAppError):
+    pass
