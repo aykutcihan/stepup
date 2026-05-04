@@ -10,7 +10,7 @@ from app.schemas.user import RegisterRequest, UserResponse
 from app.services.auth_service import AuthService
 from app.services.invitation_service import InvitationService
 
-from app.main import limiter
+from app.core.limiter import limiter
 
 router = APIRouter()
 invitation_service = InvitationService()

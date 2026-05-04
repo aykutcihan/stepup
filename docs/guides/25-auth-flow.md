@@ -54,7 +54,9 @@ REFRESH_TOKEN_COOKIE = "refresh_token"
 
 Login endpoint is rate limited to 5 requests per minute per IP via `slowapi`.
 
-The `Limiter` instance is created once in `main.py` and registered on `app.state.limiter`. Endpoints import it from `main.py` — this ensures a single shared counter across the application. Creating a separate `Limiter` in each router would result in isolated counters that bypass the global limit.
+The `Limiter` instance is created once in `app/core/limiter.py` and registered on `app.state.limiter` in `main.py`. Endpoints import it from `core/limiter.py` — this ensures a single shared counter across the application.
+
+**Why not import from `main.py` directly?** Importing `limiter` from `main.py` inside a router causes a circular import — `main.py` loads the router, the router loads `auth.py`, `auth.py` tries to import from `main.py` which is not yet fully initialized. Moving `limiter` to `core/limiter.py` breaks the cycle.
 
 ## Key Files
 
