@@ -1,16 +1,16 @@
 from fastapi import APIRouter, Depends, Response, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from app.core.constants import ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
+from app.errors import AuthenticationError, messages
 from app.models.user import User
 from app.schemas.auth import LoginRequest
 from app.schemas.user import RegisterRequest, UserResponse
 from app.services.auth_service import AuthService
 from app.services.invitation_service import InvitationService
-from app.errors import AuthenticationError, messages
-from app.core.constants import ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE
 
+from app.main import limiter
 
 router = APIRouter()
 invitation_service = InvitationService()
@@ -33,7 +33,9 @@ async def register(
 
 
 @router.post("/login", status_code=status.HTTP_200_OK)
+@limiter.limit("5/minute")
 async def login(
+    request: Request,
     data: LoginRequest,
     response: Response,
     db: AsyncSession = Depends(get_db),

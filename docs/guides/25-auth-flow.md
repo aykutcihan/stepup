@@ -50,6 +50,12 @@ ACCESS_TOKEN_COOKIE = "access_token"
 REFRESH_TOKEN_COOKIE = "refresh_token"
 ```
 
+## Rate Limiting
+
+Login endpoint is rate limited to 5 requests per minute per IP via `slowapi`.
+
+The `Limiter` instance is created once in `main.py` and registered on `app.state.limiter`. Endpoints import it from `main.py` — this ensures a single shared counter across the application. Creating a separate `Limiter` in each router would result in isolated counters that bypass the global limit.
+
 ## Key Files
 
 | File | Responsibility |
