@@ -14,6 +14,10 @@ from app.repositories.invitation_repository import InvitationRepository
 from app.repositories.user_repository import UserRepository
 from app.services.email_service import EmailService
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 INVITATION_EXPIRY_DAYS = 7
 
 invitation_repository = InvitationRepository()
@@ -45,11 +49,16 @@ class InvitationService:
         await invitation_repository.create(db, invitation)
         await db.commit()
         await db.refresh(invitation)
-        await email_service.send_invitation_email(
-            to_email=email,
-            token=invitation.token,
-            role=role.value,
-        )
+
+        try:
+            await email_service.send_invitation_email(
+                to_email=email,
+                token=invitation.token,
+                role=role.value,
+            )
+        except Exception as e:
+            logger.error(f"Failed to send invitation email to {email}: {e}")
+
         return invitation
 
     async def validate_invitation(self, db: AsyncSession, token: str) -> Invitation:
