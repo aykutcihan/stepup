@@ -121,3 +121,26 @@ class TestCreateInvitation:
                     mock_db, "existing@example.com", MagicMock(), MagicMock()
                 )
 
+    async def test_create_invitation_still_returns_invitation_when_email_service_fails(
+        self, service, mock_db
+    ):
+        with patch(
+            "app.services.invitation_service.user_repository",
+            autospec=True,
+        ) as mock_user_repo, patch(
+            "app.services.invitation_service.invitation_repository",
+            autospec=True,
+        ) as mock_inv_repo, patch(
+            "app.services.invitation_service.email_service",
+            autospec=True,
+        ) as mock_email:
+
+            mock_user_repo.get_by_email = AsyncMock(return_value=None)
+            mock_inv_repo.create = AsyncMock()
+            mock_email.send_invitation_email = AsyncMock(side_effect=Exception("SMTP error"))
+
+            result = await service.create_invitation(
+                mock_db, "new@example.com", MagicMock(), MagicMock()
+            )
+
+            assert result is not None
