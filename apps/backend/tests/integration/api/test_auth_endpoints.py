@@ -84,3 +84,40 @@ class TestLogout:
         response = await client.post("/api/v1/auth/logout")
 
         assert response.status_code == 401
+
+
+class TestRefresh:
+
+    async def test_refresh_returns_204_when_cookie_is_valid(
+        self, client, db_session
+    ):
+        user = User(
+            email="refreshuser@test.com",
+            role=UserRole.EMPLOYEE,
+            first_name="Refresh",
+            last_name="User",
+            password_hash=pwd_context.hash("password123"),
+            is_active=True,
+        )
+        db_session.add(user)
+        await db_session.flush()
+
+        refresh_token = RefreshToken(
+            user_id=user.id,
+            token=secrets.token_urlsafe(32),
+            expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+        )
+        db_session.add(refresh_token)
+        await db_session.flush()
+
+        client.cookies.set("refresh_token", refresh_token.token)
+        response = await client.post("/api/v1/auth/refresh")
+
+        assert response.status_code == 204
+
+    async def test_refresh_returns_401_when_cookie_is_missing(
+        self, client
+    ):
+        response = await client.post("/api/v1/auth/refresh")
+
+        assert response.status_code == 401
