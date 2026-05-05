@@ -115,3 +115,38 @@ test_create_invitation_raises_error_when_user_already_exists
 - All lowercase, words separated by underscores
 - Include the function under test, the input condition, and the expected outcome
 - Avoid vague names like `test_valid_case` or `test_error` — they say nothing
+
+---
+
+## Grouping Tests with Classes
+
+Group test functions by the source function they test using a class. This keeps the file readable as it grows — you always know where to find tests for a specific function.
+
+```python
+class TestValidateInvitation:
+    async def test_returns_invitation_when_token_is_valid(self, service, mock_db): ...
+    async def test_raises_not_found_when_token_does_not_exist(self, service, mock_db): ...
+    async def test_raises_error_when_invitation_is_expired(self, service, mock_db): ...
+    async def test_raises_error_when_invitation_is_already_used(self, service, mock_db): ...
+
+
+class TestCreateInvitation:
+    async def test_returns_invitation_when_email_is_new(self, service, mock_db): ...
+    async def test_raises_error_when_user_already_exists(self, service, mock_db): ...
+```
+
+One class per source function. pytest discovers and runs all methods starting with `test_` inside classes automatically — no extra configuration needed.
+
+Note: class methods receive `self` as the first parameter, followed by fixtures.
+
+**Common mistake:** forgetting `self` inside a class. Without it, pytest treats the first fixture as `self` — the test class instance — and the fixture is never injected.
+
+```python
+# Wrong — pytest treats `service` as `self`
+async def test_something(service, mock_db): ...
+
+# Correct
+async def test_something(self, service, mock_db): ...
+```
+
+The error you will see: `AttributeError: 'TestXxx' object has no attribute '...'`

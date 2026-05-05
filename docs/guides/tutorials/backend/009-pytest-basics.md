@@ -74,6 +74,33 @@ mock_repo.get_by_email = AsyncMock(return_value=None)
 
 You control what it returns, so you can test every code path (user found, user not found, exception raised) without a real database.
 
+### autospec=True — protecting against typos and wrong signatures
+
+By default, `MagicMock` silently accepts any attribute name — even ones that do not exist on the real class. This means a test can pass while referencing a method that does not exist in production.
+
+`autospec=True` fixes this. It introspects the real class automatically and enforces both **attribute names** and **method signatures**.
+
+```python
+# Without autospec — dangerous
+with patch("app.services.invitation_service.invitation_repository") as mock_repo:
+    mock_repo.get_by_tokne = AsyncMock(...)  # typo — test still passes!
+
+# With autospec=True — safe
+with patch(
+    "app.services.invitation_service.invitation_repository",
+    autospec=True,
+) as mock_repo:
+    mock_repo.get_by_tokne = AsyncMock(...)  # AttributeError — typo caught immediately
+    mock_repo.get_by_token()                 # TypeError — missing required arguments
+```
+
+**Why `autospec=True` over `spec=RealClass`:**
+- `spec=RealClass` checks attribute names only
+- `autospec=True` checks attribute names **and** method signatures — wrong number of arguments raises `TypeError`
+- `autospec=True` does not require importing the real class — it introspects automatically
+
+Always use `autospec=True` when patching.
+
 ---
 
 ## Test Function Naming
