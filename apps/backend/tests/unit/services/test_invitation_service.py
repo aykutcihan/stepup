@@ -251,3 +251,5 @@ class TestResendInvitation:
 
             with pytest.raises(ValidationError):
                 await service.resend_invitation(mock_db, MagicMock())
+
+
