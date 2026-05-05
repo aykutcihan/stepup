@@ -172,3 +172,26 @@ class TestRegisterUserFromInvitation:
             )
 
             assert result is not None
+
+
+    async def test_register_user_from_invitation_raises_error_when_user_already_exists(
+        self, service, mock_db
+    ):
+        mock_invitation = MagicMock()
+        mock_invitation.email = "existing@example.com"
+
+        with patch.object(
+            service, "validate_invitation", new=AsyncMock(return_value=mock_invitation)
+        ), patch(
+            "app.services.invitation_service.user_repository",
+            autospec=True,
+        ) as mock_user_repo:
+
+            mock_user_repo.get_by_email = AsyncMock(return_value=MagicMock())
+
+            with pytest.raises(ValidationError):
+                await service.register_user_from_invitation(
+                    mock_db, "valid-token", "John", "Doe", "password123"
+                )
+
+
