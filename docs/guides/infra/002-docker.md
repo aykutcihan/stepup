@@ -212,25 +212,28 @@ FROM node:18-slim
 Frontend is React — needs Node.js, not Python.
 
 ```dockerfile
-COPY package.json pnpm-lock.yaml ./
+COPY apps/frontend/package.json ./package.json
 ```
-Copy two files first:
-- `package.json` → which libraries are needed
-- `pnpm-lock.yaml` → exact versions of all libraries
-
-Copied before the code — Docker cache optimization (see below).
+Copy only `package.json` first. The build context is the monorepo root (`.`), so the path includes `apps/frontend/`. Copied before the code for Docker cache optimization — `npm install` is skipped on rebuilds when dependencies have not changed.
 
 ```dockerfile
-RUN npm install -g pnpm && pnpm install
+RUN npm install
 ```
-Two commands joined together:
-- `npm install -g pnpm` → Node image does not have pnpm, install it first
-- `pnpm install` → install all frontend libraries
+Install all frontend libraries inside the container.
+
+We use `npm` instead of `pnpm` in Docker. pnpm's storage structure uses symbolic links pointing to a virtual store (`.pnpm/` directory). This does not work reliably with Docker's anonymous volume mechanism. npm creates a flat, self-contained `node_modules/` — more reliable inside containers.
 
 ```dockerfile
-CMD ["pnpm", "dev"]
+COPY apps/frontend .
 ```
-Start the React development server when the container starts.
+Copy all frontend source files after installing dependencies.
+
+```dockerfile
+CMD ["node_modules/.bin/vite", "--host"]
+```
+Start the Vite development server. `--host` makes Vite listen on all interfaces so the browser on the host machine can reach it. The binary path is relative to WORKDIR (`/app`).
+
+For a full explanation of the frontend Docker setup including volumes, `.dockerignore`, and the two-volume pattern, see `docs/guides/tutorials/frontend/006-docker.md`.
 
 ---
 
