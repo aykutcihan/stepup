@@ -220,3 +220,34 @@ class TestResendInvitation:
             result = await service.resend_invitation(mock_db, MagicMock())
 
             assert result is not None
+
+
+    async def test_resend_invitation_raises_not_found_when_invitation_does_not_exist(
+        self, service, mock_db
+    ):
+        with patch(
+            "app.services.invitation_service.invitation_repository",
+            autospec=True,
+        ) as mock_inv_repo:
+
+            mock_inv_repo.get_by_id = AsyncMock(return_value=None)
+
+            with pytest.raises(NotFoundError):
+                await service.resend_invitation(mock_db, MagicMock())
+
+
+    async def test_resend_invitation_raises_error_when_invitation_is_already_used(
+        self, service, mock_db
+    ):
+        mock_invitation = MagicMock()
+        mock_invitation.used_at = datetime.now(timezone.utc) - timedelta(days=1)
+
+        with patch(
+            "app.services.invitation_service.invitation_repository",
+            autospec=True,
+        ) as mock_inv_repo:
+
+            mock_inv_repo.get_by_id = AsyncMock(return_value=mock_invitation)
+
+            with pytest.raises(ValidationError):
+                await service.resend_invitation(mock_db, MagicMock())
