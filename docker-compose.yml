@@ -40,7 +40,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./apps/frontend:/app
+      - ./apps/frontend:/app/apps/frontend
       - /app/node_modules
     depends_on:
       - backend
