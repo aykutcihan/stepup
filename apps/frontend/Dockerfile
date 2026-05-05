@@ -10,4 +10,4 @@ COPY apps/frontend .
 
 EXPOSE 3000
 
-CMD ["node_modules/.bin/vite", "--host"]
+CMD ["node_modules/.bin/vite", "--host", "--port", "3000"]
