@@ -2,12 +2,15 @@ FROM node:18-slim
 
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm
 
-RUN npm install -g pnpm && pnpm install
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY apps/frontend/package.json ./apps/frontend/
 
-COPY . .
+RUN pnpm install --frozen-lockfile
+
+COPY apps/frontend ./apps/frontend
 
 EXPOSE 3000
 
-CMD ["pnpm", "dev"]
+CMD ["pnpm", "--filter", "frontend", "dev", "--host"]
