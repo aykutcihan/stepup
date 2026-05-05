@@ -57,3 +57,19 @@ async def test_validate_invitation_raises_error_when_invitation_is_expired(
 
         with pytest.raises(ValidationError):
             await service.validate_invitation(mock_db, "expired-token")
+
+
+async def test_validate_invitation_raises_error_when_invitation_is_already_used(
+    service, mock_db
+):
+    mock_invitation = MagicMock()
+    mock_invitation.expires_at = datetime.now(timezone.utc) + timedelta(days=1)
+    mock_invitation.used_at = datetime.now(timezone.utc) - timedelta(days=1)
+
+    with patch(
+        "app.services.invitation_service.invitation_repository"
+    ) as mock_repo:
+        mock_repo.get_by_token = AsyncMock(return_value=mock_invitation)
+
+        with pytest.raises(ValidationError):
+            await service.validate_invitation(mock_db, "used-token")
