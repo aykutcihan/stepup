@@ -195,3 +195,28 @@ class TestRegisterUserFromInvitation:
                 )
 
 
+class TestResendInvitation:
+
+    async def test_resend_invitation_returns_updated_invitation_when_id_is_valid(
+        self, service, mock_db
+    ):
+        mock_invitation = MagicMock()
+        mock_invitation.used_at = None
+        mock_invitation.email = "user@example.com"
+        mock_invitation.role = MagicMock()
+        mock_invitation.role.value = "employee"
+
+        with patch(
+            "app.services.invitation_service.invitation_repository",
+            autospec=True,
+        ) as mock_inv_repo, patch(
+            "app.services.invitation_service.email_service",
+            autospec=True,
+        ) as mock_email:
+
+            mock_inv_repo.get_by_id = AsyncMock(return_value=mock_invitation)
+            mock_email.send_invitation_email = AsyncMock()
+
+            result = await service.resend_invitation(mock_db, MagicMock())
+
+            assert result is not None
