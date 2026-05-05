@@ -103,3 +103,32 @@ class TestRefresh:
 
             assert new_access_token is not None
             assert new_refresh_token is not None
+
+    async def test_refresh_raises_error_when_token_does_not_exist(
+        self, service, mock_db
+    ):
+        with patch(
+            "app.services.auth_service.refresh_token_repository",
+            autospec=True,
+        ) as mock_rt_repo:
+
+            mock_rt_repo.get_by_token = AsyncMock(return_value=None)
+
+            with pytest.raises(AuthenticationError):
+                await service.refresh(mock_db, "nonexistent-token")
+
+    async def test_refresh_raises_error_when_token_is_expired(
+        self, service, mock_db
+    ):
+        mock_refresh_token = MagicMock()
+        mock_refresh_token.expires_at = datetime.now(timezone.utc) - timedelta(days=1)
+
+        with patch(
+            "app.services.auth_service.refresh_token_repository",
+            autospec=True,
+        ) as mock_rt_repo:
+
+            mock_rt_repo.get_by_token = AsyncMock(return_value=mock_refresh_token)
+
+            with pytest.raises(AuthenticationError):
+                await service.refresh(mock_db, "expired-token")
