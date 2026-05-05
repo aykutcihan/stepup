@@ -1,4 +1,5 @@
 import pytest
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from app.services.auth_service import AuthService
@@ -76,3 +77,29 @@ class TestLogin:
 
             with pytest.raises(AuthenticationError):
                 await service.login(mock_db, "user@example.com", "wrongpassword")
+
+
+class TestRefresh:
+
+    async def test_refresh_returns_new_tokens_when_token_is_valid(
+        self, service, mock_db
+    ):
+        mock_refresh_token = MagicMock()
+        mock_refresh_token.user_id = MagicMock()
+        mock_refresh_token.expires_at = datetime.now(timezone.utc) + timedelta(days=1)
+
+        with patch(
+            "app.services.auth_service.refresh_token_repository",
+            autospec=True,
+        ) as mock_rt_repo:
+
+            mock_rt_repo.get_by_token = AsyncMock(return_value=mock_refresh_token)
+            mock_rt_repo.delete_by_token = AsyncMock()
+            mock_rt_repo.create = AsyncMock()
+
+            new_access_token, new_refresh_token = await service.refresh(
+                mock_db, "valid-refresh-token"
+            )
+
+            assert new_access_token is not None
+            assert new_refresh_token is not None
