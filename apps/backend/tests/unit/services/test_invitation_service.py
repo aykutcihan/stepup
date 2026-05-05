@@ -105,3 +105,19 @@ class TestCreateInvitation:
             )
 
             assert result is not None
+
+
+    async def test_create_invitation_raises_error_when_user_already_exists(
+        self, service, mock_db
+    ):
+        with patch(
+            "app.services.invitation_service.user_repository",
+            autospec=True,
+        ) as mock_user_repo:
+            mock_user_repo.get_by_email = AsyncMock(return_value=MagicMock())
+
+            with pytest.raises(ValidationError):
+                await service.create_invitation(
+                    mock_db, "existing@example.com", MagicMock(), MagicMock()
+                )
+
