@@ -113,3 +113,43 @@ class TestGetInvitations:
         response = await client.get("/api/v1/invitations/")
 
         assert response.status_code == 401
+
+
+class TestResendInvitation:
+
+    async def test_resend_invitation_returns_200_when_id_is_valid(
+        self, authenticated_client, db_session, hr_admin_user
+    ):
+        with patch(
+            "app.services.invitation_service.email_service",
+            autospec=True,
+        ) as mock_email:
+            mock_email.send_invitation_email = AsyncMock()
+
+            invitation = Invitation(
+                email="resend@example.com",
+                role=UserRole.EMPLOYEE,
+                token=secrets.token_urlsafe(32),
+                invited_by=hr_admin_user.id,
+                expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+            )
+            db_session.add(invitation)
+            await db_session.flush()
+
+            response = await authenticated_client.post(
+                f"/api/v1/invitations/{invitation.id}/resend"
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["email"] == "resend@example.com"
+
+    async def test_resend_invitation_returns_401_when_not_authenticated(
+        self, client
+    ):
+        import uuid
+        response = await client.post(
+            f"/api/v1/invitations/{uuid.uuid4()}/resend"
+        )
+
+        assert response.status_code == 401
