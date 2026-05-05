@@ -95,3 +95,21 @@ class TestValidateInvitation:
         )
 
         assert response.status_code == 404
+
+
+class TestGetInvitations:
+
+    async def test_get_invitations_returns_200_with_empty_list(
+        self, authenticated_client
+    ):
+        response = await authenticated_client.get("/api/v1/invitations/")
+
+        assert response.status_code == 200
+        assert response.json() == []
+
+    async def test_get_invitations_returns_401_when_not_authenticated(
+        self, client
+    ):
+        response = await client.get("/api/v1/invitations/")
+
+        assert response.status_code == 401
