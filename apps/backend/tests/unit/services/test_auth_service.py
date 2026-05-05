@@ -1,0 +1,47 @@
+import pytest
+from unittest.mock import AsyncMock, MagicMock, patch
+
+from app.services.auth_service import AuthService
+from app.errors import AuthenticationError
+
+
+@pytest.fixture
+def service():
+    return AuthService()
+
+
+@pytest.fixture
+def mock_db():
+    db = AsyncMock()
+    db.add = MagicMock()
+    return db
+
+
+class TestLogin:
+
+    async def test_login_returns_tokens_when_credentials_are_valid(
+        self, service, mock_db
+    ):
+        mock_user = MagicMock()
+        mock_user.id = MagicMock()
+
+        with patch(
+            "app.services.auth_service.user_repository",
+            autospec=True,
+        ) as mock_user_repo, patch(
+            "app.services.auth_service.refresh_token_repository",
+            autospec=True,
+        ) as mock_rt_repo, patch(
+            "app.services.auth_service.pwd_context",
+        ) as mock_pwd:
+
+            mock_user_repo.get_by_email = AsyncMock(return_value=mock_user)
+            mock_pwd.verify = MagicMock(return_value=True)
+            mock_rt_repo.create = AsyncMock()
+
+            access_token, refresh_token = await service.login(
+                mock_db, "user@example.com", "password123"
+            )
+
+            assert access_token is not None
+            assert refresh_token is not None
