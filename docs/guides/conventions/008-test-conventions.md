@@ -89,3 +89,29 @@ Test files mirror the file they test:
 |-------------|-----------|
 | `app/services/invitation_service.py` | `tests/unit/services/test_invitation_service.py` |
 | `app/api/v1/invitation.py` | `tests/integration/api/test_invitation_endpoints.py` |
+
+---
+
+## Function Naming
+
+Pattern: `test_<function_name>_<scenario>_<expected_outcome>`
+
+Reading the function name should tell you exactly what is being tested and what the expected result is — no comment needed.
+
+```python
+# validate_invitation — 4 scenarios
+test_validate_invitation_returns_invitation_when_token_is_valid
+test_validate_invitation_raises_not_found_when_token_does_not_exist
+test_validate_invitation_raises_error_when_invitation_is_expired
+test_validate_invitation_raises_error_when_invitation_is_already_used
+
+# create_invitation — scenarios
+test_create_invitation_returns_invitation_when_email_is_new
+test_create_invitation_raises_error_when_user_already_exists
+```
+
+**Rules:**
+- Always start with `test_`
+- All lowercase, words separated by underscores
+- Include the function under test, the input condition, and the expected outcome
+- Avoid vague names like `test_valid_case` or `test_error` — they say nothing

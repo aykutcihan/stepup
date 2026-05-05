@@ -51,6 +51,35 @@ Endpoint contracts — happy paths, HTTP status codes, response body shape, data
 
 ---
 
+## Test Scenarios
+
+Every function has three types of scenarios to consider:
+
+**Happy path**
+Everything goes right. The function receives valid input and returns the expected result.
+```
+valid token → invitation returned
+```
+
+**Sad path**
+Expected failure scenarios — business rules that reject invalid input. These are not bugs, they are intentional behavior.
+```
+token not found      → NotFoundError
+invitation expired   → ValidationError
+invitation used      → ValidationError
+```
+
+**Edge case**
+Boundary values and unexpected inputs — things that sit right at the limit of what the system handles.
+```
+token expires exactly at this millisecond
+empty string passed as token
+```
+
+When writing tests, always cover the happy path first, then sad paths, then edge cases if the logic warrants it.
+
+---
+
 ## Test Database
 
 We do **not** use SQLite for integration tests even though it is simpler to set up. The reason: production runs on PostgreSQL. Different databases have different behaviors (constraints, type handling, query planner). Testing on SQLite would mask bugs that only appear on PostgreSQL.

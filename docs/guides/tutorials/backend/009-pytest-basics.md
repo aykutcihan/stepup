@@ -87,3 +87,53 @@ async def test_create_invitation_raises_if_email_already_invited():
 ```
 
 Pattern: `test_<what>_<expected outcome>` — readable as a sentence.
+
+---
+
+## Putting It Together — Behind the Scenes
+
+Here is what actually happens when a unit test runs, using a real example from this project.
+
+```python
+@pytest.fixture
+def service():
+    return InvitationService()
+
+@pytest.fixture
+def mock_db():
+    return MagicMock()
+
+async def test_validate_invitation_returns_invitation_when_token_is_valid(
+    service, mock_db
+):
+    mock_invitation = MagicMock()
+    mock_invitation.expires_at = datetime.now(timezone.utc) + timedelta(days=1)
+    mock_invitation.used_at = None
+
+    with patch("app.services.invitation_service.invitation_repository") as mock_repo:
+        mock_repo.get_by_token = AsyncMock(return_value=mock_invitation)
+
+        result = await service.validate_invitation(mock_db, "valid-token")
+
+        assert result == mock_invitation
+```
+
+**Step 1 — Fixtures are injected**
+pytest sees `service` and `mock_db` as parameters and runs those fixtures before the test. `service` gives a fresh `InvitationService()`. `mock_db` gives a `MagicMock()` — a fake database session that satisfies the type signature but does nothing.
+
+**Step 2 — The stand-in invitation is built**
+`mock_invitation` simulates a row that came back from the database: valid expiry (1 day from now), not yet used (`used_at = None`).
+
+**Step 3 — `patch` swaps the real repository**
+`invitation_service.py` has a module-level `invitation_repository` object. `patch` temporarily replaces it with `mock_repo` for the duration of the `with` block. When the block ends, the original is restored — other tests are not affected.
+
+**Step 4 — `AsyncMock` controls the return value**
+`get_by_token` is an async function (called with `await`). `AsyncMock(return_value=mock_invitation)` tells it: "when called, do not go to the database — return this object instead."
+
+**Step 5 — The service runs for real**
+`validate_invitation` executes normally. It calls `get_by_token` (gets `mock_invitation`), checks `expires_at` (valid), checks `used_at` (None) — all conditions pass, it returns the invitation.
+
+**Step 6 — assert**
+The test confirms the returned object is exactly the one we prepared. If any step above had gone wrong, the assert would fail and pytest would show the difference.
+
+The entire test runs in memory. No database was touched.
