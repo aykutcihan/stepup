@@ -12,7 +12,8 @@ def service():
 
 @pytest.fixture
 def mock_db():
-    return MagicMock()
+    return AsyncMock()
+
 
 async def test_validate_invitation_returns_invitation_when_token_is_valid(
     service, mock_db
@@ -73,3 +74,5 @@ async def test_validate_invitation_raises_error_when_invitation_is_already_used(
 
         with pytest.raises(ValidationError):
             await service.validate_invitation(mock_db, "used-token")
+
+
