@@ -72,6 +72,19 @@ mock_repo.get_by_email = AsyncMock(return_value=None)
 
 `AsyncMock` is for async functions — `await mock_repo.get_by_email(...)` will return `None` without touching the database.
 
+**Mixing sync and async on the same object:**
+`AsyncMock()` makes all attributes async by default. If the real object has some sync methods (like `db.add()` in SQLAlchemy — no `await`), override them explicitly in the fixture:
+
+```python
+@pytest.fixture
+def mock_db():
+    db = AsyncMock()
+    db.add = MagicMock()  # sync — SQLAlchemy's add() is not awaited
+    return db
+```
+
+If you forget this, pytest will warn: `RuntimeWarning: coroutine was never awaited`.
+
 You control what it returns, so you can test every code path (user found, user not found, exception raised) without a real database.
 
 ### autospec=True — protecting against typos and wrong signatures

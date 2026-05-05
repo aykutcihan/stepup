@@ -13,7 +13,9 @@ def service():
 
 @pytest.fixture
 def mock_db():
-    return AsyncMock()
+    db = AsyncMock()
+    db.add = MagicMock()
+    return db
 
 
 class TestValidateInvitation:
@@ -121,6 +123,7 @@ class TestCreateInvitation:
                     mock_db, "existing@example.com", MagicMock(), MagicMock()
                 )
 
+
     async def test_create_invitation_still_returns_invitation_when_email_service_fails(
         self, service, mock_db
     ):
@@ -141,6 +144,31 @@ class TestCreateInvitation:
 
             result = await service.create_invitation(
                 mock_db, "new@example.com", MagicMock(), MagicMock()
+            )
+
+            assert result is not None
+
+
+class TestRegisterUserFromInvitation:
+
+    async def test_register_user_from_invitation_returns_user_when_token_is_valid(
+        self, service, mock_db
+    ):
+        mock_invitation = MagicMock()
+        mock_invitation.email = "user@example.com"
+        mock_invitation.role = MagicMock()
+
+        with patch.object(
+            service, "validate_invitation", new=AsyncMock(return_value=mock_invitation)
+        ), patch(
+            "app.services.invitation_service.user_repository",
+            autospec=True,
+        ) as mock_user_repo:
+
+            mock_user_repo.get_by_email = AsyncMock(return_value=None)
+
+            result = await service.register_user_from_invitation(
+                mock_db, "valid-token", "John", "Doe", "password123"
             )
 
             assert result is not None
