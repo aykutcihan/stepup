@@ -2,15 +2,12 @@ FROM node:18-slim
 
 WORKDIR /app
 
-RUN npm install -g pnpm
+COPY apps/frontend/package.json ./package.json
 
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
-COPY apps/frontend/package.json ./apps/frontend/
+RUN npm install
 
-RUN pnpm install --frozen-lockfile
-
-COPY apps/frontend ./apps/frontend
+COPY apps/frontend .
 
 EXPOSE 3000
 
-CMD ["pnpm", "--filter", "frontend", "dev", "--host"]
+CMD ["node_modules/.bin/vite", "--host"]
