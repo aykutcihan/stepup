@@ -45,3 +45,16 @@ class TestLogin:
 
             assert access_token is not None
             assert refresh_token is not None
+
+    async def test_login_raises_error_when_user_does_not_exist(
+        self, service, mock_db
+    ):
+        with patch(
+            "app.services.auth_service.user_repository",
+            autospec=True,
+        ) as mock_user_repo:
+
+            mock_user_repo.get_by_email = AsyncMock(return_value=None)
+
+            with pytest.raises(AuthenticationError):
+                await service.login(mock_db, "unknown@example.com", "password123")
