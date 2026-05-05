@@ -132,3 +132,23 @@ class TestRefresh:
 
             with pytest.raises(AuthenticationError):
                 await service.refresh(mock_db, "expired-token")
+
+
+class TestLogout:
+
+    async def test_logout_deletes_refresh_tokens_for_user(
+        self, service, mock_db
+    ):
+        import uuid
+        user_id = uuid.uuid4()
+
+        with patch(
+            "app.services.auth_service.refresh_token_repository",
+            autospec=True,
+        ) as mock_rt_repo:
+
+            mock_rt_repo.delete_by_user_id = AsyncMock()
+
+            await service.logout(mock_db, user_id)
+
+            mock_rt_repo.delete_by_user_id.assert_called_once_with(mock_db, user_id)
