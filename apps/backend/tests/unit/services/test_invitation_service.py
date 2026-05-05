@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 from app.services.invitation_service import InvitationService
 from app.errors import NotFoundError, ValidationError
 
+
 @pytest.fixture
 def service():
     return InvitationService()
@@ -15,64 +16,92 @@ def mock_db():
     return AsyncMock()
 
 
-async def test_validate_invitation_returns_invitation_when_token_is_valid(
-    service, mock_db
-):
-    mock_invitation = MagicMock()
-    mock_invitation.expires_at = datetime.now(timezone.utc) + timedelta(days=1)
-    mock_invitation.used_at = None
+class TestValidateInvitation:
 
-    with patch(
-        "app.services.invitation_service.invitation_repository"
-    ) as mock_repo:
-        mock_repo.get_by_token = AsyncMock(return_value=mock_invitation)
+    async def test_validate_invitation_returns_invitation_when_token_is_valid(
+        self, service, mock_db
+    ):
+        mock_invitation = MagicMock()
+        mock_invitation.expires_at = datetime.now(timezone.utc) + timedelta(days=1)
+        mock_invitation.used_at = None
 
-        result = await service.validate_invitation(mock_db, "valid-token")
+        with patch(
+            "app.services.invitation_service.invitation_repository",
+            autospec=True,
+        ) as mock_repo:
+            mock_repo.get_by_token = AsyncMock(return_value=mock_invitation)
 
-        assert result == mock_invitation
+            result = await service.validate_invitation(mock_db, "valid-token")
+
+            assert result == mock_invitation
+
+    async def test_validate_invitation_raises_not_found_when_token_does_not_exist(
+        self, service, mock_db
+    ):
+        with patch(
+            "app.services.invitation_service.invitation_repository",
+            autospec=True,
+        ) as mock_repo:
+            mock_repo.get_by_token = AsyncMock(return_value=None)
+
+            with pytest.raises(NotFoundError):
+                await service.validate_invitation(mock_db, "invalid-token")
+
+    async def test_validate_invitation_raises_error_when_invitation_is_expired(
+        self, service, mock_db
+    ):
+        mock_invitation = MagicMock()
+        mock_invitation.expires_at = datetime.now(timezone.utc) - timedelta(days=1)
+        mock_invitation.used_at = None
+
+        with patch(
+            "app.services.invitation_service.invitation_repository",
+            autospec=True,
+        ) as mock_repo:
+            mock_repo.get_by_token = AsyncMock(return_value=mock_invitation)
+
+            with pytest.raises(ValidationError):
+                await service.validate_invitation(mock_db, "expired-token")
+
+    async def test_validate_invitation_raises_error_when_invitation_is_already_used(
+        self, service, mock_db
+    ):
+        mock_invitation = MagicMock()
+        mock_invitation.expires_at = datetime.now(timezone.utc) + timedelta(days=1)
+        mock_invitation.used_at = datetime.now(timezone.utc) - timedelta(days=1)
+
+        with patch(
+            "app.services.invitation_service.invitation_repository",
+            autospec=True,
+        ) as mock_repo:
+            mock_repo.get_by_token = AsyncMock(return_value=mock_invitation)
+
+            with pytest.raises(ValidationError):
+                await service.validate_invitation(mock_db, "used-token")
 
 
-async def test_validate_invitation_raises_not_found_when_token_does_not_exist(
-    service, mock_db
-):
-    with patch(
-        "app.services.invitation_service.invitation_repository"
-    ) as mock_repo:
-        mock_repo.get_by_token = AsyncMock(return_value=None)
+class TestCreateInvitation:
 
-        with pytest.raises(NotFoundError):
-            await service.validate_invitation(mock_db, "invalid-token")
+    async def test_create_invitation_returns_invitation_when_email_is_new(
+        self, service, mock_db
+    ):
+        with patch(
+            "app.services.invitation_service.user_repository",
+            autospec=True,
+        ) as mock_user_repo, patch(
+            "app.services.invitation_service.invitation_repository",
+            autospec=True,
+        ) as mock_inv_repo, patch(
+            "app.services.invitation_service.email_service",
+            autospec=True,
+        ) as mock_email:
 
+            mock_user_repo.get_by_email = AsyncMock(return_value=None)
+            mock_inv_repo.create = AsyncMock()
+            mock_email.send_invitation_email = AsyncMock()
 
-async def test_validate_invitation_raises_error_when_invitation_is_expired(
-    service, mock_db
-):
-    mock_invitation = MagicMock()
-    mock_invitation.expires_at = datetime.now(timezone.utc) - timedelta(days=1)
-    mock_invitation.used_at = None
+            result = await service.create_invitation(
+                mock_db, "new@example.com", MagicMock(), MagicMock()
+            )
 
-    with patch(
-        "app.services.invitation_service.invitation_repository"
-    ) as mock_repo:
-        mock_repo.get_by_token = AsyncMock(return_value=mock_invitation)
-
-        with pytest.raises(ValidationError):
-            await service.validate_invitation(mock_db, "expired-token")
-
-
-async def test_validate_invitation_raises_error_when_invitation_is_already_used(
-    service, mock_db
-):
-    mock_invitation = MagicMock()
-    mock_invitation.expires_at = datetime.now(timezone.utc) + timedelta(days=1)
-    mock_invitation.used_at = datetime.now(timezone.utc) - timedelta(days=1)
-
-    with patch(
-        "app.services.invitation_service.invitation_repository"
-    ) as mock_repo:
-        mock_repo.get_by_token = AsyncMock(return_value=mock_invitation)
-
-        with pytest.raises(ValidationError):
-            await service.validate_invitation(mock_db, "used-token")
-
-
+            assert result is not None
