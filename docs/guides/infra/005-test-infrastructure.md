@@ -22,7 +22,7 @@ testpaths = ["tests"]
 | Setting | What it does |
 |---------|--------------|
 | `asyncio_mode = "auto"` | Automatically treats async test functions as async — no need to add `@pytest.mark.asyncio` on every test |
-| `asyncio_default_fixture_loop_scope = "function"` | Each test gets its own event loop — tests stay isolated from each other |
+| `asyncio_default_fixture_loop_scope = "session"` | All async fixtures and tests share the same session event loop — required for asyncpg connection pool compatibility |
 | `testpaths = ["tests"]` | Tells pytest where to look for tests — avoids scanning the entire project |
 
 ### ruff configuration
@@ -100,3 +100,38 @@ To run only integration tests:
 ```powershell
 docker exec stepup-backend python -m pytest tests/integration --tb=short -q
 ```
+
+---
+
+## Troubleshooting
+
+### `Future attached to a different loop`
+
+**Cause:** asyncpg's connection pool binds to the event loop that creates the first connection. If fixtures run in the session loop but test functions run in a function loop, the connection can't be shared across loops.
+
+**Fix 1:** Set `asyncio_default_fixture_loop_scope = "session"` in `pyproject.toml` so all async fixtures use the session loop.
+
+**Fix 2:** Add `pytestmark = pytest.mark.asyncio(loop_scope="session")` at the top of integration test files so test functions also run in the session loop.
+
+Both fixes together are required.
+
+---
+
+### `UniqueViolationError` on second test (rollback not working)
+
+**Cause:** When service code calls `await db.commit()`, the data is permanently written to the database. A simple `session.rollback()` after the test cannot undo a committed transaction — so the next test sees leftover data.
+
+**Fix:** Use SQLAlchemy's `join_transaction_mode="create_savepoint"` in the `db_session` fixture:
+
+```python
+@pytest.fixture
+async def db_session():
+    async with test_engine.connect() as conn:
+        await conn.begin()
+        session = AsyncSession(conn, join_transaction_mode="create_savepoint")
+        yield session
+        await session.close()
+        await conn.rollback()
+```
+
+How it works: the service's `commit()` call releases a savepoint instead of a real commit. The outer `conn.rollback()` at the end rolls back everything — the database is clean for the next test.
