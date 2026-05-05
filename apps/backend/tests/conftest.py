@@ -8,7 +8,7 @@ from app.core.config import settings
 from app.core.database import get_db
 from app.main import app
 from app.models.base import Base
-import app.models  # noqa: F401 — ensures all models are registered with Base
+import app.models as _app_models  # noqa: F401 — ensures all models are registered with Base
 
 
 test_engine = create_async_engine(settings.TEST_DATABASE_URL, echo=False)

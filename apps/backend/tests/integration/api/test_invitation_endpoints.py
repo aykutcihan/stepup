@@ -43,3 +43,14 @@ class TestPostInvitation:
             )
 
         assert response.status_code == 400
+
+
+    async def test_post_invitation_returns_401_when_not_authenticated(
+        self, client
+    ):
+        response = await client.post(
+            "/api/v1/invitations/",
+            json={"email": "someone@example.com", "role": "employee"},
+        )
+
+        assert response.status_code == 401
