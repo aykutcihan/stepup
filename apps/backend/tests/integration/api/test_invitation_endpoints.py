@@ -85,3 +85,13 @@ class TestValidateInvitation:
         data = response.json()
         assert data["email"] == "invited@example.com"
         assert data["role"] == "employee"
+
+
+    async def test_validate_invitation_returns_404_when_token_does_not_exist(
+        self, client
+    ):
+        response = await client.get(
+            "/api/v1/invitations/validate?token=nonexistent-token"
+        )
+
+        assert response.status_code == 404
