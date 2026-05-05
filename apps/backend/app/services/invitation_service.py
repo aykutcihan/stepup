@@ -135,3 +135,4 @@ class InvitationService:
             logger.error(f"Failed to resend invitation email to {invitation.email}: {e}")
 
         return invitation
+ 

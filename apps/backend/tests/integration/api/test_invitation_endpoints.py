@@ -26,3 +26,20 @@ class TestPostInvitation:
         assert data["role"] == "employee"
         assert "id" in data
         assert "expires_at" in data
+
+
+    async def test_post_invitation_returns_400_when_user_already_exists(
+        self, authenticated_client
+    ):
+        with patch(
+            "app.services.invitation_service.email_service",
+            autospec=True,
+        ) as mock_email:
+            mock_email.send_invitation_email = AsyncMock()
+
+            response = await authenticated_client.post(
+                "/api/v1/invitations/",
+                json={"email": "admin@test.com", "role": "employee"},
+            )
+
+        assert response.status_code == 400
