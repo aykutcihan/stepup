@@ -67,3 +67,20 @@ class TestLogin:
         )
 
         assert response.status_code == 401
+
+
+class TestLogout:
+
+    async def test_logout_returns_204_when_authenticated(
+        self, authenticated_client
+    ):
+        response = await authenticated_client.post("/api/v1/auth/logout")
+
+        assert response.status_code == 204
+
+    async def test_logout_returns_401_when_not_authenticated(
+        self, client
+    ):
+        response = await client.post("/api/v1/auth/logout")
+
+        assert response.status_code == 401
