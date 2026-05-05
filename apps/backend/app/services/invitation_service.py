@@ -108,8 +108,6 @@ class InvitationService:
     async def get_invitations(self, db: AsyncSession) -> list[Invitation]:
         return await invitation_repository.get_all(db)
 
-    
-
     async def resend_invitation(
         self,
         db: AsyncSession,
