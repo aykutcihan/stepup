@@ -58,3 +58,21 @@ class TestLogin:
 
             with pytest.raises(AuthenticationError):
                 await service.login(mock_db, "unknown@example.com", "password123")
+
+    async def test_login_raises_error_when_password_is_wrong(
+        self, service, mock_db
+    ):
+        mock_user = MagicMock()
+
+        with patch(
+            "app.services.auth_service.user_repository",
+            autospec=True,
+        ) as mock_user_repo, patch(
+            "app.services.auth_service.pwd_context",
+        ) as mock_pwd:
+
+            mock_user_repo.get_by_email = AsyncMock(return_value=mock_user)
+            mock_pwd.verify = MagicMock(return_value=False)
+
+            with pytest.raises(AuthenticationError):
+                await service.login(mock_db, "user@example.com", "wrongpassword")
