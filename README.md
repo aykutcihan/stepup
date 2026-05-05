@@ -13,7 +13,7 @@ StepUp streamlines the process of onboarding new employees — structured task a
 | Sprint | Theme | Status |
 |---|---|---|
 | Sprint 1 | Infrastructure | ✅ Complete |
-| Sprint 2 | Authentication & Authorization | ⏳ Next |
+| Sprint 2 | Authentication & Authorization | 🔄 BE Complete, FE Pending |
 | Sprint 3 | User & Department Management | — |
 | Sprint 4 | Onboarding Template Management | — |
 | Sprint 5 | Onboarding Plan & Task Workflow | — |
@@ -127,6 +127,15 @@ docker-compose logs -f backend
 
 # Rebuild backend image (after requirements.txt changes)
 docker-compose build backend
+
+# Run all backend tests
+docker exec stepup-backend python -m pytest --tb=short -q
+
+# Run only unit tests
+docker exec stepup-backend python -m pytest tests/unit --tb=short -q
+
+# Run only integration tests
+docker exec stepup-backend python -m pytest tests/integration --tb=short -q
 ```
 
 ---
@@ -145,10 +154,12 @@ docker-compose build backend
 ## Branch Strategy
 
 ```
-main      → production (stable, merged at sprint end)
-develop   → integration branch
-feature/  → one branch per issue (feature/us-001-invite-user)
-fix/      → bug fixes
+main        → production (stable, merged at sprint end)
+develop     → integration branch
+feature/    → one branch per issue (feature/us-001-invite-user)
+fix/        → bug fixes
+test/be-    → backend tests for a user story (test/be-us-001-invitation-service)
+test/fe-    → frontend tests for a user story (test/fe-us-001-invite-form)
 ```
 
 All changes go through Pull Requests into `develop`.
