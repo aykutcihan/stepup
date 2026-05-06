@@ -1,9 +1,13 @@
+import { useEffect, useState } from 'react'
+import { format } from 'date-fns'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { createInvitation } from '@/services/invitationService'
+import type { components } from '@/types/api'
+import { createInvitation, getInvitations } from '@/services/invitationService'
 import { getErrorMessage } from '@/utils/getErrorMessage'
-import { useState } from 'react'
+
+type InvitationResponse = components['schemas']['InvitationResponse']
 
 const schema = z.object({
   email: z.string().email('Invalid email address'),
@@ -15,16 +19,24 @@ type FormData = z.infer<typeof schema>
 export default function InviteUserPage() {
   const [pageError, setPageError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [invitations, setInvitations] = useState<InvitationResponse[]>([])
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
+
+  useEffect(() => {
+    getInvitations()
+      .then((data) => setInvitations(data))
+      .catch((err) => setPageError(getErrorMessage(err)))
+  }, [])
 
   const onSubmit = async (data: FormData) => {
     try {
       await createInvitation(data)
       setSuccess(true)
       reset()
+      getInvitations().then((data) => setInvitations(data))
     } catch (err) {
       setPageError(getErrorMessage(err))
     }
@@ -46,6 +58,15 @@ export default function InviteUserPage() {
         {errors.role && <p>{errors.role.message}</p>}
         <button type="submit">Send Invitation</button>
       </form>
+
+      <h2>Pending Invitations</h2>
+      <ul>
+        {invitations.map((inv) => (
+          <li key={inv.id}>
+            {inv.email} — {inv.role} — {format(new Date(inv.expires_at), 'dd/MM/yyyy')}
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
