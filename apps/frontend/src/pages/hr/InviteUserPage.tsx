@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import type { components } from '@/types/api'
-import { createInvitation, getInvitations } from '@/services/invitationService'
+import { createInvitation, getInvitations, resendInvitation } from '@/services/invitationService'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 type InvitationResponse = components['schemas']['InvitationResponse']
@@ -30,6 +30,15 @@ export default function InviteUserPage() {
       .then((data) => setInvitations(data))
       .catch((err) => setPageError(getErrorMessage(err)))
   }, [])
+
+  const handleResend = async (id: string) => {
+    try {
+      await resendInvitation(id)
+      getInvitations().then((data) => setInvitations(data))
+    } catch (err) {
+      setPageError(getErrorMessage(err))
+    }
+  }
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -64,6 +73,7 @@ export default function InviteUserPage() {
         {invitations.map((inv) => (
           <li key={inv.id}>
             {inv.email} — {inv.role} — {format(new Date(inv.expires_at), 'dd/MM/yyyy')}
+            <button onClick={() => handleResend(inv.id)}>Resend</button>
           </li>
         ))}
       </ul>
