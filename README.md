@@ -125,6 +125,9 @@ docker-compose up
 # Run database migrations
 docker-compose run --rm backend alembic upgrade head
 
+# Seed the database with initial data
+docker-compose run --rm backend python scripts/seed.py
+
 # Create a new migration after model changes
 docker-compose run --rm backend alembic revision --autogenerate -m "description"
 
