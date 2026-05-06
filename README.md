@@ -62,6 +62,15 @@ stepup/
         core/         # Config, database connection
         models/       # SQLAlchemy models
       alembic/        # Database migrations
+    frontend/         # React 18 + TypeScript application
+      src/
+        components/   # Reusable UI components
+        pages/        # Route-based pages (hr/, manager/, employee/)
+        hooks/        # Custom React hooks
+        services/     # API call functions
+        store/        # Zustand stores
+        types/        # TypeScript types
+        constants/    # Routes, API endpoints, error messages
   packages/
     shared-types/     # Shared TypeScript types
   docs/
@@ -116,6 +125,9 @@ docker-compose up
 # Run database migrations
 docker-compose run --rm backend alembic upgrade head
 
+# Seed the database with initial data
+docker-compose run --rm backend python scripts/seed.py
+
 # Create a new migration after model changes
 docker-compose run --rm backend alembic revision --autogenerate -m "description"
 
@@ -136,6 +148,18 @@ docker exec stepup-backend python -m pytest tests/unit --tb=short -q
 
 # Run only integration tests
 docker exec stepup-backend python -m pytest tests/integration --tb=short -q
+
+# Start frontend (first time or after Dockerfile changes)
+docker-compose up frontend --build
+
+# Start frontend (subsequent runs)
+docker-compose up frontend
+
+# View frontend logs
+docker-compose logs -f frontend
+
+# Run frontend tests
+docker-compose run --rm frontend node_modules/.bin/vitest run --config vitest.config.ts --passWithNoTests
 ```
 
 ---

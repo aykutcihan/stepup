@@ -186,6 +186,44 @@ Mapping to 5433 on the host avoids the port conflict.
 
 ---
 
+## Frontend-Specific Commands
+
+```powershell
+# First time or after Dockerfile/package.json changes
+docker-compose up frontend --build
+
+# Subsequent runs (no rebuild needed)
+docker-compose up frontend
+
+# Force a clean rebuild (clears Docker cache)
+docker-compose build --no-cache frontend
+docker-compose up frontend
+
+# Full reset (removes volumes — node_modules rebuilt from scratch)
+docker-compose down -v
+docker-compose up frontend --build
+
+# Run frontend tests inside container
+docker-compose run --rm frontend node_modules/.bin/vitest run --config vitest.config.ts --passWithNoTests
+
+# View frontend logs
+docker-compose logs -f frontend
+
+# Regenerate TypeScript types from BE OpenAPI spec (run after BE schema changes)
+docker-compose run --rm frontend node_modules/.bin/openapi-typescript http://backend:8000/openapi.json -o src/types/api.ts
+```
+
+**When to rebuild vs when not to:**
+
+| Change | Action needed |
+|--------|--------------|
+| Source code (`.tsx`, `.ts`, `.css`) | Nothing — bind mount reflects instantly |
+| `package.json` (add/remove dependency) | `docker-compose up frontend --build` |
+| `Dockerfile` | `docker-compose up frontend --build` |
+| Broken `node_modules` in container | `docker-compose down -v` then `--build` |
+
+---
+
 ## Common Issues & Solutions
 
 | Issue | Solution |

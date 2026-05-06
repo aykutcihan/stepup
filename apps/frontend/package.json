@@ -9,9 +9,11 @@
     "preview": "vite preview",
     "lint": "eslint src",
     "test": "vitest run --config vitest.config.ts --passWithNoTests",
-    "test:watch": "vitest --config vitest.config.ts"
+    "test:watch": "vitest --config vitest.config.ts",
+    "generate-types": "openapi-typescript http://backend:8000/openapi.json -o src/types/api.ts"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.1",
     "@tanstack/react-query": "^5.62.0",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
@@ -35,6 +37,7 @@
     "@eslint/js": "^9.17.0",
     "eslint": "^9.17.0",
     "eslint-plugin-react-hooks": "^5.1.0",
+    "openapi-typescript": "^7.4.4",
     "typescript-eslint": "^8.19.0",
     "jsdom": "^25.0.1",
     "postcss": "^8.4.49",

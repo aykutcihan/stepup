@@ -209,6 +209,7 @@ __marimo__/
 # Node.js
 node_modules/
 *.local
+apps/frontend/.env
 
 # Vite / Frontend build
 apps/frontend/dist/
