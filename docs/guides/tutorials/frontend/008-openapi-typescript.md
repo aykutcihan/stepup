@@ -111,3 +111,79 @@ type InvitationValidateResponse = components['schemas']['InvitationValidateRespo
 - The file is generated, not maintained by hand
 - Only imported types end up in the production bundle (tree-shaking)
 - The file is the single source of truth for all API types
+
+---
+
+## Two Types of Errors — What Goes Where
+
+When the BE returns an error, there are two completely different kinds. Understanding this determines where the FE handles them.
+
+### Type 1: Validation Errors (HTTPValidationError)
+
+Produced automatically by FastAPI + Pydantic. The request is rejected at the door — before any business logic runs.
+
+**When it happens:** A required field is missing, an email field has no `@`, a string is sent where a number is expected.
+
+**HTTP status:** `422 Unprocessable Entity`
+
+**Response shape:**
+```json
+{
+  "detail": [
+    { "msg": "field required", "loc": ["body", "password"] }
+  ]
+}
+```
+
+**Where it lives:** Already in `api.ts` as `HTTPValidationError` — generated automatically.
+
+**Example in BE:**
+```python
+class RegisterRequest(BaseModel):
+    token: str
+    first_name: str
+    last_name: str
+    password: str   # If this is missing → 422, no code needed
+```
+
+---
+
+### Type 2: Business Logic Errors (Custom Errors)
+
+Produced manually by the developer. The request passes validation but fails a business rule — checked inside the service after hitting the database.
+
+**When it happens:** Token expired, invitation already used, user already exists, wrong password.
+
+**HTTP status:** `400 Bad Request` or `404 Not Found`
+
+**Response shape:**
+```json
+{
+  "success": false,
+  "error_code": "INVITATION_EXPIRED",
+  "message": "Invitation token has expired"
+}
+```
+
+**Where it lives:** NOT in `api.ts` — FastAPI cannot auto-document these. They live in `src/constants/errorMessages.ts`.
+
+**Example in BE:**
+```python
+# app/errors/messages.py — written by the developer
+INVITATION_EXPIRED = ("INVITATION_EXPIRED", "Invitation token has expired")
+INVITATION_ALREADY_USED = ("INVITATION_ALREADY_USED", "Invitation has already been used")
+```
+
+---
+
+### Summary
+
+| | Type 1: Validation | Type 2: Business Logic |
+|---|---|---|
+| Who produces it | FastAPI + Pydantic (automatic) | Developer (manual) |
+| When | Before logic runs | Inside service, after DB check |
+| HTTP status | 422 | 400 / 404 |
+| In api.ts? | ✅ Yes (HTTPValidationError) | ❌ No |
+| FE handles via | api.ts type | errorMessages.ts map |
+
+See `009-services-and-constants.md` for how `errorMessages.ts` is structured and used.
