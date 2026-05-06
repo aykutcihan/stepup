@@ -1,58 +1,91 @@
-# ADR-005: Monorepo with Turborepo and pnpm
+# ADR-003: State Management — Zustand + React Query
 
-**Date:** 2026-04-21
+**Date:** 2026-05-05
 **Status:** Accepted
 
 ---
 
 ## Context
 
-StepUp has two applications — a FastAPI backend and a React frontend — that will eventually share TypeScript types via a shared package. The project needs a repository structure that keeps both apps in sync, makes running tasks (lint, test, build) straightforward, and is recognizable to employers reviewing the codebase.
+A React frontend application manages two fundamentally different kinds of state:
 
-Two structural options were considered: monorepo and polyrepo.
+**Server state** — data that lives on the server and is fetched over the network: tasks, users, invitations, plans. This data can be stale, needs to be synchronized, has loading and error states, and can be refetched.
+
+**Client state** — UI state that lives only in the browser: who is currently logged in, which modal is open, active tab selection. This does not need to be fetched or synchronized with the server.
+
+These two categories have different requirements. Treating them the same way leads to unnecessary complexity.
+
+We needed to choose:
+1. One solution for both categories (Redux, Recoil, MobX)
+2. Separate solutions for each category
 
 ---
 
 ## Decision
 
-We use a **monorepo** with **Turborepo** as the build orchestration tool and **pnpm** as the package manager.
+We use **React Query** (TanStack Query) for server state and **Zustand** for client state.
 
-```
-stepup/
-├── apps/
-│   ├── backend/    # FastAPI
-│   └── frontend/   # React
-├── packages/
-│   └── shared-types/
-├── turbo.json
-└── pnpm-workspace.yaml
-```
+**React Query handles:**
+- All API calls (GET, POST, PATCH, DELETE)
+- Response caching and cache invalidation
+- Loading, error, and success states
+- Background refetching
+- Optimistic updates (future)
+
+**Zustand handles:**
+- Logged-in user info (id, name, role) — stored after login, cleared on logout
+- Nothing else in Sprint 2
 
 ---
 
 ## Alternatives Considered
 
-**Polyrepo (separate repositories)**
-Keeping backend and frontend in separate repositories is simpler to set up initially. However, it makes cross-app changes harder to track, requires managing two separate CI pipelines, and makes it impossible to share TypeScript types without publishing a package.
+### Redux Toolkit
 
-**Nx**
-Nx is a powerful monorepo tool with more features than Turborepo (affected commands, project graph visualization). However, it has a steeper learning curve and heavier configuration. Turborepo is sufficient for a two-app monorepo and is faster to set up.
+Redux is the most widely known state management library. Redux Toolkit reduces boilerplate significantly compared to vanilla Redux.
 
-**Lerna**
-Lerna is an older monorepo tool primarily designed for publishing npm packages. It is not the right fit for an application monorepo.
+However: Redux treats all state the same way — it has no concept of "this state comes from an API" vs "this state is local to the UI". Managing server state in Redux requires manual cache invalidation, manual loading/error tracking, and significant boilerplate (slices, thunks, selectors).
+
+React Query solves the server state problem at the library level. Adding Redux on top for client state would mean maintaining two systems where React Query already handles 90% of the use cases.
+
+**Decision: too much for what we need.**
+
+### Context API
+
+React's built-in Context API can share state across components without a third-party library.
+
+However: Context re-renders all consumers when the value changes. For global auth state, this means every component reading from context re-renders on every login/logout event. This is acceptable for small apps but becomes a performance concern as the component tree grows.
+
+Zustand uses a subscription model — only components that access a specific piece of state re-render when that piece changes.
+
+**Decision: Zustand is better for auth state specifically.**
+
+### Recoil / Jotai
+
+Atom-based state libraries from Facebook/community. More granular than Zustand, good for complex interdependent state.
+
+StepUp's client state is minimal — logged-in user and a few UI flags. The atom model is over-engineered for this use case.
+
+**Decision: too complex for what we need.**
 
 ---
 
 ## Consequences
 
 **Gained:**
-- Single repository — one place for code, issues, PRs, and CI pipeline
-- Turborepo caches task outputs — `turbo run build` only rebuilds what changed
-- pnpm workspaces enable shared `packages/shared-types` without publishing to npm
-- Single `docker-compose.yml` at the root runs both apps locally
-- Employers see the full project in one repository
+- Server state is managed automatically — no manual loading/error/cache logic
+- Cache invalidation is explicit: `queryClient.invalidateQueries(['invitations'])` after a mutation
+- React Query DevTools shows all cached queries during development
+- Zustand's store is simple to read and test — plain JavaScript object with functions
+- Clear separation: API data goes through React Query, UI state goes through Zustand
 
 **Trade-offs:**
-- pnpm PATH issue on Windows required a PowerShell profile fix (`$env:PATH += ...`)
-- Turborepo adds a `turbo.json` configuration file that needs to be maintained
-- Python backend does not benefit from Turborepo's JS-focused caching — backend tasks still run via Docker commands directly
+- Two libraries to learn instead of one
+- React Query has its own mental model (queryKey, stale time, refetch behavior) that takes time to internalize
+- Zustand store must be cleared on logout — easy to forget
+
+**Rule of thumb applied:**
+> If the data comes from an API, it is server state → React Query.
+> If the data never touches the server, it is client state → Zustand.
+
+When in doubt, default to React Query. Avoid putting API data in Zustand.

@@ -17,5 +17,8 @@
     "node": ">=18",
     "pnpm": ">=8"
   },
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@10.33.0",
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
 }

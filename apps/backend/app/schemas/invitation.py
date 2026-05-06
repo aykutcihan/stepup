@@ -1,0 +1,25 @@
+import uuid
+from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, EmailStr
+
+from app.enums.user_role import UserRole
+
+
+class InvitationCreate(BaseModel):
+    email: EmailStr
+    role: UserRole
+
+
+class InvitationResponse(BaseModel):
+    id: uuid.UUID
+    email: EmailStr
+    role: UserRole
+    expires_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+class InvitationValidateResponse(BaseModel):
+    email: str
+    role: UserRole
+

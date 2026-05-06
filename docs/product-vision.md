@@ -5,7 +5,7 @@
 **Owner:** Developer (Solo Project)  
 **Status:** Living document — will evolve throughout development  
 
----
+--- 
 
 ## Executive Summary
 
@@ -361,11 +361,12 @@ stepup/
 │   │   │   ├── repositories/     # Database queries
 │   │   │   ├── models/           # SQLAlchemy models
 │   │   │   ├── schemas/          # Pydantic schemas
-│   │   │   ├── core/             # Config, security, dependencies
-│   │   │   │   ├── exceptions.py      # All custom exception classes
-│   │   │   │   ├── constants.py       # No magic strings or numbers
-│   │   │   │   ├── responses.py       # Standard API response wrapper
-│   │   │   │   └── error_handlers.py  # Global FastAPI exception handler
+│   │   │   ├── core/             # Config, database, dependencies
+│   │   │   ├── errors/           # Error handling package
+│   │   │   │   ├── __init__.py        # Exception classes
+│   │   │   │   ├── messages.py        # Error code + message constants
+│   │   │   │   └── handlers.py        # FastAPI exception handlers
+│   │   │   ├── enums/            # Shared enum types
 │   │   │   └── workers/          # APScheduler jobs
 │   │   ├── tests/
 │   │   │   ├── unit/
@@ -422,37 +423,36 @@ stepup/
 
 ### Error Handling Strategy
 
-All custom exceptions are defined in a single `core/exceptions.py` module and caught by a global FastAPI exception handler in `core/error_handlers.py`. No scattered try/catch blocks across the codebase.
+All error-related code lives in `app/errors/` — a dedicated package separate from `core/`. No scattered try/catch blocks across the codebase.
+
+```
+app/errors/
+    __init__.py    ← exception classes (BaseAppError, NotFoundError, ValidationError, ...)
+    messages.py    ← error code + message tuples (INVITATION_NOT_FOUND, ...)
+    handlers.py    ← FastAPI exception handlers, registered in main.py
+```
 
 **Exception hierarchy:**
 ```python
 BaseAppError
 ├── NotFoundError
-│   ├── TaskNotFoundError
-│   ├── PlanNotFoundError
-│   └── UserNotFoundError
-├── AuthorizationError
-│   ├── InsufficientPermissionsError
-│   └── ResourceOwnershipError
 ├── ValidationError
-│   ├── InvalidStateTransitionError
-│   ├── DeadlinePassedError
-│   └── FileTypeNotAllowedError
+├── AuthorizationError
 └── ConflictError
-    └── OptimisticLockError
 ```
+
+Subclasses are added as needed — not pre-emptively.
 
 **Consistent error response format across all endpoints:**
 ```json
 {
   "success": false,
-  "error_code": "TASK_NOT_FOUND",
-  "message": "Task with id 5 was not found",
-  "request_id": "abc-123-def-456"
+  "error_code": "INVITATION_NOT_FOUND",
+  "message": "Invitation not found"
 }
 ```
 
-The `error_code` field allows the frontend to display localized messages (English / Dutch) without relying on backend message strings. All constants — including error codes, token expiry times, file size limits, pagination defaults — are defined in `core/constants.py`. No magic strings or numbers anywhere in the codebase.
+The `error_code` field allows the frontend to display localized messages without relying on backend message strings. Error messages are centralized in `app/errors/messages.py` — no magic strings in service or handler code.
 
 ### Frontend Constants Strategy
 
@@ -704,45 +704,54 @@ ADR-007: Structured logging to GCP Cloud Logging
 
 ## Product Roadmap
 
-### Sprint 1–2: Foundation (Weeks 1–4)
+### Sprint 1 — Foundation ✅ Done
 - Monorepo setup (Turborepo + pnpm)
 - Docker + docker-compose local environment
 - GCP project setup (Cloud Run, Cloud SQL, Secret Manager)
 - GitHub Actions CI pipeline
-- Database schema + Alembic migrations
-- Seed data (minimum set)
-- JWT authentication (login, refresh, logout)
-- User management (HR Admin only)
-- Department CRUD
-- Basic protected routes (frontend)
+- Database schema + Alembic migrations (User model)
 
-### Sprint 3–4: Core Features (Weeks 5–8)
-- Onboarding template CRUD (HR Admin)
-- Onboarding plan creation from template
-- Task state machine implementation
-- Task completion + document upload
-- Manager approval / return flow
-- Email notifications (SendGrid)
-- APScheduler: overdue task detection + reminder emails
-- Employee dashboard
-- Manager dashboard
-- HR dashboard
+### Sprint 2 — Authentication
+- User invitation by email with role assignment
+- Registration via invitation token link
+- Login, logout, token refresh (HttpOnly cookies)
+- Role-based access control (RBAC) on all endpoints
+- Force logout on user deactivation
 
-### Sprint 5–6: Quality & Polish (Weeks 9–12)
-- Audit trail (complete implementation)
-- Reporting & analytics (HR)
-- CSV / PDF export
-- Soft delete on all entities
+### Sprint 3 — User, Department & Profile Management
+- Department CRUD + soft delete
+- User management (list, assign to department, deactivate)
+- My Profile (view + update name)
+- Seed data: users and departments
+
+### Sprint 4 — Onboarding Template Management
+- Template CRUD per department (create, edit, activate, deactivate)
+- Task management within templates (add, edit, reorder, delete)
+- Clone template
+- Seed data: templates and template tasks
+- ADR-003 (Zustand + React Query) + ADR-004 (HttpOnly cookies)
+
+### Sprint 5 — Onboarding Plan & Task Workflow
+- Create onboarding plan from template (auto-generate tasks)
+- Employee: view plan, start/complete tasks, upload attachments, add comments
+- Manager: approve or return tasks with feedback, view documents
+- HR Admin: cancel tasks, adjust deadlines, change manager, add tasks to active plan
+
+### Sprint 6 — Notifications, Scheduler & Dashboards
+- Email notifications via SendGrid (plan started, task completed, approved, returned, deadline reminder)
+- APScheduler: daily overdue detection + deadline reminders
+- Employee dashboard (progress, tasks by status, upcoming deadlines)
+- Manager dashboard (team overview, pending approvals, overdue alerts)
+- HR Admin dashboard (system-wide stats, avg completion time)
+
+### Sprint 7 — Audit Trail, Reports & Quality
+- Audit trail (complete, uneditable, filterable, paginated)
+- Admin reports + CSV export
 - Pagination on all list endpoints
-- Health check endpoint
-- Request ID logging
-- Optimistic locking (version column on plan_tasks)
-- Redis cache for templates (GCP Memorystore)
-- Full test suite (unit + integration + E2E)
-- OWASP ZAP security scan
+- Health check endpoint + request ID middleware
+- Full E2E regression suite (Playwright)
 - README + Swagger polish
-- GCP deploy pipeline (GitHub Actions → Cloud Run)
-- Demo seed data (realistic dataset)
+- Demo seed data finalized
 
 ### Bonus (If Time Allows)
 - Multi-tenancy (organization_id on all tables)
@@ -811,6 +820,7 @@ A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
 |---|---|---|
 | 1.0 | 2026-04-21 | Initial product vision document |
 | 1.1 | 2026-04-21 | Added error handling strategy, frontend constants, logging strategy, API versioning, removed intern references |
+| 1.2 | 2026-05-03 | Updated error handling to app/errors/ package, updated monorepo structure |
 
 **Review Frequency:** After each sprint  
 **Status:** Living document — will evolve throughout the project

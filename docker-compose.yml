@@ -1,13 +1,11 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:15
     container_name: stepup-db
     environment:
-      POSTGRES_USER: stepup
-      POSTGRES_PASSWORD: stepup123
-      POSTGRES_DB: stepup_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5433:5432"
     volumes:
@@ -19,8 +17,12 @@ services:
       dockerfile: Dockerfile
     container_name: stepup-backend
     environment:
-      DATABASE_URL: postgresql://stepup:stepup123@db:5432/stepup_db
-      SECRET_KEY: dev-secret-key-change-in-production
+      DATABASE_URL: ${DATABASE_URL}
+      TEST_DATABASE_URL: ${TEST_DATABASE_URL}
+      FRONTEND_URL: ${FRONTEND_URL}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     ports:
       - "8000:8000"
     volumes:
@@ -30,8 +32,8 @@ services:
 
   frontend:
     build:
-      context: ./apps/frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/frontend/Dockerfile
     container_name: stepup-frontend
     ports:
       - "3000:3000"
