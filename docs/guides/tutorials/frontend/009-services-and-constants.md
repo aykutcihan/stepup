@@ -108,10 +108,47 @@ One file per domain — same grouping as BE routers.
 
 ---
 
-## src/services/authService.ts Explained
+## src/services/apiClient.ts
+
+Every API call in the project goes through a single axios instance defined here.
 
 ```typescript
 import axios from 'axios'
+
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true,
+})
+
+export default apiClient
+```
+
+### `axios.create()`
+
+Creates a custom axios instance with preset configuration. All service functions import `apiClient` instead of raw `axios` — the base URL is set once, applied everywhere.
+
+### `baseURL: import.meta.env.VITE_API_URL`
+
+The BE address comes from an environment variable, not hardcoded. In development: `http://localhost:8000`. In production: the deployed Cloud Run URL.
+
+If hardcoded, anyone cloning the project would need to edit source code to point at their BE — wrong approach.
+
+### `withCredentials: true`
+
+The BE uses HttpOnly cookies for auth tokens. Browsers block cookies on cross-origin requests by default (FE on port 3000, BE on port 8000 = different origins). This flag tells the browser: "send cookies on cross-origin requests."
+
+Without this, login would succeed but every subsequent request would be unauthenticated.
+
+### Why in `services/`?
+
+`apiClient.ts` is the shared foundation all service files depend on. Keeping it in `services/` means one folder holds everything API-related. No separate `lib/` or `config/` folder needed.
+
+---
+
+## src/services/authService.ts Explained
+
+```typescript
+import apiClient from '@/services/apiClient'
 import type { components } from '@/types/api'
 import { API } from '@/constants/apiEndpoints'
 
@@ -120,20 +157,20 @@ type RegisterRequest = components['schemas']['RegisterRequest']
 type UserResponse = components['schemas']['UserResponse']
 
 export async function validateInvitation(token: string): Promise<InvitationValidateResponse> {
-  const res = await axios.get(API.INVITATIONS.VALIDATE, { params: { token } })
+  const res = await apiClient.get(API.INVITATIONS.VALIDATE, { params: { token } })
   return res.data
 }
 
 export async function register(data: RegisterRequest): Promise<UserResponse> {
-  const res = await axios.post(API.AUTH.REGISTER, data)
+  const res = await apiClient.post(API.AUTH.REGISTER, data)
   return res.data
 }
 ```
 
-### `axios.get` with `params`
+### `apiClient.get` with `params`
 
 ```typescript
-axios.get(API.INVITATIONS.VALIDATE, { params: { token } })
+apiClient.get(API.INVITATIONS.VALIDATE, { params: { token } })
 ```
 
 This sends: `GET /api/v1/invitations/validate?token=abc123`
@@ -177,3 +214,71 @@ Error   → look up error_code in ERROR_MESSAGES (from errorMessages.ts)
 ```
 
 Every piece has one home. Nothing is hardcoded inline.
+
+---
+
+## RegisterPage — How It All Comes Together
+
+RegisterPage is the first page that uses all these pieces together. Understanding it shows how services, constants, hooks, and types connect.
+
+### Page load: useEffect + validateInvitation
+
+```typescript
+useEffect(() => {
+  if (!token) {
+    setPageError('Invalid or missing invitation link.')
+    return
+  }
+  validateInvitation(token)
+    .then((data) => setEmail(data.email))
+    .catch((err) => {
+      const code = err.response?.data?.error_code
+      setPageError(ERROR_MESSAGES[code] ?? 'This invitation link is invalid.')
+    })
+}, [token])
+```
+
+**`useEffect`** runs after the component renders. The `[token]` dependency array means: "run this when `token` changes." On first render, `token` is read from the URL and this effect fires once.
+
+**Why not call `validateInvitation` directly in the component body?**
+
+React renders components many times. Calling an API directly in the component body would send a request on every render — potentially dozens of requests. `useEffect` with a dependency array ensures it runs only when needed.
+
+**`.then()` and `.catch()`** are Promise callbacks:
+- `.then(data => ...)` — runs when the API call succeeds
+- `.catch(err => ...)` — runs when the API call fails
+
+### Form submission: handleSubmit + onSubmit
+
+```typescript
+const { register: registerField, handleSubmit, formState: { errors } } = useForm<FormData>({
+  resolver: zodResolver(schema),
+})
+
+const onSubmit = async (data: FormData) => {
+  try {
+    await register({ token, ...data })
+    navigate(ROUTES.LOGIN)
+  } catch (err: unknown) {
+    const code = (err as { response?: { data?: { error_code?: string } } }).response?.data?.error_code
+    setPageError(ERROR_MESSAGES[code ?? ''] ?? 'Something went wrong. Please try again.')
+  }
+}
+```
+
+**`handleSubmit(onSubmit)`** — React Hook Form intercepts the form submit event, runs Zod validation, and only calls `onSubmit` if all fields pass. Invalid fields populate `errors` instead.
+
+**`{ token, ...data }`** — spreads the form data and adds the token from the URL. BE needs all four fields: `token`, `first_name`, `last_name`, `password`.
+
+**`navigate(ROUTES.LOGIN)`** — programmatic navigation after successful registration. Uses the constant from `routes.ts`.
+
+### Error handling pattern
+
+```typescript
+const code = err.response?.data?.error_code
+setPageError(ERROR_MESSAGES[code] ?? 'Fallback message.')
+```
+
+`?.` is optional chaining — if `err.response` is undefined, the whole expression returns undefined instead of throwing. Safe to use on unknown error shapes.
+
+`ERROR_MESSAGES[code]` looks up the user-facing message by error code. `?? 'Fallback'` provides a default if the code is not in the map.
