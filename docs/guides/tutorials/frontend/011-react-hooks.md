@@ -209,6 +209,37 @@ When the schema changes, the TypeScript type updates automatically — no manual
 
 ---
 
+## Dropdown Fields — z.enum and select
+
+### z.enum — Validate Against a Fixed Set of Values
+
+Text inputs use `z.string()`. Dropdowns have a fixed set of allowed values — use `z.enum()`:
+
+```typescript
+const schema = z.object({
+  role: z.enum(['employee', 'manager', 'hr_admin']),
+})
+```
+
+If any value other than these three is submitted, Zod rejects it. Mirrors the BE's `UserRole` enum exactly.
+
+### select + register
+
+A `<select>` element connects to React Hook Form the same way as `<input>` — using `register`:
+
+```tsx
+<select {...register('role')}>
+  <option value="employee">Employee</option>
+  <option value="manager">Manager</option>
+  <option value="hr_admin">HR Admin</option>
+</select>
+{errors.role && <p>{errors.role.message}</p>}
+```
+
+`{...register('role')}` spreads `name`, `onChange`, `onBlur`, `ref` onto the `<select>`. React Hook Form tracks the selected value automatically. The `value` of each `<option>` must match the enum values in the Zod schema.
+
+---
+
 ## useNavigate and useSearchParams
 
 ### useNavigate — Go to Another Page in Code
