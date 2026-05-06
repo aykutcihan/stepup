@@ -208,6 +208,9 @@ docker-compose run --rm frontend node_modules/.bin/vitest run --config vitest.co
 
 # View frontend logs
 docker-compose logs -f frontend
+
+# Regenerate TypeScript types from BE OpenAPI spec (run after BE schema changes)
+docker-compose run --rm frontend node_modules/.bin/openapi-typescript http://backend:8000/openapi.json -o src/types/api.ts
 ```
 
 **When to rebuild vs when not to:**

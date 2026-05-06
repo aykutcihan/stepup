@@ -55,4 +55,4 @@ Technical reference for working on this project. See [`guides/README.md`](guides
 | `tooling/` | Tool usage — Git, Docker, pnpm, Turborepo, monorepo |
 | `infra/` | Infrastructure setup — environment variables, Docker, GCP, GitHub Actions, test infrastructure |
 | `tutorials/backend/` | Backend learning guides — FastAPI, SQLAlchemy, Alembic, auth flow, testing |
-| `tutorials/frontend/` | Frontend learning guides — Vite, TypeScript, Vitest, Tailwind, ESLint, Docker, packages |
+| `tutorials/frontend/` | Frontend learning guides — Vite, TypeScript, Vitest, Tailwind, ESLint, Docker, packages, openapi-typescript |
