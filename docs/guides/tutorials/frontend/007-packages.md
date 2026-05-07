@@ -104,9 +104,20 @@ Date utility library. Formats dates for display.
 ```typescript
 formatDistanceToNow(new Date(task.deadline))  // "3 days from now"
 format(new Date(invitation.expires_at), 'MMM d, yyyy')  // "May 12, 2026"
+format(new Date(invitation.expires_at), 'dd/MM/yyyy')   // "13/05/2026"
 ```
 
-Lighter than `moment.js` (tree-shakeable — only the functions you import end up in the bundle).
+**Why not `new Date().toLocaleDateString()`?**
+
+Browser's built-in date formatting varies by locale and browser. `date-fns` gives consistent output everywhere.
+
+**Import only what you need:**
+```typescript
+import { format } from 'date-fns'        // only format
+import { formatDistanceToNow } from 'date-fns'  // only this one
+```
+
+Tree-shakeable — unused functions are not included in the bundle. Lighter than `moment.js` which ships everything regardless.
 
 ---
 
