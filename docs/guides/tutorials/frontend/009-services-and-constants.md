@@ -46,18 +46,29 @@ New entries are added as needed — one US at a time. US-002 will add `AUTH.LOGI
 
 ## src/constants/routes.ts
 
-All frontend page paths in one place.
+All frontend page paths in one place. Split into two exports:
 
 ```typescript
 export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
+  HR_DASHBOARD: '/hr/dashboard',
+  MANAGER_DASHBOARD: '/manager/dashboard',
+  EMPLOYEE_DASHBOARD: '/employee/dashboard',
+}
+
+export const ERROR_ROUTES = {
+  FORBIDDEN: '/403',
 }
 ```
+
+`ROUTES` holds normal page paths. `ERROR_ROUTES` holds error page paths — kept separate so it is obvious at a glance which routes are error states.
 
 Usage:
 ```typescript
 navigate(ROUTES.LOGIN)
+navigate(ROUTES.HR_DASHBOARD)
+<Navigate to={ERROR_ROUTES.FORBIDDEN} />
 <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
 ```
 
