@@ -378,23 +378,30 @@ stepup/
 │   │
 │   └── frontend/                 # React application
 │       ├── src/
-│       │   ├── components/       # Reusable UI components
-│       │   ├── pages/            # Route-based pages
-│       │   │   ├── hr/           # HR Admin pages
-│       │   │   ├── manager/      # Manager pages
-│       │   │   └── employee/     # Employee pages
-│       │   ├── hooks/            # Custom React hooks
-│       │   ├── services/         # API call functions
-│       │   ├── store/            # Zustand stores
-│       │   ├── types/            # TypeScript types
-│       │   ├── constants/        # No magic strings or numbers
-│       │   │   ├── routes.ts          # All route paths
-│       │   │   ├── apiEndpoints.ts    # All API endpoint strings
-│       │   │   └── errorMessages.ts   # error_code → human readable message
-│       │   └── utils/            # Helper functions
+│       │   ├── app/              # App.tsx, router setup
+│       │   ├── lib/              # apiClient.ts (axios + interceptor)
+│       │   ├── stores/           # authStore.ts (Zustand)
+│       │   ├── components/       # Shared components (RequireRole, ForbiddenPage)
+│       │   ├── constants/        # routes.ts, apiEndpoints.ts, errorMessages.ts, userRoles.ts
+│       │   ├── types/            # api.ts (auto-generated from OpenAPI)
+│       │   ├── utils/            # getErrorMessage.ts
+│       │   └── features/
+│       │       ├── auth/
+│       │       │   ├── pages/    # LoginPage.tsx + LoginPage.test.tsx
+│       │       │   ├── hooks/    # useLoginForm.ts
+│       │       │   ├── schemas/  # loginSchema.ts
+│       │       │   └── services/ # authService.ts
+│       │       ├── invitation/
+│       │       │   ├── pages/    # RegisterPage.tsx, InviteUserPage.tsx + tests
+│       │       │   ├── hooks/    # useRegisterForm.ts, useInviteUserForm.ts
+│       │       │   ├── schemas/  # registerSchema.ts, inviteSchema.ts
+│       │       │   └── services/ # invitationService.ts
+│       │       └── users/
+│       │           ├── pages/    # HRDashboard.tsx + HRDashboard.test.tsx
+│       │           └── services/ # userService.ts
 │       ├── tests/
-│       │   ├── unit/
-│       │   └── e2e/              # Playwright tests
+│       │   ├── setup.ts          # Shared test setup only (jest-dom import)
+│       │   └── e2e/              # Playwright E2E tests
 │       ├── Dockerfile
 │       └── package.json
 │

@@ -14,7 +14,7 @@ Test files live next to the component they test (co-located):
 | `src/features/invitation/pages/RegisterPage.tsx` | `src/features/invitation/pages/RegisterPage.test.tsx` |
 | `src/components/RequireRole.tsx` | `src/components/RequireRole.test.tsx` |
 
-`tests/` directory keeps only `setup.ts`.
+`tests/` directory keeps only `setup.ts` and `e2e/` (Playwright).
 
 ---
 

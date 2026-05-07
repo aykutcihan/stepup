@@ -136,7 +136,7 @@ expect(screen.getByRole('button')).toBeDisabled()
 Components call service functions (e.g. `validateInvitation`). In tests, we do not want to hit the real backend — we replace the service with a fake that returns a controlled value.
 
 ```typescript
-vi.mock('@/services/authService', () => ({
+vi.mock('@/features/auth/services/authService', () => ({
   validateInvitation: vi.fn().mockResolvedValue({ email: 'admin@test.com', role: 'hr_admin' })
 }))
 ```
@@ -149,21 +149,26 @@ This is the FE equivalent of `patch()` in pytest — the real function is replac
 
 ## Test File Conventions
 
-Tests live in `tests/` at the same level as `src/`, mirroring the `src/` structure:
+Test files live next to the component they test (co-located). `tests/` contains only `setup.ts`:
 
 ```
 apps/frontend/
   src/
-    pages/
-      LoginPage.tsx
+    features/
+      auth/
+        pages/
+          LoginPage.tsx
+          LoginPage.test.tsx      ← next to the component
+      invitation/
+        pages/
+          RegisterPage.tsx
+          RegisterPage.test.tsx   ← next to the component
     components/
       RequireRole.tsx
+      RequireRole.test.tsx        ← next to the component
   tests/
-    setup.ts
-    pages/
-      LoginPage.test.tsx
-    components/
-      RequireRole.test.tsx
+    setup.ts                      ← shared test setup only
+    e2e/                          ← Playwright E2E tests
 ```
 
 ---
