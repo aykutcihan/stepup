@@ -13,6 +13,9 @@ refresh_token_repository = RefreshTokenRepository()
 
 class UserService:
 
+    async def get_users(self, db: AsyncSession) -> list:
+        return await user_repository.get_all(db)
+
     async def deactivate_user(
         self,
         db: AsyncSession,
