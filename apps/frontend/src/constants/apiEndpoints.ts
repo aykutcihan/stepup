@@ -8,6 +8,7 @@ export const API = {
   AUTH: {
     REGISTER: '/api/v1/auth/register',
     LOGIN: '/api/v1/auth/login',
+    ME: '/api/v1/auth/me',
 
   },
 }

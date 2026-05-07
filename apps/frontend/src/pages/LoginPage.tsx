@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { login } from '@/services/authService'
+import { login, getMe } from '@/services/authService'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
@@ -25,15 +25,16 @@ export default function LoginPage() {
 
   async function onSubmit(data: FormData) {
     try {
-        const user = await login(data)
-        setUser(user)
-        if (user.role === 'hr_admin') navigate('/hr/dashboard')
-        else if (user.role === 'manager') navigate('/manager/dashboard')
-        else navigate('/employee/dashboard')
+      await login(data)
+      const user = await getMe()
+      setUser(user)
+      if (user.role === 'hr_admin') navigate('/hr/dashboard')
+      else if (user.role === 'manager') navigate('/manager/dashboard')
+      else navigate('/employee/dashboard')
     } catch (err) {
-        console.error(getErrorMessage(err))
+      console.error(getErrorMessage(err))
     }
-    }
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
