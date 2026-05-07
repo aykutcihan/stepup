@@ -213,4 +213,4 @@ apps/frontend/.env
 
 # Vite / Frontend build
 apps/frontend/dist/
-
+apps/frontend/.vite/
