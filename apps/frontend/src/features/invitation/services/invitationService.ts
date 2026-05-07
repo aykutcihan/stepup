@@ -1,4 +1,4 @@
-import apiClient from '@/services/apiClient'
+import apiClient from '@/lib/apiClient'
 import type { components } from '@/types/api'
 import { API } from '@/constants/apiEndpoints'
 

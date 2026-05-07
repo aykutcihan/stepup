@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { login, getMe } from '@/services/authService'
+import { login, getMe } from '@/features/auth/services/authService'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'

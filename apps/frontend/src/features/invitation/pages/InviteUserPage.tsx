@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import type { components } from '@/types/api'
 import { USER_ROLE_VALUES } from '@/constants/userRoles'
-import { createInvitation, getInvitations, resendInvitation } from '@/services/invitationService'
+import { createInvitation, getInvitations, resendInvitation } from '@/features/invitation/services/invitationService'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 type InvitationResponse = components['schemas']['InvitationResponse']
