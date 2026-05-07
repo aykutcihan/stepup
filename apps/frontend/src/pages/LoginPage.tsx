@@ -18,14 +18,22 @@ export default function LoginPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
+  const navigate = useNavigate()
+  const setUser = useAuthStore((state) => state.setUser)
+
+
 
   async function onSubmit(data: FormData) {
     try {
-      await login(data)
+        const user = await login(data)
+        setUser(user)
+        if (user.role === 'hr_admin') navigate('/hr/dashboard')
+        else if (user.role === 'manager') navigate('/manager/dashboard')
+        else navigate('/employee/dashboard')
     } catch (err) {
-      console.error(getErrorMessage(err))
+        console.error(getErrorMessage(err))
     }
-  }
+    }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
