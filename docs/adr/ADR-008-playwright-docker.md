@@ -19,7 +19,9 @@ We run Playwright tests in a **dedicated Docker service** using the official `mc
 
 ```yaml
 playwright:
-  image: mcr.microsoft.com/playwright:v1.49.0-noble
+  build:
+    context: .
+    dockerfile: apps/frontend/Dockerfile.e2e
   volumes:
     - ./apps/frontend:/app
   working_dir: /app
@@ -28,9 +30,15 @@ playwright:
     - backend
 ```
 
+`Dockerfile.e2e` extends the official Playwright image with pnpm:
+```dockerfile
+FROM mcr.microsoft.com/playwright:v1.49.0-noble
+RUN npm install -g pnpm@10
+```
+
 Run command:
 ```powershell
-docker-compose run --rm playwright pnpm e2e
+docker-compose run --rm playwright sh -c "pnpm install && pnpm e2e"
 ```
 
 ---
