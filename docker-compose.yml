@@ -43,5 +43,17 @@ services:
     depends_on:
       - backend
 
+  playwright:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile.e2e
+    volumes:
+      - ./apps/frontend:/app
+    working_dir: /app
+    user: root
+    depends_on:
+      - frontend
+      - backend
+
 volumes:
   postgres_data:

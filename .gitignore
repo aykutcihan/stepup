@@ -215,3 +215,10 @@ apps/frontend/.env
 apps/frontend/dist/
 apps/frontend/.vite/
 
+# Playwright
+apps/frontend/playwright-report/
+apps/frontend/test-results/
+
+# pnpm Docker store
+apps/frontend/.pnpm-store/
+
