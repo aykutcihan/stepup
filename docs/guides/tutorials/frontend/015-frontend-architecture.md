@@ -104,6 +104,34 @@ const user = useAuthStore((state) => state.user)
 
 ---
 
+## Page Refresh — Restoring Auth State
+
+Zustand lives in memory. When the user refreshes the page, the store resets — `user` becomes `null`.
+
+Without handling this, every page refresh would redirect to `/login` even if the user has a valid session cookie.
+
+**Solution:** `App.tsx` calls `GET /me` on first render. If the cookie is still valid, the user is restored to Zustand before any route renders.
+
+```typescript
+useEffect(() => {
+  getMe()
+    .then(setUser)
+    .catch(() => {})
+    .finally(() => setLoading(false))
+}, [])
+```
+
+**`isLoading` flag:** While `/me` is in flight, `RequireRole` must not redirect yet — it does not know if the user is logged in or not. The store starts with `isLoading: true`. After `/me` resolves (success or failure), it becomes `false`. `RequireRole` renders `null` until loading is done.
+
+```
+Page loads → isLoading: true → RequireRole renders null
+→ /me resolves → isLoading: false
+  → user set   → RequireRole shows the page
+  → user null  → RequireRole redirects to /login
+```
+
+---
+
 ## Logout Flow
 
 ```
