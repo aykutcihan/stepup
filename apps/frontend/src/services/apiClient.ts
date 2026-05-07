@@ -12,7 +12,9 @@ apiClient.interceptors.response.use(
   async (error) => {
     const original = error.config
 
-    if (error.response?.status === 401 && !original._retry) {
+    const isAuthEndpoint = original.url === API.AUTH.ME || original.url === API.AUTH.REFRESH
+
+    if (error.response?.status === 401 && !original._retry && !isAuthEndpoint) {
       original._retry = true
       try {
         await apiClient.post(API.AUTH.REFRESH)
