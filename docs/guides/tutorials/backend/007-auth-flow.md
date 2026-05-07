@@ -39,6 +39,9 @@ Real-world analogy: a card renewal document that lets you get a new access card 
 3. Server issues access token and refresh token
 4. Both tokens are set as HttpOnly cookies in the response
 5. Client receives `{"message": "Login successful"}` — no tokens in body
+6. Client immediately calls `GET /api/v1/auth/me` to get user info (id, email, role, name)
+
+**Why a separate `/me` call?** The login endpoint only authenticates — it does not return user data by design. User info is fetched via `/me` using the cookie that was just set. This endpoint is also used on page refresh to restore the logged-in user state (Zustand resets on reload).
 
 ## Request Authentication
 
