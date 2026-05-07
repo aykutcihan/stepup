@@ -1,56 +1,8 @@
-import { useEffect, useState } from 'react'
 import { format } from 'date-fns'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import type { components } from '@/types/api'
-import { USER_ROLE_VALUES } from '@/constants/userRoles'
-import { createInvitation, getInvitations, resendInvitation } from '@/features/invitation/services/invitationService'
-import { getErrorMessage } from '@/utils/getErrorMessage'
-
-type InvitationResponse = components['schemas']['InvitationResponse']
-
-const schema = z.object({
-  email: z.string().email('Invalid email address'),
-  role: z.enum(USER_ROLE_VALUES),
-})
-
-type FormData = z.infer<typeof schema>
+import { useInviteUserForm } from '@/features/invitation/hooks/useInviteUserForm'
 
 export default function InviteUserPage() {
-  const [pageError, setPageError] = useState('')
-  const [success, setSuccess] = useState(false)
-  const [invitations, setInvitations] = useState<InvitationResponse[]>([])
-
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  })
-
-  useEffect(() => {
-    getInvitations()
-      .then((data) => setInvitations(data))
-      .catch((err) => setPageError(getErrorMessage(err)))
-  }, [])
-
-  const handleResend = async (id: string) => {
-    try {
-      await resendInvitation(id)
-      getInvitations().then((data) => setInvitations(data))
-    } catch (err) {
-      setPageError(getErrorMessage(err))
-    }
-  }
-
-  const onSubmit = async (data: FormData) => {
-    try {
-      await createInvitation(data)
-      setSuccess(true)
-      reset()
-      getInvitations().then((data) => setInvitations(data))
-    } catch (err) {
-      setPageError(getErrorMessage(err))
-    }
-  }
+  const { register, handleSubmit, errors, onSubmit, handleResend, invitations, pageError, success } = useInviteUserForm()
 
   return (
     <div>
