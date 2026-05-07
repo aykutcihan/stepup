@@ -13,6 +13,12 @@ apiClient.interceptors.response.use(
     const original = error.config
 
     const isAuthEndpoint = original.url === API.AUTH.ME || original.url === API.AUTH.REFRESH
+    const errorCode = error.response?.data?.error_code
+
+    if (errorCode === 'USER_DEACTIVATED') {
+      window.location.href = `${ROUTES.LOGIN}?error=USER_DEACTIVATED`
+      return Promise.reject(error)
+    }
 
     if (error.response?.status === 401 && !original._retry && !isAuthEndpoint) {
       original._retry = true

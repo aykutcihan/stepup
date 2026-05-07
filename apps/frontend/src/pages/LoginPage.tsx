@@ -3,11 +3,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { login, getMe } from '@/services/authService'
 import { getErrorMessage } from '@/utils/getErrorMessage'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
 import { ROUTES } from '@/constants/routes'
 import { USER_ROLES } from '@/constants/userRoles'
-
+import { ERROR_MESSAGES } from '@/constants/errorMessages'
 
 const schema = z.object({
   email: z.string().email(),
@@ -21,9 +21,11 @@ export default function LoginPage() {
     resolver: zodResolver(schema),
   })
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const setUser = useAuthStore((state) => state.setUser)
 
-
+  const errorCode = searchParams.get('error')
+  const pageError = errorCode ? (ERROR_MESSAGES[errorCode] ?? 'Something went wrong.') : ''
 
   async function onSubmit(data: FormData) {
     try {
@@ -40,6 +42,7 @@ export default function LoginPage() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      {pageError && <p>{pageError}</p>}
       <input type="email" {...register('email')} placeholder="Email" />
       {errors.email && <p>{errors.email.message}</p>}
 
