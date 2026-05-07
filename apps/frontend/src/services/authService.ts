@@ -27,3 +27,7 @@ export async function getMe(): Promise<UserResponse> {
   const res = await apiClient.get(API.AUTH.ME)
   return res.data
 }
+
+export async function logout(): Promise<void> {
+  await apiClient.post(API.AUTH.LOGOUT)
+}

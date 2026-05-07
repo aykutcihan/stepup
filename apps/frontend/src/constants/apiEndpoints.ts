@@ -10,6 +10,7 @@ export const API = {
     LOGIN: '/api/v1/auth/login',
     ME: '/api/v1/auth/me',
     REFRESH: '/api/v1/auth/refresh',
+    LOGOUT: '/api/v1/auth/logout',
 
   },
 }
