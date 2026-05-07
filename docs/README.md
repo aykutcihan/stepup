@@ -28,6 +28,7 @@ Architecture Decision Records. Each file documents one decision: the context, th
 | `ADR-005` | Monorepo with Turborepo |
 | `ADR-006` | API versioning strategy |
 | `ADR-007` | Structured logging |
+| `ADR-008` | Playwright E2E tests in a dedicated Docker container |
 
 ---
 
