@@ -33,7 +33,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./src/test/setup.ts'],
+    setupFiles: ['./tests/setup.ts'],
   },
 })
 ```
@@ -82,13 +82,13 @@ describe('LoginForm', () => {
 
 The `"types": ["vitest/globals"]` in `tsconfig.json` provides TypeScript types for these globals.
 
-### `setupFiles: ['./src/test/setup.ts']`
+### `setupFiles: ['./tests/setup.ts']`
 
 Runs this file before every test suite. Used to configure the test environment.
 
 ---
 
-## src/test/setup.ts Explained
+## tests/setup.ts Explained
 
 ```typescript
 import '@testing-library/jest-dom'
@@ -107,14 +107,68 @@ Without this import, you would need to use lower-level DOM assertions. With it, 
 
 ---
 
+## React Testing Library — How Component Tests Work
+
+Component tests follow three steps:
+
+**1. Render** — mount the component into a virtual browser (jsdom):
+```typescript
+render(<RegisterPage />)
+```
+
+**2. Find** — query the DOM for an element:
+```typescript
+screen.getByPlaceholderText('Email')
+screen.getByRole('button', { name: 'Register' })
+screen.getByText('This invitation link has expired.')
+```
+
+**3. Assert** — verify the element exists or has the expected state:
+```typescript
+expect(screen.getByText('admin@test.com')).toBeInTheDocument()
+expect(screen.getByRole('button')).toBeDisabled()
+```
+
+---
+
+## Mocking Service Calls
+
+Components call service functions (e.g. `validateInvitation`). In tests, we do not want to hit the real backend — we replace the service with a fake that returns a controlled value.
+
+```typescript
+vi.mock('@/features/auth/services/authService', () => ({
+  validateInvitation: vi.fn().mockResolvedValue({ email: 'admin@test.com', role: 'hr_admin' })
+}))
+```
+
+This is the FE equivalent of `patch()` in pytest — the real function is replaced for the duration of the test.
+
+`vi.fn()` creates a fake function. `.mockResolvedValue(...)` makes it return a resolved Promise with the given value.
+
+---
+
 ## Test File Conventions
 
-Tests live in `tests/unit/` and mirror the `src/` structure:
+Test files live next to the component they test (co-located). `tests/` contains only `setup.ts`:
 
 ```
-src/components/LoginForm.tsx       → tests/unit/components/LoginForm.test.tsx
-src/hooks/useAuth.ts               → tests/unit/hooks/useAuth.test.ts
-src/services/authService.ts        → tests/unit/services/authService.test.ts
+apps/frontend/
+  src/
+    features/
+      auth/
+        pages/
+          LoginPage.tsx
+          LoginPage.test.tsx      ← next to the component
+      invitation/
+        pages/
+          RegisterPage.tsx
+          RegisterPage.test.tsx   ← next to the component
+    components/
+      RequireRole.tsx
+      RequireRole.test.tsx        ← next to the component
+  tests/
+    setup.ts                      ← shared test setup only
+    e2e/                          ← Playwright E2E tests
 ```
 
 ---

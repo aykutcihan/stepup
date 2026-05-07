@@ -135,22 +135,31 @@ if (user.role === USER_ROLES.HR_ADMIN) navigate(ROUTES.HR_DASHBOARD)
 
 ---
 
-## src/services/
+## Services
 
-Service files contain the actual API calls. They use `axios`, the constants from above, and the types from `api.ts`.
+Service files contain the actual API calls. They use `axios`, the constants from above, and the types from `api.ts`. Services live inside their feature folder:
 
 ```
-src/services/
-  authService.ts      ← login, logout, register, validateInvitation, getMe
-  invitationService.ts ← create, list, resend
-  userService.ts      ← getUsers, deactivateUser
+src/
+  lib/
+    apiClient.ts                          ← shared axios instance
+  features/
+    auth/
+      services/
+        authService.ts                    ← login, logout, register, validateInvitation, getMe
+    invitation/
+      services/
+        invitationService.ts              ← create, list, resend
+    users/
+      services/
+        userService.ts                    ← getUsers, deactivateUser
 ```
 
-One file per domain — same grouping as BE routers.
+One file per feature domain — same grouping as BE routers.
 
 ---
 
-## src/services/apiClient.ts
+## src/lib/apiClient.ts
 
 Every API call in the project goes through a single axios instance defined here.
 
@@ -181,16 +190,16 @@ The BE uses HttpOnly cookies for auth tokens. Browsers block cookies on cross-or
 
 Without this, login would succeed but every subsequent request would be unauthenticated.
 
-### Why in `services/`?
+### Why in `lib/`?
 
-`apiClient.ts` is the shared foundation all service files depend on. Keeping it in `services/` means one folder holds everything API-related. No separate `lib/` or `config/` folder needed.
+`apiClient.ts` is shared infrastructure — not tied to any single feature. `lib/` holds shared technical utilities used across features. Feature-specific code (services, hooks, schemas) lives in `features/`.
 
 ---
 
-## src/services/authService.ts Explained
+## src/features/auth/services/authService.ts Explained
 
 ```typescript
-import apiClient from '@/services/apiClient'
+import apiClient from '@/lib/apiClient'
 import type { components } from '@/types/api'
 import { API } from '@/constants/apiEndpoints'
 

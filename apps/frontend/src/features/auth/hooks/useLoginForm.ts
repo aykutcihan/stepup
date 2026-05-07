@@ -1,24 +1,17 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { login, getMe } from '@/services/authService'
-import { getErrorMessage } from '@/utils/getErrorMessage'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { login, getMe } from '@/features/auth/services/authService'
 import { useAuthStore } from '@/stores/authStore'
 import { ROUTES } from '@/constants/routes'
 import { USER_ROLES } from '@/constants/userRoles'
 import { ERROR_MESSAGES } from '@/constants/errorMessages'
+import { getErrorMessage } from '@/utils/getErrorMessage'
+import { loginSchema, type LoginFormData } from '@/features/auth/schemas/loginSchema'
 
-const schema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
-})
-
-type FormData = z.infer<typeof schema>
-
-export default function LoginPage() {
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
+export function useLoginForm() {
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
   })
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -27,7 +20,7 @@ export default function LoginPage() {
   const errorCode = searchParams.get('error')
   const pageError = errorCode ? (ERROR_MESSAGES[errorCode] ?? 'Something went wrong.') : ''
 
-  async function onSubmit(data: FormData) {
+  async function onSubmit(data: LoginFormData) {
     try {
       await login(data)
       const user = await getMe()
@@ -40,16 +33,5 @@ export default function LoginPage() {
     }
   }
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {pageError && <p>{pageError}</p>}
-      <input type="email" {...register('email')} placeholder="Email" />
-      {errors.email && <p>{errors.email.message}</p>}
-
-      <input type="password" {...register('password')} placeholder="Password" />
-      {errors.password && <p>{errors.password.message}</p>}
-
-      <button type="submit">Login</button>
-    </form>
-  )
+  return { register, handleSubmit, errors, onSubmit, pageError }
 }
