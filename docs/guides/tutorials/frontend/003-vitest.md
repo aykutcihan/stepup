@@ -175,12 +175,30 @@ apps/frontend/
 
 ## Running Tests
 
+All commands are run from the **monorepo root**:
+
 ```powershell
-# Run once (CI mode)
-pnpm test
+# Run all frontend tests once (CI mode)
+pnpm --filter frontend test
+
+# Run a single test file
+pnpm --filter frontend test -- src/features/auth/pages/LoginPage.test.tsx
 
 # Watch mode (development)
+pnpm --filter frontend test:watch
+```
+
+From inside `apps/frontend/` directly:
+
+```powershell
+# Run all tests
+pnpm test
+
+# Run a single test file
+pnpm test -- src/features/auth/pages/LoginPage.test.tsx
+
+# Watch mode
 pnpm test:watch
 ```
 
-Both commands use `vitest.config.ts` explicitly via `--config vitest.config.ts`.
+All commands use `vitest.config.ts` explicitly via `--config vitest.config.ts`.
