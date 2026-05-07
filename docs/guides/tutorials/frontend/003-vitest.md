@@ -107,6 +107,46 @@ Without this import, you would need to use lower-level DOM assertions. With it, 
 
 ---
 
+## React Testing Library — How Component Tests Work
+
+Component tests follow three steps:
+
+**1. Render** — mount the component into a virtual browser (jsdom):
+```typescript
+render(<RegisterPage />)
+```
+
+**2. Find** — query the DOM for an element:
+```typescript
+screen.getByPlaceholderText('Email')
+screen.getByRole('button', { name: 'Register' })
+screen.getByText('This invitation link has expired.')
+```
+
+**3. Assert** — verify the element exists or has the expected state:
+```typescript
+expect(screen.getByText('admin@test.com')).toBeInTheDocument()
+expect(screen.getByRole('button')).toBeDisabled()
+```
+
+---
+
+## Mocking Service Calls
+
+Components call service functions (e.g. `validateInvitation`). In tests, we do not want to hit the real backend — we replace the service with a fake that returns a controlled value.
+
+```typescript
+vi.mock('@/services/authService', () => ({
+  validateInvitation: vi.fn().mockResolvedValue({ email: 'admin@test.com', role: 'hr_admin' })
+}))
+```
+
+This is the FE equivalent of `patch()` in pytest — the real function is replaced for the duration of the test.
+
+`vi.fn()` creates a fake function. `.mockResolvedValue(...)` makes it return a resolved Promise with the given value.
+
+---
+
 ## Test File Conventions
 
 Tests live in `tests/` at the same level as `src/`, mirroring the `src/` structure:
