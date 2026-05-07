@@ -75,6 +75,30 @@ docker-compose run --rm backend alembic downgrade -1
 
 ---
 
+## docker-compose restart
+
+```powershell
+docker-compose restart frontend     # restart one service
+docker-compose restart              # restart all services
+```
+
+**What it does:** Stops and restarts the container using the same image.
+Does not rebuild the image, does not reinstall `node_modules`.
+
+**When to use vs alternatives:**
+
+| Situation | Command |
+|-----------|---------|
+| Process crashed, volume mount out of sync, container stuck | `docker-compose restart frontend` |
+| `package.json` changed (new dependency added) | `docker-compose up --build frontend` |
+| `Dockerfile` changed | `docker-compose up --build frontend` |
+| Full reset (clear all data) | `docker-compose down -v` then `up --build` |
+
+**When we used it:** Vite was failing to resolve `@/pages/RegisterPage` with a 500 error.
+The container had started in a bad state — `restart` fixed it without a full rebuild.
+
+---
+
 ## docker-compose down
 
 ```powershell
