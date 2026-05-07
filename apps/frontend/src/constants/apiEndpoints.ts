@@ -9,6 +9,7 @@ export const API = {
     REGISTER: '/api/v1/auth/register',
     LOGIN: '/api/v1/auth/login',
     ME: '/api/v1/auth/me',
+    REFRESH: '/api/v1/auth/refresh',
 
   },
 }
