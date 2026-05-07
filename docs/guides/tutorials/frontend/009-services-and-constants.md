@@ -105,14 +105,45 @@ This separation means:
 
 ---
 
+## src/constants/userRoles.ts
+
+BE role values as typed constants — eliminates magic strings like `'hr_admin'` scattered across the codebase.
+
+```typescript
+export type UserRole = components['schemas']['UserRole']
+
+export const USER_ROLE_VALUES = ['employee', 'manager', 'hr_admin'] as const satisfies readonly UserRole[]
+
+export const USER_ROLES = {
+  HR_ADMIN: 'hr_admin' as UserRole,
+  MANAGER: 'manager' as UserRole,
+  EMPLOYEE: 'employee' as UserRole,
+}
+```
+
+**`USER_ROLE_VALUES`** — a tuple for Zod validation:
+```typescript
+role: z.enum(USER_ROLE_VALUES)
+```
+
+**`USER_ROLES`** — an object for comparisons:
+```typescript
+if (user.role === USER_ROLES.HR_ADMIN) navigate(ROUTES.HR_DASHBOARD)
+```
+
+**Rule:** Never write `'hr_admin'`, `'manager'`, or `'employee'` as raw strings. Use these constants.
+
+---
+
 ## src/services/
 
 Service files contain the actual API calls. They use `axios`, the constants from above, and the types from `api.ts`.
 
 ```
 src/services/
-  authService.ts      ← login, logout, register, validateInvitation
-  invitationService.ts ← create, list, resend (added when needed)
+  authService.ts      ← login, logout, register, validateInvitation, getMe
+  invitationService.ts ← create, list, resend
+  userService.ts      ← getUsers, deactivateUser
 ```
 
 One file per domain — same grouping as BE routers.
