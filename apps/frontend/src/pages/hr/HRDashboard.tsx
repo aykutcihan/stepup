@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { logout } from '@/services/authService'
 import { useAuthStore } from '@/stores/authStore'
+import { ROUTES } from '@/constants/routes'
 
 export default function HRDashboard() {
   const navigate = useNavigate()
@@ -9,7 +10,7 @@ export default function HRDashboard() {
   async function handleLogout() {
     await logout()
     clearUser()
-    navigate('/login')
+    navigate(ROUTES.LOGIN)
   }
 
   return (

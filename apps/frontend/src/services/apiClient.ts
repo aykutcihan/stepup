@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { API } from '@/constants/apiEndpoints'
+import { ROUTES } from '@/constants/routes'
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -17,7 +18,7 @@ apiClient.interceptors.response.use(
         await apiClient.post(API.AUTH.REFRESH)
         return apiClient(original)
       } catch {
-        window.location.href = '/login'
+        window.location.href = ROUTES.LOGIN
       }
     }
 

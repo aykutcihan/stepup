@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import type { components } from '@/types/api'
+import { USER_ROLE_VALUES } from '@/constants/userRoles'
 import { createInvitation, getInvitations, resendInvitation } from '@/services/invitationService'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
@@ -11,7 +12,7 @@ type InvitationResponse = components['schemas']['InvitationResponse']
 
 const schema = z.object({
   email: z.string().email('Invalid email address'),
-  role: z.enum(['employee', 'manager', 'hr_admin']),
+  role: z.enum(USER_ROLE_VALUES),
 })
 
 type FormData = z.infer<typeof schema>

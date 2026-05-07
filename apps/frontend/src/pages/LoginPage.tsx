@@ -5,6 +5,8 @@ import { login, getMe } from '@/services/authService'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
+import { ROUTES } from '@/constants/routes'
+import { USER_ROLES } from '@/constants/userRoles'
 
 
 const schema = z.object({
@@ -28,9 +30,9 @@ export default function LoginPage() {
       await login(data)
       const user = await getMe()
       setUser(user)
-      if (user.role === 'hr_admin') navigate('/hr/dashboard')
-      else if (user.role === 'manager') navigate('/manager/dashboard')
-      else navigate('/employee/dashboard')
+      if (user.role === USER_ROLES.HR_ADMIN) navigate(ROUTES.HR_DASHBOARD)
+      else if (user.role === USER_ROLES.MANAGER) navigate(ROUTES.MANAGER_DASHBOARD)
+      else navigate(ROUTES.EMPLOYEE_DASHBOARD)
     } catch (err) {
       console.error(getErrorMessage(err))
     }
