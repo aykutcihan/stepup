@@ -33,7 +33,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: ['./src/test/setup.ts'],
+    setupFiles: ['./tests/setup.ts'],
   },
 })
 ```
@@ -82,13 +82,13 @@ describe('LoginForm', () => {
 
 The `"types": ["vitest/globals"]` in `tsconfig.json` provides TypeScript types for these globals.
 
-### `setupFiles: ['./src/test/setup.ts']`
+### `setupFiles: ['./tests/setup.ts']`
 
 Runs this file before every test suite. Used to configure the test environment.
 
 ---
 
-## src/test/setup.ts Explained
+## tests/setup.ts Explained
 
 ```typescript
 import '@testing-library/jest-dom'
@@ -109,12 +109,21 @@ Without this import, you would need to use lower-level DOM assertions. With it, 
 
 ## Test File Conventions
 
-Tests live in `tests/unit/` and mirror the `src/` structure:
+Tests live in `tests/` at the same level as `src/`, mirroring the `src/` structure:
 
 ```
-src/components/LoginForm.tsx       → tests/unit/components/LoginForm.test.tsx
-src/hooks/useAuth.ts               → tests/unit/hooks/useAuth.test.ts
-src/services/authService.ts        → tests/unit/services/authService.test.ts
+apps/frontend/
+  src/
+    pages/
+      LoginPage.tsx
+    components/
+      RequireRole.tsx
+  tests/
+    setup.ts
+    pages/
+      LoginPage.test.tsx
+    components/
+      RequireRole.test.tsx
 ```
 
 ---
