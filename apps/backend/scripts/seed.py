@@ -1,17 +1,19 @@
 import asyncio
+import os
+import sys
 import uuid
+
 from passlib.context import CryptContext
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import select
-import sys
-import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.models.user import User
 from app.enums.user_role import UserRole
-from app.core.config import settings
+
+DATABASE_URL = os.environ["DATABASE_URL"]
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -44,7 +46,7 @@ SEED_USERS = [
 
 
 async def seed():
-    engine = create_async_engine(settings.DATABASE_URL)
+    engine = create_async_engine(DATABASE_URL)
     async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
     async with async_session() as session:
