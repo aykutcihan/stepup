@@ -160,7 +160,11 @@ After running the seed script, the following users are available:
 
 ## E2E Tests
 
-E2E tests run entirely inside Docker using Playwright.
+Two modes are available depending on the context.
+
+### Docker (CI / pre-push)
+
+Runs in an isolated container — same environment as CI. Slower due to Vite cold start (~5 min for full suite).
 
 ```bash
 # Run migrations and seed (once, or after DB reset)
@@ -173,7 +177,31 @@ docker-compose run --rm playwright sh -c "pnpm install && pnpm e2e"
 docker-compose run --rm playwright sh -c "pnpm install && pnpm exec playwright test tests/e2e/login.spec.ts"
 ```
 
-The `seeder` service runs automatically as part of the Playwright dependency chain — no manual seed step needed when running E2E tests.
+The `seeder` service runs automatically as part of the Playwright dependency chain — no manual seed step needed.
+
+### Local (during development)
+
+Runs against the local Vite dev server. Much faster (~1-2 min) since Vite is already warm.
+
+**Prerequisites:** backend running (`docker-compose up db backend`) and frontend running (`pnpm --filter frontend dev`).
+
+```bash
+# First-time setup: install browser binary
+pnpm --filter frontend exec playwright install chromium
+
+# Run all E2E tests locally
+pnpm --filter frontend e2e:local
+
+# Run a specific test file
+pnpm --filter frontend exec playwright test --config apps/frontend/playwright.config.local.ts tests/e2e/login.spec.ts
+```
+
+| | Docker | Local |
+|---|---|---|
+| Speed | ~5 min | ~1-2 min |
+| Workers | 1 | 2 |
+| Test timeout | 120s | 30s |
+| Use when | CI, pre-push | Active development |
 
 ---
 
