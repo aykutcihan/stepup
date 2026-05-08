@@ -8,12 +8,10 @@ StepUp streamlines the process of onboarding new employees — structured task a
 
 ## Status
 
-🚧 **In active development** — Sprint 1 complete, Sprint 2 (Auth) next
-
 | Sprint | Theme | Status |
 |---|---|---|
 | Sprint 1 | Infrastructure | ✅ Complete |
-| Sprint 2 | Authentication & Authorization | 🔄 BE Complete, FE Pending |
+| Sprint 2 | Authentication & Authorization | ✅ Complete |
 | Sprint 3 | User & Department Management | — |
 | Sprint 4 | Onboarding Template Management | — |
 | Sprint 5 | Onboarding Plan & Task Workflow | — |
@@ -27,25 +25,13 @@ Sprint progress is tracked on the [StepUp Board](https://github.com/users/aykutc
 
 ---
 
-## Sprint 1 — What's Done
-
-| US | Description |
-|---|---|
-| US-006 | Monorepo setup (Turborepo + pnpm) |
-| US-007 | Docker + docker-compose local environment |
-| US-008 | GCP project (Cloud Run, Cloud SQL, Secret Manager) |
-| US-009 | GitHub Actions CI pipeline |
-| US-010 | Database schema + Alembic initial migration |
-
----
-
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
 | **Backend** | Python 3.11, FastAPI, SQLAlchemy 2.0, Alembic |
 | **Database** | PostgreSQL 15 |
-| **Frontend** | React 18, TypeScript, Tailwind CSS, shadcn/ui |
+| **Frontend** | React 18, TypeScript, Tailwind CSS |
 | **Infrastructure** | Docker, GCP Cloud Run, GCP Cloud SQL, GCP Secret Manager |
 | **CI/CD** | GitHub Actions |
 | **Package Manager** | pnpm (monorepo with Turborepo) |
@@ -59,24 +45,30 @@ stepup/
   apps/
     backend/          # FastAPI application
       app/
-        core/         # Config, database connection
+        api/          # Route handlers
+        core/         # Config, database, limiter
         models/       # SQLAlchemy models
+        services/     # Business logic
+        repositories/ # Database queries
+        schemas/      # Pydantic schemas
       alembic/        # Database migrations
+      scripts/        # Seed and utility scripts
+      tests/          # Unit and integration tests
     frontend/         # React 18 + TypeScript application
       src/
-        components/   # Reusable UI components
-        pages/        # Route-based pages (hr/, manager/, employee/)
-        hooks/        # Custom React hooks
-        services/     # API call functions
-        store/        # Zustand stores
-        types/        # TypeScript types
-        constants/    # Routes, API endpoints, error messages
-  packages/
-    shared-types/     # Shared TypeScript types
+        app/          # App entry, routing
+        components/   # Shared UI components
+        constants/    # Routes, API endpoints, messages
+        features/     # Feature-based modules (auth, invitation, users)
+        lib/          # API client
+        stores/       # Zustand stores
+        types/        # Generated API types
+      tests/
+        e2e/          # Playwright E2E tests
   docs/
-    product-vision.md # Full product specification
-    guides/           # Technical guides (Docker, Git, FastAPI, Alembic, etc.)
     adr/              # Architecture Decision Records
+    postmortems/      # Debug and incident records
+    guides/           # Technical guides
     scrum/            # Sprint planning and retrospectives
   docker-compose.yml
   turbo.json
@@ -89,43 +81,109 @@ stepup/
 ### Prerequisites
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Node.js 18+](https://nodejs.org/)
 - [pnpm](https://pnpm.io/installation)
 
-### Setup
+### First-time setup
 
 ```bash
 # 1. Clone the repository
 git clone https://github.com/aykutcihan/stepup.git
 cd stepup
 
-# 2. Start the database
-docker-compose up -d db
+# 2. Install frontend dependencies
+pnpm install
 
-# 3. Run database migrations
+# 3. Create frontend env file
+echo "VITE_API_URL=" > apps/frontend/.env
+
+# 4. Run database migrations
 docker-compose run --rm backend alembic upgrade head
 
-# 4. Start all services
-docker-compose up
+# 5. Seed the database with test users
+docker-compose run --rm backend python scripts/seed.py
 ```
 
-### Services
+### Running the app
+
+There are two ways to run the app locally. The hybrid approach is recommended for active frontend development.
+
+#### Option A — Hybrid (recommended for FE development)
+
+Backend and database run in Docker. Frontend runs locally for instant hot reload.
+
+**Terminal 1:**
+```bash
+docker-compose up db backend
+```
+
+**Terminal 2:**
+```bash
+pnpm --filter frontend dev
+```
 
 | Service | URL |
 |---|---|
+| Frontend | http://localhost:5173 |
 | Backend API | http://localhost:8000 |
 | Swagger UI | http://localhost:8000/docs |
-| Frontend | http://localhost:3000 |
 | Database | localhost:5433 |
 
-> Port 5433 is used instead of the default 5432 (conflict with local PostgreSQL).
+#### Option B — Full Docker
 
-### Useful Commands
+Everything runs in Docker containers.
+
+```bash
+docker-compose up db backend frontend
+```
+
+| Service | URL |
+|---|---|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:8000 |
+| Swagger UI | http://localhost:8000/docs |
+| Database | localhost:5433 |
+
+> Port 5433 is used instead of the default 5432 to avoid conflicts with a locally installed PostgreSQL.
+
+### Test users
+
+After running the seed script, the following users are available:
+
+| Email | Password | Role |
+|---|---|---|
+| admin@stepup.com | Admin1234! | HR Admin |
+| manager@stepup.com | Manager1234! | Manager |
+| employee@stepup.com | Employee1234! | Employee |
+
+---
+
+## E2E Tests
+
+E2E tests run entirely inside Docker using Playwright.
+
+```bash
+# Run migrations and seed (once, or after DB reset)
+docker-compose run --rm backend alembic upgrade head
+
+# Run all E2E tests
+docker-compose run --rm playwright sh -c "pnpm install && pnpm e2e"
+
+# Run a specific test file
+docker-compose run --rm playwright sh -c "pnpm install && pnpm exec playwright test tests/e2e/login.spec.ts"
+```
+
+The `seeder` service runs automatically as part of the Playwright dependency chain — no manual seed step needed when running E2E tests.
+
+---
+
+## Useful Commands
 
 ```bash
 # Run database migrations
 docker-compose run --rm backend alembic upgrade head
 
-# Seed the database with initial data
+# Seed the database
 docker-compose run --rm backend python scripts/seed.py
 
 # Create a new migration after model changes
@@ -140,26 +198,11 @@ docker-compose logs -f backend
 # Rebuild backend image (after requirements.txt changes)
 docker-compose build backend
 
-# Run all backend tests
-docker exec stepup-backend python -m pytest --tb=short -q
+# Run backend tests
+docker-compose run --rm backend pytest --tb=short -q
 
-# Run only unit tests
-docker exec stepup-backend python -m pytest tests/unit --tb=short -q
-
-# Run only integration tests
-docker exec stepup-backend python -m pytest tests/integration --tb=short -q
-
-# Start frontend (first time or after Dockerfile changes)
-docker-compose up frontend --build
-
-# Start frontend (subsequent runs)
-docker-compose up frontend
-
-# View frontend logs
-docker-compose logs -f frontend
-
-# Run frontend tests
-docker-compose run --rm frontend node_modules/.bin/vitest run --config vitest.config.ts --passWithNoTests
+# Run frontend unit tests
+pnpm --filter frontend test
 ```
 
 ---
@@ -168,10 +211,11 @@ docker-compose run --rm frontend node_modules/.bin/vitest run --config vitest.co
 
 | Document | Description |
 |---|---|
-| [`docs/product-vision.md`](./docs/product-vision.md) | Full product specification, user roles, workflows, architecture |
-| [`docs/scrum/`](./docs/scrum/) | Sprint goals, refinement notes, reviews, retrospectives |
-| [`docs/guides/`](./docs/guides/) | Technical guides (FastAPI, Docker, Git, Alembic, SQLAlchemy, etc.) |
+| [`docs/product-vision.md`](./docs/product-vision.md) | Full product specification, user roles, workflows |
 | [`docs/adr/`](./docs/adr/) | Architecture Decision Records |
+| [`docs/postmortems/`](./docs/postmortems/) | Debug and incident records |
+| [`docs/guides/`](./docs/guides/) | Technical guides (FastAPI, Docker, Git, Alembic, etc.) |
+| [`docs/scrum/`](./docs/scrum/) | Sprint goals, refinement notes, reviews, retrospectives |
 
 ---
 
@@ -182,8 +226,8 @@ main        → production (stable, merged at sprint end)
 develop     → integration branch
 feature/    → one branch per issue (feature/us-001-invite-user)
 fix/        → bug fixes
-test/be-    → backend tests for a user story (test/be-us-001-invitation-service)
-test/fe-    → frontend tests for a user story (test/fe-us-001-invite-form)
+test/be-    → backend tests (test/be-us-001-invitation-service)
+test/fe-    → frontend tests (test/fe-us-001-invite-form)
 ```
 
 All changes go through Pull Requests into `develop`.
