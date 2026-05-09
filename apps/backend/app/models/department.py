@@ -1,12 +1,17 @@
 
 
+from __future__ import annotations
+
 import uuid
+from typing import TYPE_CHECKING
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
-
 from app.models.base import Base, TimestampMixin
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 class Department(Base, TimestampMixin):
@@ -23,4 +28,4 @@ class Department(Base, TimestampMixin):
         nullable=False,
         unique=True
     )
-    department: Mapped["Department"] = relationship("Department", back_populates="users")
+    users: Mapped[list["User"]] = relationship("User", back_populates="department")
