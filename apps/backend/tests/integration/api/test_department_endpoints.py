@@ -3,6 +3,33 @@ import pytest
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 
 
+class TestDeactivateDepartment:
+
+    async def test_deactivate_department_returns_200_when_no_active_users(
+        self, authenticated_client
+    ):
+        create_response = await authenticated_client.post(
+            "/api/v1/departments/", json={"name": "ToDeactivate"}
+        )
+        department_id = create_response.json()["id"]
+
+        response = await authenticated_client.patch(
+            f"/api/v1/departments/{department_id}/deactivate"
+        )
+
+        assert response.status_code == 200
+        assert response.json()["is_active"] is False
+
+    async def test_deactivate_department_returns_404_when_not_found(
+        self, authenticated_client
+    ):
+        response = await authenticated_client.patch(
+            "/api/v1/departments/00000000-0000-0000-0000-000000000000/deactivate"
+        )
+
+        assert response.status_code == 404
+
+
 class TestPatchDepartment:
 
     async def test_patch_department_returns_200_when_name_is_updated(
