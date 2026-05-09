@@ -23,6 +23,7 @@ services:
       SENDGRID_API_KEY: ${SENDGRID_API_KEY}
       SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      LOGIN_RATE_LIMIT: "1000/minute"
     ports:
       - "8000:8000"
     volumes:
@@ -35,6 +36,9 @@ services:
       context: .
       dockerfile: apps/frontend/Dockerfile
     container_name: stepup-frontend
+    environment:
+      BACKEND_URL: http://backend:8000
+      VITE_API_URL: ""
     ports:
       - "3000:3000"
     volumes:
@@ -42,6 +46,41 @@ services:
       - /app/node_modules
     depends_on:
       - backend
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('net').createConnection({host:'localhost',port:3000},()=>process.exit(0)).on('error',()=>process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+
+  seeder:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    command: ["python", "scripts/seed.py"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    volumes:
+      - ./apps/backend:/app
+    depends_on:
+      - db
+      - backend
+
+  playwright:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile.e2e
+    volumes:
+      - ./apps/frontend:/app
+    working_dir: /app
+    user: root
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_started
+      seeder:
+        condition: service_completed_successfully
 
 volumes:
   postgres_data:

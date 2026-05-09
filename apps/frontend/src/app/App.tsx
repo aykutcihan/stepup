@@ -15,14 +15,15 @@ import { useAuthStore } from '@/stores/authStore'
 
 export default function App() {
   const setUser = useAuthStore((state) => state.setUser)
+  const clearUser = useAuthStore((state) => state.clearUser)
   const setLoading = useAuthStore((state) => state.setLoading)
 
   useEffect(() => {
     getMe()
       .then(setUser)
-      .catch(() => {})
+      .catch(() => clearUser())
       .finally(() => setLoading(false))
-  }, [])
+  }, [setUser, clearUser, setLoading])
 
   return (
     <Routes>

@@ -13,7 +13,7 @@ export const API = {
     LOGOUT: '/api/v1/auth/logout',
   },
   USERS: {
-    LIST: '/api/v1/users',
+    LIST: '/api/v1/users/',
     DEACTIVATE: (id: string) => `/api/v1/users/${id}/deactivate`,
   },
 }

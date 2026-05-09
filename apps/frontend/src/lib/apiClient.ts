@@ -3,7 +3,7 @@ import { API } from '@/constants/apiEndpoints'
 import { ROUTES } from '@/constants/routes'
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || '',
   withCredentials: true,
 })
 
