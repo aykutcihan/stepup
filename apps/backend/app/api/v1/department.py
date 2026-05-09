@@ -23,6 +23,16 @@ async def get_departments(
     return [DepartmentResponse.model_validate(d) for d in departments]
 
 
+@router.patch("/{department_id}/deactivate", response_model=DepartmentResponse)
+async def deactivate_department(
+    department_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
+) -> DepartmentResponse:
+    department = await department_service.deactivate_department(db=db, department_id=department_id)
+    return DepartmentResponse.model_validate(department)
+
+
 @router.patch("/{department_id}", response_model=DepartmentResponse)
 async def update_department(
     department_id: uuid.UUID,
