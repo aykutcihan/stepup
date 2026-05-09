@@ -29,6 +29,7 @@ async def authenticated_client(db_session, hr_admin_user):
         yield db_session
 
     async def override_get_current_user():
+        await db_session.refresh(hr_admin_user)
         return hr_admin_user
 
     app.dependency_overrides[get_db] = override_get_db
