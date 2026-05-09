@@ -24,7 +24,7 @@ export async function login(data: LoginRequest): Promise<UserResponse> {
 }
 
 export async function getMe(): Promise<UserResponse> {
-  const res = await apiClient.get(API.AUTH.ME)
+  const res = await apiClient.get(API.USERS.ME)
   return res.data
 }
 
