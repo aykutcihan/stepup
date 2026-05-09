@@ -41,8 +41,7 @@ class UserService:
             user.role = data.role
 
         await db.commit()
-        await db.refresh(user)
-        return user
+        return await user_repository.get_by_id(db, user_id)
 
     async def deactivate_user(
         self,

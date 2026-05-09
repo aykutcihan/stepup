@@ -48,3 +48,7 @@ class User(Base, TimestampMixin):
     )
     department: Mapped["Department"] = relationship("Department", back_populates="users")
 
+    @property
+    def department_name(self) -> str | None:
+        return self.department.name if self.department else None
+
