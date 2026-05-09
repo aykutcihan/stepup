@@ -2,7 +2,7 @@
 
 import uuid
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 
 
@@ -23,3 +23,4 @@ class Department(Base, TimestampMixin):
         nullable=False,
         unique=True
     )
+    department: Mapped["Department"] = relationship("Department", back_populates="users")
