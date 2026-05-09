@@ -12,11 +12,18 @@ class RegisterRequest(BaseModel):
     password: str
 
 
+class UserUpdate(BaseModel):
+    department_id: uuid.UUID | None = None
+    role: UserRole | None = None
+
+
 class UserResponse(BaseModel):
     id: uuid.UUID
     email: EmailStr
     role: UserRole
     first_name: str
     last_name: str
+    is_active: bool
+    department_id: uuid.UUID | None
 
     model_config = ConfigDict(from_attributes=True)

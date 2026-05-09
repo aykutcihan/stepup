@@ -79,6 +79,57 @@ Soft delete means rows are never physically removed. Queries filter `deleted_at 
 
 ---
 
+## Relationships
+
+SQLAlchemy `relationship()` links two models at the ORM level. When two models reference each other, a naive import causes a **circular import** — `user.py` imports `department.py`, `department.py` imports `user.py`, Python crashes.
+
+### Solution: `TYPE_CHECKING`
+
+```python
+# department.py
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+from sqlalchemy.orm import Mapped, relationship
+
+from app.models.base import Base, TimestampMixin
+
+if TYPE_CHECKING:
+    from app.models.user import User  # only imported by type checkers, not at runtime
+
+
+class Department(Base, TimestampMixin):
+    users: Mapped[list["User"]] = relationship("User", back_populates="department")
+```
+
+```python
+# user.py
+from app.models.department import Department  # safe — Department doesn't import User at runtime
+
+
+class User(Base, TimestampMixin):
+    department: Mapped["Department"] = relationship("Department", back_populates="users")
+```
+
+| Detail | Why |
+|--------|-----|
+| `TYPE_CHECKING` is `False` at runtime | The import inside the block never executes — no circular import |
+| `TYPE_CHECKING` is `True` for Pylance/mypy | They see the import and resolve `"User"` as a real type — no IDE warning |
+| `from __future__ import annotations` | Makes all annotations lazy strings by default — required when using `TYPE_CHECKING` imports in annotations |
+| String reference `"User"` in `relationship()` | SQLAlchemy resolves it lazily after all models are loaded — does not need a live import |
+
+### `back_populates` Rule
+
+Both sides of a relationship must declare `back_populates` pointing to each other's attribute name.
+
+```
+Department.users  ←→  User.department
+```
+
+If the names don't match, SQLAlchemy raises a configuration error at startup.
+
+---
+
 ## Naming Conventions
 
 | Context | Convention | Example |

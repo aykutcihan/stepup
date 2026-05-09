@@ -1,13 +1,14 @@
 import uuid
+from typing import Optional
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.dependencies import require_role
 from app.enums.user_role import UserRole
 from app.models.user import User
-from app.schemas.user import UserResponse
+from app.schemas.user import UserResponse, UserUpdate
 from app.services.user_service import UserService
 
 router = APIRouter()
@@ -18,12 +19,23 @@ user_service = UserService()
 async def get_users(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
+    role: Optional[UserRole] = Query(None),
+    department_id: Optional[uuid.UUID] = Query(None),
+    is_active: Optional[bool] = Query(None),
 ) -> list[UserResponse]:
-    users = await user_service.get_users(db=db)
-    result = []
-    for u in users:
-        result.append(UserResponse.model_validate(u))
-    return result
+    users = await user_service.get_users(db=db, role=role, department_id=department_id, is_active=is_active)
+    return [UserResponse.model_validate(u) for u in users]
+
+
+@router.patch("/{user_id}", response_model=UserResponse)
+async def update_user(
+    user_id: uuid.UUID,
+    data: UserUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
+) -> UserResponse:
+    user = await user_service.update_user(db=db, user_id=user_id, data=data)
+    return UserResponse.model_validate(user)
 
 
 @router.patch("/{user_id}/deactivate", status_code=status.HTTP_204_NO_CONTENT)

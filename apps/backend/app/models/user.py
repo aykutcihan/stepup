@@ -1,10 +1,11 @@
 import uuid
-from sqlalchemy import String
+from sqlalchemy import ForeignKey, String
 from sqlalchemy import Enum as SAEnum
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 from app.models.base import Base, TimestampMixin
 from app.enums.user_role import UserRole
+from app.models.department import Department
 
 
 class User(Base, TimestampMixin):
@@ -40,4 +41,10 @@ class User(Base, TimestampMixin):
         default=True,
         nullable=False,
     )
+    department_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("departments.id"),
+        nullable=True,
+    )
+    department: Mapped["Department"] = relationship("Department", back_populates="users")
 
