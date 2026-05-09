@@ -1,8 +1,9 @@
 import uuid
 
-from sqlalchemy import select, func
+from sqlalchemy import select, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.enums.user_role import UserRole
 from app.models.user import User
 
 
@@ -34,7 +35,21 @@ class UserRepository:
         )
         return result.scalar_one()
 
-    async def get_all(self, db: AsyncSession) -> list[User]:
-        result = await db.execute(select(User))
+    async def get_all(
+        self,
+        db: AsyncSession,
+        role: UserRole | None = None,
+        department_id: uuid.UUID | None = None,
+        is_active: bool | None = None,
+    ) -> list[User]:
+        filters = []
+        if role is not None:
+            filters.append(User.role == role)
+        if department_id is not None:
+            filters.append(User.department_id == department_id)
+        if is_active is not None:
+            filters.append(User.is_active == is_active)
+
+        result = await db.execute(select(User).where(and_(*filters)))
         return list(result.scalars().all())
 
