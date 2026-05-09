@@ -15,6 +15,16 @@ user_repository = UserRepository()
 
 class DepartmentService:
 
+    async def reactivate_department(self, db: AsyncSession, department_id: uuid.UUID) -> Department:
+        department = await department_repository.get_by_id(db, department_id)
+        if not department:
+            raise NotFoundError(*messages.DEPARTMENT_NOT_FOUND)
+
+        department.is_active = True
+        await db.commit()
+        await db.refresh(department)
+        return department
+
     async def deactivate_department(self, db: AsyncSession, department_id: uuid.UUID) -> Department:
         department = await department_repository.get_by_id(db, department_id)
         if not department:
