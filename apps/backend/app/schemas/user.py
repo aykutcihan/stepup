@@ -12,6 +12,11 @@ class RegisterRequest(BaseModel):
     password: str
 
 
+class UserUpdate(BaseModel):
+    department_id: uuid.UUID | None = None
+    role: UserRole | None = None
+
+
 class UserResponse(BaseModel):
     id: uuid.UUID
     email: EmailStr
