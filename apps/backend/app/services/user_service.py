@@ -2,6 +2,7 @@ import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.enums.user_role import UserRole
 from app.errors import NotFoundError, ValidationError
 from app.errors import messages
 from app.repositories.refresh_token_repository import RefreshTokenRepository
@@ -13,8 +14,14 @@ refresh_token_repository = RefreshTokenRepository()
 
 class UserService:
 
-    async def get_users(self, db: AsyncSession) -> list:
-        return await user_repository.get_all(db)
+    async def get_users(
+        self,
+        db: AsyncSession,
+        role: UserRole | None = None,
+        department_id: uuid.UUID | None = None,
+        is_active: bool | None = None,
+    ) -> list:
+        return await user_repository.get_all(db, role=role, department_id=department_id, is_active=is_active)
 
     async def deactivate_user(
         self,
