@@ -16,3 +16,7 @@ USER_DEACTIVATED = ("USER_DEACTIVATED", "Your account has been deactivated")
 
 # Authorization
 PERMISSION_DENIED = ("PERMISSION_DENIED", "You do not have permission to perform this action")
+
+# Department
+DEPARTMENT_ALREADY_EXISTS = ("DEPARTMENT_ALREADY_EXISTS", "A department with this name already exists")
+DEPARTMENT_NOT_FOUND = ("DEPARTMENT_NOT_FOUND", "Department not found")
