@@ -86,31 +86,45 @@ stepup/
 
 ### First-time setup
 
-```bash
-# 1. Clone the repository
-git clone https://github.com/aykutcihan/stepup.git
-cd stepup
+Run these once after cloning the repository.
 
-# 2. Install frontend dependencies
+```bash
+# 1. Install frontend dependencies
 pnpm install
 
-# 3. Create frontend env file
+# 2. Create frontend env file
 echo "VITE_API_URL=" > apps/frontend/.env
+
+# 3. Build Docker images
+docker-compose build
 
 # 4. Run database migrations
 docker-compose run --rm backend alembic upgrade head
 
-# 5. Seed the database with test users
+# 5. Seed the database
 docker-compose run --rm backend python scripts/seed.py
 ```
 
-### Running the app
+Steps 4 and 5 automatically start the database container if it is not already running.
 
-There are two ways to run the app locally. The hybrid approach is recommended for active frontend development.
+### Scenario 1 — Full Docker
 
-#### Option A — Hybrid (recommended for FE development)
+Everything runs in Docker. Use this when you want a quick start or a clean environment.
 
-Backend and database run in Docker. Frontend runs locally for instant hot reload.
+```bash
+docker-compose up db backend frontend
+```
+
+| Service | URL |
+|---|---|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:8000 |
+| Swagger UI | http://localhost:8000/docs |
+| Database | localhost:5433 |
+
+### Scenario 2 — Frontend Local
+
+Database and backend run in Docker. Frontend runs locally for faster hot reload.
 
 **Terminal 1:**
 ```bash
@@ -129,26 +143,9 @@ pnpm --filter frontend dev
 | Swagger UI | http://localhost:8000/docs |
 | Database | localhost:5433 |
 
-#### Option B — Full Docker
-
-Everything runs in Docker containers.
-
-```bash
-docker-compose up db backend frontend
-```
-
-| Service | URL |
-|---|---|
-| Frontend | http://localhost:3000 |
-| Backend API | http://localhost:8000 |
-| Swagger UI | http://localhost:8000/docs |
-| Database | localhost:5433 |
-
 > Port 5433 is used instead of the default 5432 to avoid conflicts with a locally installed PostgreSQL.
 
 ### Test users
-
-After running the seed script, the following users are available:
 
 | Email | Password | Role |
 |---|---|---|
@@ -160,16 +157,11 @@ After running the seed script, the following users are available:
 
 ## E2E Tests
 
-Two modes are available depending on the context.
-
 ### Docker (CI / pre-push)
 
 Runs in an isolated container — same environment as CI. Slower due to Vite cold start (~5 min for full suite).
 
 ```bash
-# Run migrations and seed (once, or after DB reset)
-docker-compose run --rm backend alembic upgrade head
-
 # Run all E2E tests
 docker-compose run --rm playwright sh -c "pnpm install && pnpm e2e"
 
@@ -177,19 +169,19 @@ docker-compose run --rm playwright sh -c "pnpm install && pnpm e2e"
 docker-compose run --rm playwright sh -c "pnpm install && pnpm exec playwright test tests/e2e/login.spec.ts"
 ```
 
-The `seeder` service runs automatically as part of the Playwright dependency chain — no manual seed step needed.
+The `seeder` service runs automatically as part of the Playwright dependency chain.
 
 ### Local (during development)
 
 Runs against the local Vite dev server. Much faster (~1-2 min) since Vite is already warm.
 
-**Prerequisites:** backend running (`docker-compose up db backend`) and frontend running (`pnpm --filter frontend dev`).
+**Prerequisite:** Scenario 2 must be running (db, backend, and `pnpm --filter frontend dev`).
 
 ```bash
-# First-time setup: install browser binary
+# First-time only: install browser binary
 pnpm --filter frontend exec playwright install chromium
 
-# Run all E2E tests locally
+# Run all E2E tests
 pnpm --filter frontend e2e:local
 
 # Run a specific test file
