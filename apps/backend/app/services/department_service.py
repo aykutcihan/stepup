@@ -11,6 +11,9 @@ department_repository = DepartmentRepository()
 
 class DepartmentService:
 
+    async def get_all_departments(self, db: AsyncSession) -> list[Department]:
+        return await department_repository.get_all(db)
+
     async def create_department(self, db: AsyncSession, data: DepartmentCreate) -> Department:
         existing = await department_repository.get_by_name(db, data.name)
         if existing:
