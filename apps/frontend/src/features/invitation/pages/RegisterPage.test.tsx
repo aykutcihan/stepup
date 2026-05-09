@@ -77,7 +77,7 @@ describe('RegisterPage', () => {
     await userEvent.type(screen.getByPlaceholderText(/first name/i), 'Jane')
     await userEvent.type(screen.getByPlaceholderText(/last name/i), 'Doe')
     await userEvent.type(screen.getByPlaceholderText(/password/i), 'password123')
-    await userEvent.click(screen.getByRole('button', { name: /register/i }))
+    await userEvent.click(screen.getByRole('button', { name: /create account/i }))
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/login')
