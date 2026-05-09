@@ -82,6 +82,42 @@ class TestGetUsers:
 
         assert response.status_code == 401
 
+    async def test_get_users_filters_by_role(self, authenticated_client, db_session):
+        user = User(
+            email="manager_filter@test.com",
+            role=UserRole.MANAGER,
+            first_name="Manager",
+            last_name="Filter",
+            password_hash="placeholder",
+            is_active=True,
+        )
+        db_session.add(user)
+        await db_session.flush()
+
+        response = await authenticated_client.get("/api/v1/users/?role=manager")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert all(u["role"] == "manager" for u in data)
+
+    async def test_get_users_filters_by_is_active(self, authenticated_client, db_session):
+        user = User(
+            email="inactive_filter@test.com",
+            role=UserRole.EMPLOYEE,
+            first_name="Inactive",
+            last_name="Filter",
+            password_hash="placeholder",
+            is_active=False,
+        )
+        db_session.add(user)
+        await db_session.flush()
+
+        response = await authenticated_client.get("/api/v1/users/?is_active=false")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert all(u["is_active"] is False for u in data)
+
     async def test_get_users_returns_403_for_employee(
         self, db_session, client
     ):
