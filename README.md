@@ -250,13 +250,16 @@ pnpm --filter frontend test
 ## Branch Strategy
 
 ```
-main        → production (stable, merged at sprint end)
-develop     → integration branch
-feature/    → one branch per issue (feature/us-001-invite-user)
-fix/        → bug fixes
-test/be-    → backend tests (test/be-us-001-invitation-service)
-test/fe-    → frontend tests (test/fe-us-001-invite-form)
+main           → production (stable, merged at sprint end)
+develop        → integration branch
+feature/be-    → backend feature work  (feature/be-us-004-department)
+feature/fe-    → frontend feature work (feature/fe-us-004-department)
+fix/           → bug fixes
+test/be-       → backend tests  (test/be-us-001-invitation-service)
+test/fe-       → frontend tests (test/fe-us-001-invite-form)
 ```
+
+BE and FE are developed on separate branches per user story, allowing independent PRs and reviews.
 
 All changes go through Pull Requests into `develop`.
 `develop` is merged into `main` at the end of each sprint.
