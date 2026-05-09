@@ -13,6 +13,43 @@ pytestmark = pytest.mark.asyncio(loop_scope="session")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+class TestUpdateUser:
+
+    async def test_patch_user_assigns_department(self, authenticated_client, db_session):
+        from app.models.department import Department
+
+        dept = Department(name="UpdateTestDept", is_active=True)
+        db_session.add(dept)
+        await db_session.flush()
+        dept_id = str(dept.id)
+        target = User(
+            email="update_target@test.com",
+            role=UserRole.EMPLOYEE,
+            first_name="Update",
+            last_name="Target",
+            password_hash="placeholder",
+            is_active=True,
+        )
+        db_session.add(target)
+        await db_session.flush()
+
+        response = await authenticated_client.patch(
+            f"/api/v1/users/{target.id}",
+            json={"department_id": dept_id},
+        )
+
+        assert response.status_code == 200
+        assert response.json()["department_id"] == dept_id
+
+    async def test_patch_user_returns_404_when_not_found(self, authenticated_client):
+        response = await authenticated_client.patch(
+            "/api/v1/users/00000000-0000-0000-0000-000000000000",
+            json={"role": "manager"},
+        )
+
+        assert response.status_code == 404
+
+
 class TestDeactivateUser:
 
     async def test_deactivate_user_returns_204_when_id_is_valid(
