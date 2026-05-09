@@ -4,14 +4,30 @@ from app.errors import ValidationError, NotFoundError
 from app.errors import messages
 from app.models.department import Department
 from app.repositories.department_repository import DepartmentRepository
+from app.repositories.user_repository import UserRepository
 import uuid
 
 from app.schemas.department import DepartmentCreate, DepartmentUpdate
 
 department_repository = DepartmentRepository()
+user_repository = UserRepository()
 
 
 class DepartmentService:
+
+    async def deactivate_department(self, db: AsyncSession, department_id: uuid.UUID) -> Department:
+        department = await department_repository.get_by_id(db, department_id)
+        if not department:
+            raise NotFoundError(*messages.DEPARTMENT_NOT_FOUND)
+
+        active_user_count = await user_repository.count_active_by_department(db, department_id)
+        if active_user_count > 0:
+            raise ValidationError(*messages.DEPARTMENT_HAS_ACTIVE_USERS)
+
+        department.is_active = False
+        await db.commit()
+        await db.refresh(department)
+        return department
 
     async def get_all_departments(self, db: AsyncSession) -> list[Department]:
         return await department_repository.get_all(db)
