@@ -1,8 +1,8 @@
 """create_departments_table_and_add_department_id_to_users
 
-Revision ID: 3759df7b6a54
+Revision ID: c3466e23b228
 Revises: 7a8eb238eec4
-Create Date: 2026-05-09 07:43:05.356886
+Create Date: 2026-05-09 08:09:10.224401
 
 """
 from typing import Sequence, Union
@@ -11,7 +11,7 @@ from alembic import op
 import sqlalchemy as sa
 
 
-revision: str = '3759df7b6a54'
+revision: str = 'c3466e23b228'
 down_revision: Union[str, None] = '7a8eb238eec4'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -22,6 +22,7 @@ def upgrade() -> None:
     op.create_table('departments',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('name', sa.String(length=255), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),

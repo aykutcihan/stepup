@@ -28,4 +28,9 @@ class Department(Base, TimestampMixin):
         nullable=False,
         unique=True
     )
+    
+    is_active: Mapped[bool] = mapped_column(
+        default=True,
+        nullable=False,
+    )
     users: Mapped[list["User"]] = relationship("User", back_populates="department")
