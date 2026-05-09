@@ -18,5 +18,7 @@ class UserResponse(BaseModel):
     role: UserRole
     first_name: str
     last_name: str
+    is_active: bool
+    department_id: uuid.UUID | None
 
     model_config = ConfigDict(from_attributes=True)
