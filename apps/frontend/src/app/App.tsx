@@ -14,6 +14,7 @@ import { useAuthInit } from './useAuthInit'
 import HRDashboardLayout from '@/layouts/HRDashboardLayout'
 import DepartmentsPage from '@/features/department/pages/DepartmentsPage'
 import UsersPage from '@/features/users/pages/UsersPage'
+import ProfilePage from '@/features/users/pages/ProfilePage'
 
 
 export default function App() {
@@ -31,18 +32,21 @@ export default function App() {
           <Route path={ROUTES.HR_INVITE_USER} element={<InviteUserPage />} />
           <Route path={ROUTES.HR_DEPARTMENTS} element={<DepartmentsPage />} />
           <Route path={ROUTES.HR_USERS} element={<UsersPage />} />
+          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         </Route>
       </Route>
 
       <Route element={<RequireRole roles={[USER_ROLES.MANAGER]} />}>
         <Route element={<DashboardLayout />}>
           <Route path={ROUTES.MANAGER_DASHBOARD} element={<ManagerDashboard />} />
+          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         </Route>
       </Route>
 
       <Route element={<RequireRole roles={[USER_ROLES.EMPLOYEE]} />}>
         <Route element={<DashboardLayout />}>
           <Route path={ROUTES.EMPLOYEE_DASHBOARD} element={<EmployeeDashboard />} />
+          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         </Route>
       </Route>
     </Routes>
