@@ -2,6 +2,7 @@ import uuid
 
 from sqlalchemy import select, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from app.enums.user_role import UserRole
 from app.models.user import User
@@ -22,7 +23,7 @@ class UserRepository:
 
     async def get_by_id(self, db: AsyncSession, user_id: uuid.UUID) -> User | None:
         result = await db.execute(
-            select(User).where(User.id == user_id)
+            select(User).where(User.id == user_id).options(joinedload(User.department))
         )
         return result.scalar_one_or_none()
 
@@ -50,6 +51,9 @@ class UserRepository:
         if is_active is not None:
             filters.append(User.is_active == is_active)
 
-        result = await db.execute(select(User).where(and_(*filters)))
+        query = select(User).options(joinedload(User.department))
+        if filters:
+            query = query.where(and_(*filters))
+        result = await db.execute(query)
         return list(result.scalars().all())
 

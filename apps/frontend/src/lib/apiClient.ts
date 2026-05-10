@@ -12,7 +12,7 @@ apiClient.interceptors.response.use(
   async (error) => {
     const original = error.config
 
-    const isAuthEndpoint = original.url === API.AUTH.ME || original.url === API.AUTH.REFRESH
+    const isAuthEndpoint = original.url === API.USERS.ME || original.url === API.AUTH.REFRESH
     const errorCode = error.response?.data?.error_code
 
     if (errorCode === 'USER_DEACTIVATED') {

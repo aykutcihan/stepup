@@ -17,6 +17,13 @@ class UserUpdate(BaseModel):
     role: UserRole | None = None
 
 
+class UserProfileUpdate(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+
+    model_config = ConfigDict(extra='forbid')
+
+
 class UserResponse(BaseModel):
     id: uuid.UUID
     email: EmailStr
@@ -25,5 +32,6 @@ class UserResponse(BaseModel):
     last_name: str
     is_active: bool
     department_id: uuid.UUID | None
+    department_name: str | None = None
 
     model_config = ConfigDict(from_attributes=True)

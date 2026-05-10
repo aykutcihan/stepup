@@ -8,11 +8,11 @@ export const API = {
   AUTH: {
     REGISTER: '/api/v1/auth/register',
     LOGIN: '/api/v1/auth/login',
-    ME: '/api/v1/auth/me',
     REFRESH: '/api/v1/auth/refresh',
     LOGOUT: '/api/v1/auth/logout',
   },
   USERS: {
+    ME: '/api/v1/users/me',
     LIST: '/api/v1/users/',
     DEACTIVATE: (id: string) => `/api/v1/users/${id}/deactivate`,
   },
