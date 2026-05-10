@@ -51,6 +51,9 @@ class UserRepository:
         if is_active is not None:
             filters.append(User.is_active == is_active)
 
-        result = await db.execute(select(User).where(and_(*filters)).options(joinedload(User.department)))
+        query = select(User).options(joinedload(User.department))
+        if filters:
+            query = query.where(and_(*filters))
+        result = await db.execute(query)
         return list(result.scalars().all())
 
