@@ -16,4 +16,12 @@ export const API = {
     LIST: '/api/v1/users/',
     DEACTIVATE: (id: string) => `/api/v1/users/${id}/deactivate`,
   },
+  DEPARTMENTS: {
+    LIST: '/api/v1/departments/',
+    CREATE: '/api/v1/departments/',
+    UPDATE: (id: string) => `/api/v1/departments/${id}`,
+    DEACTIVATE: (id: string) => `/api/v1/departments/${id}/deactivate`,
+    REACTIVATE: (id: string) => `/api/v1/departments/${id}/reactivate`,
+},
+
 }
