@@ -13,6 +13,55 @@ pytestmark = pytest.mark.asyncio(loop_scope="session")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+class TestGetMe:
+
+    async def test_get_me_returns_200_with_correct_user(self, authenticated_client, hr_admin_user):
+        response = await authenticated_client.get("/api/v1/users/me")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["email"] == hr_admin_user.email
+        assert data["first_name"] == hr_admin_user.first_name
+        assert data["last_name"] == hr_admin_user.last_name
+        assert data["role"] == hr_admin_user.role.value
+        assert data["department_name"] is None
+
+    async def test_get_me_returns_401_when_not_authenticated(self, client):
+        response = await client.get("/api/v1/users/me")
+
+        assert response.status_code == 401
+
+
+class TestUpdateMyProfile:
+
+    async def test_patch_me_updates_name(self, authenticated_client):
+        response = await authenticated_client.patch(
+            "/api/v1/users/me",
+            json={"first_name": "Updated", "last_name": "Name"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["first_name"] == "Updated"
+        assert data["last_name"] == "Name"
+
+    async def test_patch_me_cannot_change_role(self, authenticated_client):
+        response = await authenticated_client.patch(
+            "/api/v1/users/me",
+            json={"role": "employee"},
+        )
+
+        assert response.status_code == 422
+
+    async def test_patch_me_returns_401_when_not_authenticated(self, client):
+        response = await client.patch(
+            "/api/v1/users/me",
+            json={"first_name": "Hacker"},
+        )
+
+        assert response.status_code == 401
+
+
 class TestUpdateUser:
 
     async def test_patch_user_assigns_department(self, authenticated_client, db_session):
