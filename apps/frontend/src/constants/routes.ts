@@ -7,6 +7,7 @@ export const ROUTES = {
   EMPLOYEE_DASHBOARD: '/employee/dashboard',
   HR_DEPARTMENTS: '/hr/departments',
   HR_USERS: '/hr/users',
+  PROFILE: '/profile',
 }
 
 export const ERROR_ROUTES = {
