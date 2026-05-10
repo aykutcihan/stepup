@@ -5,6 +5,8 @@ export const ROUTES = {
   HR_INVITE_USER: '/hr/invite-user',
   MANAGER_DASHBOARD: '/manager/dashboard',
   EMPLOYEE_DASHBOARD: '/employee/dashboard',
+  HR_DEPARTMENTS: '/hr/departments',
+  HR_USERS: '/hr/users',
 }
 
 export const ERROR_ROUTES = {
