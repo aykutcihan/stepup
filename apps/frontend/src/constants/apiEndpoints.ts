@@ -14,6 +14,7 @@ export const API = {
   },
   USERS: {
     LIST: '/api/v1/users/',
+    UPDATE: (id: string) => `/api/v1/users/${id}`,
     DEACTIVATE: (id: string) => `/api/v1/users/${id}/deactivate`,
   },
   DEPARTMENTS: {
