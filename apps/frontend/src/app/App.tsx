@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import RegisterPage from '@/features/invitation/pages/RegisterPage'
 import InviteUserPage from '@/features/invitation/pages/InviteUserPage'
@@ -8,22 +7,13 @@ import ManagerDashboard from '@/features/users/pages/ManagerDashboard'
 import EmployeeDashboard from '@/features/users/pages/EmployeeDashboard'
 import ForbiddenPage from '@/components/ForbiddenPage'
 import RequireRole from '@/components/RequireRole'
+import DashboardLayout from '@/layouts/DashboardLayout'
 import { ROUTES, ERROR_ROUTES } from '@/constants/routes'
 import { USER_ROLES } from '@/constants/userRoles'
-import { getMe } from '@/features/auth/services/authService'
-import { useAuthStore } from '@/stores/authStore'
+import { useAuthInit } from './useAuthInit'
 
 export default function App() {
-  const setUser = useAuthStore((state) => state.setUser)
-  const clearUser = useAuthStore((state) => state.clearUser)
-  const setLoading = useAuthStore((state) => state.setLoading)
-
-  useEffect(() => {
-    getMe()
-      .then(setUser)
-      .catch(() => clearUser())
-      .finally(() => setLoading(false))
-  }, [setUser, clearUser, setLoading])
+  useAuthInit()
 
   return (
     <Routes>
@@ -32,16 +22,22 @@ export default function App() {
       <Route path={ERROR_ROUTES.FORBIDDEN} element={<ForbiddenPage />} />
 
       <Route element={<RequireRole roles={[USER_ROLES.HR_ADMIN]} />}>
-        <Route path={ROUTES.HR_DASHBOARD} element={<HRDashboard />} />
-        <Route path={ROUTES.HR_INVITE_USER} element={<InviteUserPage />} />
+        <Route element={<DashboardLayout />}>
+          <Route path={ROUTES.HR_DASHBOARD} element={<HRDashboard />} />
+          <Route path={ROUTES.HR_INVITE_USER} element={<InviteUserPage />} />
+        </Route>
       </Route>
 
       <Route element={<RequireRole roles={[USER_ROLES.MANAGER]} />}>
-        <Route path={ROUTES.MANAGER_DASHBOARD} element={<ManagerDashboard />} />
+        <Route element={<DashboardLayout />}>
+          <Route path={ROUTES.MANAGER_DASHBOARD} element={<ManagerDashboard />} />
+        </Route>
       </Route>
 
       <Route element={<RequireRole roles={[USER_ROLES.EMPLOYEE]} />}>
-        <Route path={ROUTES.EMPLOYEE_DASHBOARD} element={<EmployeeDashboard />} />
+        <Route element={<DashboardLayout />}>
+          <Route path={ROUTES.EMPLOYEE_DASHBOARD} element={<EmployeeDashboard />} />
+        </Route>
       </Route>
     </Routes>
   )

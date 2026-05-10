@@ -9,3 +9,9 @@ export const USER_ROLES = {
   MANAGER: 'manager' as UserRole,
   EMPLOYEE: 'employee' as UserRole,
 }
+
+export const ROLE_LABELS: Record<string, string> = {
+  hr_admin: 'HR Admin',
+  manager: 'Manager',
+  employee: 'Employee',
+}

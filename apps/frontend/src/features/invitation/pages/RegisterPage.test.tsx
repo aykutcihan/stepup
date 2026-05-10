@@ -5,8 +5,8 @@ import { vi, describe, it, expect, beforeEach } from 'vitest'
 import RegisterPage from './RegisterPage'
 
 const mockNavigate = vi.fn()
-const { mockAuthServiceValidateInvitation, mockAuthServiceRegister } = vi.hoisted(() => ({
-  mockAuthServiceValidateInvitation: vi.fn(),
+const { mockValidateInvitation, mockAuthServiceRegister } = vi.hoisted(() => ({
+  mockValidateInvitation: vi.fn(),
   mockAuthServiceRegister: vi.fn(),
 }))
 
@@ -18,8 +18,11 @@ vi.mock('react-router-dom', async (importOriginal) => {
   }
 })
 
+vi.mock('@/features/invitation/services/invitationService', () => ({
+  validateInvitation: mockValidateInvitation,
+}))
+
 vi.mock('@/features/auth/services/authService', () => ({
-  validateInvitation: mockAuthServiceValidateInvitation,
   register: mockAuthServiceRegister,
 }))
 
@@ -45,7 +48,7 @@ describe('RegisterPage', () => {
   })
 
   it('pre-fills email from token validation', async () => {
-    mockAuthServiceValidateInvitation.mockResolvedValue({ email: mockUser.email, role: mockUser.role })
+    mockValidateInvitation.mockResolvedValue({ email: mockUser.email, role: mockUser.role })
 
     renderWithToken('valid-token')
 
@@ -55,7 +58,7 @@ describe('RegisterPage', () => {
   })
 
   it('shows error message when token is expired', async () => {
-    mockAuthServiceValidateInvitation.mockRejectedValue({
+    mockValidateInvitation.mockRejectedValue({
       response: { data: { error_code: 'INVITATION_EXPIRED' } },
     })
 
@@ -67,7 +70,7 @@ describe('RegisterPage', () => {
   })
 
   it('navigates to login on successful registration', async () => {
-    mockAuthServiceValidateInvitation.mockResolvedValue({ email: mockUser.email, role: mockUser.role })
+    mockValidateInvitation.mockResolvedValue({ email: mockUser.email, role: mockUser.role })
     mockAuthServiceRegister.mockResolvedValue(mockUser)
 
     renderWithToken('valid-token')
