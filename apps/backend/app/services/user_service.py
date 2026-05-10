@@ -8,7 +8,7 @@ from app.errors import messages
 from app.models.user import User
 from app.repositories.refresh_token_repository import RefreshTokenRepository
 from app.repositories.user_repository import UserRepository
-from app.schemas.user import UserUpdate
+from app.schemas.user import UserUpdate, UserProfileUpdate
 
 user_repository = UserRepository()
 refresh_token_repository = RefreshTokenRepository()
@@ -40,6 +40,20 @@ class UserService:
         if data.role is not None:
             user.role = data.role
 
+        await db.commit()
+        return await user_repository.get_by_id(db, user_id)
+
+    async def update_my_profile(
+        self,
+        db: AsyncSession,
+        user: User,
+        data: UserProfileUpdate,
+    ) -> User:
+        if data.first_name is not None:
+            user.first_name = data.first_name
+        if data.last_name is not None:
+            user.last_name = data.last_name
+        user_id = user.id
         await db.commit()
         return await user_repository.get_by_id(db, user_id)
 
