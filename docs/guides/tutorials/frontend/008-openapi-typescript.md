@@ -65,17 +65,13 @@ Two ways:
 
 ## When to Regenerate
 
-Run the generate command whenever BE schemas or endpoints change:
+Run the generate command whenever BE schemas or endpoints change. Backend must be running (`docker compose up`):
 
 ```powershell
-docker-compose run --rm frontend node_modules/.bin/openapi-typescript http://backend:8000/openapi.json -o src/types/api.ts
+pnpm --filter frontend exec openapi-typescript http://localhost:8000/openapi.json -o src/types/api.ts
 ```
 
-Or use the npm script shorthand (all services must be running):
-
-```powershell
-docker-compose run --rm frontend npm run generate-types
-```
+The `generate-types` script in `package.json` uses `http://backend:8000` which only works inside Docker network. Use `localhost:8000` when running from the host terminal.
 
 **When to run:**
 - After a new Pydantic model is added
