@@ -13,6 +13,7 @@ export const API = {
   },
   USERS: {
     ME: '/api/v1/users/me',
+    UPDATE_ME: '/api/v1/users/me',
     LIST: '/api/v1/users/',
     UPDATE: (id: string) => `/api/v1/users/${id}`,
     DEACTIVATE: (id: string) => `/api/v1/users/${id}/deactivate`,
