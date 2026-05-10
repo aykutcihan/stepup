@@ -1,16 +1,11 @@
-import type { ReactNode } from 'react'
+import { Outlet } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { logout } from '@/features/auth/services/authService'
 import { useAuthStore } from '@/stores/authStore'
 import { ROUTES } from '@/constants/routes'
+import { ROLE_LABELS } from '@/constants/userRoles'
 
-const ROLE_LABELS: Record<string, string> = {
-  hr_admin: 'HR Admin',
-  manager: 'Manager',
-  employee: 'Employee',
-}
-
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+export default function DashboardLayout() {
   const user = useAuthStore((state) => state.user)
   const clearUser = useAuthStore((state) => state.clearUser)
   const navigate = useNavigate()
@@ -40,7 +35,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </button>
         </div>
       </nav>
-      <main className="p-6">{children}</main>
+      <main className="p-6">
+        <Outlet />
+      </main>
     </div>
   )
 }

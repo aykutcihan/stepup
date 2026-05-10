@@ -5,28 +5,14 @@ import { vi, describe, it, expect, beforeEach } from 'vitest'
 import HRDashboard from './HRDashboard'
 import { useAuthStore } from '@/stores/authStore'
 
-const mockNavigate = vi.fn()
-const { mockUserServiceGetUsers, mockUserServiceDeactivate, mockAuthServiceLogout } = vi.hoisted(() => ({
+const { mockUserServiceGetUsers, mockUserServiceDeactivate } = vi.hoisted(() => ({
   mockUserServiceGetUsers: vi.fn(),
   mockUserServiceDeactivate: vi.fn(),
-  mockAuthServiceLogout: vi.fn(),
 }))
-
-vi.mock('react-router-dom', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('react-router-dom')>()
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  }
-})
 
 vi.mock('@/features/users/services/userService', () => ({
   getUsers: mockUserServiceGetUsers,
   deactivateUser: mockUserServiceDeactivate,
-}))
-
-vi.mock('@/features/auth/services/authService', () => ({
-  logout: mockAuthServiceLogout,
 }))
 
 const mockCurrentUser = { id: '1', email: 'hr@example.com', first_name: 'HR', last_name: 'Admin', role: 'hr_admin' as const }
@@ -46,7 +32,6 @@ describe('HRDashboard', () => {
     useAuthStore.setState({ user: mockCurrentUser, isLoading: false })
     mockUserServiceGetUsers.mockResolvedValue([mockCurrentUser, mockOtherUser])
     mockUserServiceDeactivate.mockResolvedValue(undefined)
-    mockAuthServiceLogout.mockResolvedValue(undefined)
   })
 
   it('displays user list on load', async () => {
@@ -66,16 +51,6 @@ describe('HRDashboard', () => {
 
     await waitFor(() => {
       expect(screen.queryByText(/john doe/i)).not.toBeInTheDocument()
-    })
-  })
-
-  it('navigates to login after logout', async () => {
-    renderPage()
-
-    await userEvent.click(screen.getByRole('button', { name: /logout/i }))
-
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/login')
     })
   })
 })

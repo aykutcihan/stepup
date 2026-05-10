@@ -141,6 +141,58 @@ Note: class methods receive `self` as the first parameter, followed by fixtures.
 
 **Common mistake:** forgetting `self` inside a class. Without it, pytest treats the first fixture as `self` — the test class instance — and the fixture is never injected.
 
+---
+
+## Common Pitfall: Expired SQLAlchemy Objects
+
+After `db.commit()` or any HTTP request that triggers a commit, SQLAlchemy marks all ORM objects in the session as **expired**. Accessing any attribute on an expired object triggers a lazy load — which fails in async context with:
+
+```
+sqlalchemy.exc.MissingGreenlet: greenlet_spawn has not been called
+```
+
+### In test fixtures (between requests)
+
+The `hr_admin_user` fixture is created once and reused across requests. After the first request commits, the object expires. The fix is to refresh it in `override_get_current_user`:
+
+```python
+async def override_get_current_user():
+    await db_session.refresh(hr_admin_user)  # re-loads from DB after any commit
+    return hr_admin_user
+```
+
+This is already applied in `tests/integration/api/conftest.py`.
+
+### In test bodies (between requests)
+
+If you create an ORM object in a test, then make an HTTP request (which commits), then try to read the object's attributes — it will be expired:
+
+```python
+# Wrong — dept.id accessed after a commit has expired the object
+dept = Department(name="Engineering")
+db_session.add(dept)
+await db_session.flush()
+
+await client.post("/api/v1/departments/", json={"name": "HR"})  # triggers commit
+
+assert something == str(dept.id)  # MissingGreenlet crash
+```
+
+**Fix:** save primitive values immediately after `flush`, before any request:
+
+```python
+dept = Department(name="Engineering")
+db_session.add(dept)
+await db_session.flush()
+dept_id = str(dept.id)  # save before any commit
+
+await client.post("/api/v1/departments/", json={"name": "HR"})
+
+assert something == dept_id  # safe — plain string, not an ORM attribute
+```
+
+**Rule:** never access ORM object attributes after a request. Save what you need as plain values (`str`, `uuid.UUID`, `int`) immediately after `flush`.
+
 ```python
 # Wrong — pytest treats `service` as `self`
 async def test_something(service, mock_db): ...
