@@ -24,6 +24,18 @@ export const API = {
     UPDATE: (id: string) => `/api/v1/departments/${id}`,
     DEACTIVATE: (id: string) => `/api/v1/departments/${id}/deactivate`,
     REACTIVATE: (id: string) => `/api/v1/departments/${id}/reactivate`,
-},
-
+  },
+  TEMPLATES: {
+    LIST: '/api/v1/templates/',
+    CREATE: '/api/v1/templates/',
+    UPDATE: (id: string) => `/api/v1/templates/${id}`,
+    ACTIVATE: (id: string) => `/api/v1/templates/${id}/activate`,
+    DEACTIVATE: (id: string) => `/api/v1/templates/${id}/deactivate`,
+    CLONE: (id: string) => `/api/v1/templates/${id}/clone`,
+    GET_TASKS: (id: string) => `/api/v1/templates/${id}/tasks`,
+    ADD_TASK: (id: string) => `/api/v1/templates/${id}/tasks`,
+    UPDATE_TASK: (id: string, taskId: string) => `/api/v1/templates/${id}/tasks/${taskId}`,
+    DELETE_TASK: (id: string, taskId: string) => `/api/v1/templates/${id}/tasks/${taskId}`,
+    REORDER_TASK: (id: string, taskId: string) => `/api/v1/templates/${id}/tasks/${taskId}/reorder`,
+  },
 }
