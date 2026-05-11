@@ -13,7 +13,6 @@ export function useUsersPage() {
   const [filterRole, setFilterRole] = useState<UserRole | ''>('')
   const [filterDepartmentId, setFilterDepartmentId] = useState<string>('')
   const [filterStatus, setFilterStatus] = useState<'active' | 'inactive' | ''>('')
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
 
   useEffect(() => {
     getUsers().then(setUsers).catch(() => {})
@@ -61,8 +60,6 @@ export function useUsersPage() {
     filterStatus,
     setFilterStatus,
     getDepartmentName,
-    openMenuId,
-    setOpenMenuId,
     handleAssignDepartment,
     handleChangeRole,
     handleDeactivate,

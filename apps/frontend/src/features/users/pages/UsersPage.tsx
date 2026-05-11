@@ -1,6 +1,7 @@
 import { useAuthStore } from '@/stores/authStore'
 import { ROLE_LABELS } from '@/constants/userRoles'
 import { useUsersPage } from '@/features/users/hooks/useUsersPage'
+import KebabMenu from '@/components/KebabMenu'
 import type { components } from '@/types/api'
 
 type UserRole = components['schemas']['UserRole']
@@ -16,8 +17,6 @@ export default function UsersPage() {
     setFilterDepartmentId,
     filterStatus,
     setFilterStatus,
-    openMenuId,
-    setOpenMenuId,
     handleAssignDepartment,
     handleChangeRole,
     handleDeactivate,
@@ -127,34 +126,9 @@ export default function UsersPage() {
                 </td>
                 <td className="px-5 py-3.5 text-right">
                   {u.id !== currentUser?.id && (
-                    <div className="relative flex justify-end">
-                      <button
-                        onClick={() => setOpenMenuId(openMenuId === u.id ? null : u.id)}
-                        className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-lg"
-                        aria-label="actions"
-                      >
-                        ⋮
-                      </button>
-
-                      {openMenuId === u.id && (
-                        <>
-                          <div
-                            className="fixed inset-0 z-10"
-                            onClick={() => setOpenMenuId(null)}
-                          />
-                          <div className="absolute right-0 bottom-full mb-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[140px]">
-                            {u.is_active && (
-                              <button
-                                onClick={() => { handleDeactivate(u.id); setOpenMenuId(null) }}
-                                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                              >
-                                Deactivate
-                              </button>
-                            )}
-                          </div>
-                        </>
-                      )}
-                    </div>
+                    <KebabMenu items={[
+                      ...(u.is_active ? [{ label: 'Deactivate', onClick: () => handleDeactivate(u.id), variant: 'danger' as const }] : []),
+                    ]} />
                   )}
                 </td>
               </tr>
