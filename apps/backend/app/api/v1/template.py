@@ -7,7 +7,7 @@ from app.core.database import get_db
 from app.core.dependencies import require_role
 from app.enums.user_role import UserRole
 from app.models.user import User
-from app.schemas.template import TemplateCreate, TemplateResponse, TemplateUpdate
+from app.schemas.template import TemplateCreate, TemplateResponse, TemplateUpdate, TaskResponse
 from app.services.template_service import TemplateService
 
 router = APIRouter()
@@ -82,4 +82,14 @@ async def clone_template(
 ) -> TemplateResponse:
     template = await template_service.clone_template(db=db, template_id=template_id)
     return TemplateResponse.model_validate(template)
+
+
+@router.get("/{template_id}/tasks", response_model=list[TaskResponse])
+async def get_tasks(
+    template_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
+) -> list[TaskResponse]:
+    tasks = await template_service.get_tasks(db=db, template_id=template_id)
+    return [TaskResponse.model_validate(t) for t in tasks]
 

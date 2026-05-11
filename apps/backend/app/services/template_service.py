@@ -4,7 +4,7 @@ import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.onboarding_template import OnboardingTemplate
 from app.repositories.template_repository import TemplateRepository
-from app.schemas.template import TemplateCreate, TemplateUpdate
+from app.schemas.template import TemplateCreate, TemplateUpdate, TaskCreate
 from app.errors import NotFoundError, ValidationError
 from app.errors import messages
 from app.models.template_task import TemplateTask
@@ -117,6 +117,14 @@ class TemplateService:
         await db.commit()
         await db.refresh(new_template)
         return new_template
+
+    async def get_tasks(
+        self, db: AsyncSession, template_id: uuid.UUID
+    ) -> list[TemplateTask]:
+        template = await template_repository.get_by_id(db, template_id)
+        if not template:
+            raise NotFoundError(*messages.TEMPLATE_NOT_FOUND)
+        return await template_task_repository.get_by_template(db, template_id)
 
     async def delete_template(
         self, db: AsyncSession, template_id: uuid.UUID

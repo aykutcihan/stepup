@@ -21,3 +21,19 @@ class TemplateResponse(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class TaskResponse(BaseModel):
+    id: uuid.UUID
+    template_id: uuid.UUID
+    title: str
+    description: str | None
+    order: int
+    deadline_days: int
+    is_required: bool
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+    
