@@ -8,6 +8,8 @@ export const ROUTES = {
   HR_DEPARTMENTS: '/hr/departments',
   HR_USERS: '/hr/users',
   PROFILE: '/profile',
+  HR_TEMPLATES: '/hr/templates',
+  HR_TEMPLATE_DETAIL: (id: string) => `/hr/templates/${id}`,
 }
 
 export const ERROR_ROUTES = {
