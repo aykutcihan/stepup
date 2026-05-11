@@ -79,6 +79,36 @@ class TestPostTemplate:
         assert response.status_code == 422
 
 
+class TestPostTask:
+
+    async def test_post_task_returns_201_with_correct_order(self, authenticated_client):
+        department_id = await create_department(authenticated_client, "PostTask Dept")
+        template = await create_template(authenticated_client, department_id, "PostTask Template")
+
+        await authenticated_client.post(
+            f"/api/v1/templates/{template['id']}/tasks",
+            json={"title": "First Task", "deadline_days": 1, "is_required": True},
+        )
+        response = await authenticated_client.post(
+            f"/api/v1/templates/{template['id']}/tasks",
+            json={"title": "Second Task", "deadline_days": 2, "is_required": False},
+        )
+
+        assert response.status_code == 201
+        assert response.json()["order"] == 2
+        assert response.json()["title"] == "Second Task"
+
+    async def test_post_task_returns_404_when_template_not_found(
+        self, authenticated_client
+    ):
+        response = await authenticated_client.post(
+            "/api/v1/templates/00000000-0000-0000-0000-000000000000/tasks",
+            json={"title": "Task", "deadline_days": 1, "is_required": True},
+        )
+
+        assert response.status_code == 404
+
+
 class TestGetTemplates:
 
     async def test_get_templates_returns_200_with_list(self, authenticated_client):

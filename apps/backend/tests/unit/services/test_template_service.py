@@ -67,6 +67,42 @@ class TestActivateTemplate:
             assert mock_template.is_active is True
 
 
+class TestAddTask:
+
+    async def test_add_task_raises_not_found_when_template_not_found(
+        self, service, mock_db
+    ):
+        with patch(
+            "app.services.template_service.template_repository", autospec=True
+        ) as mock_repo:
+            mock_repo.get_by_id = AsyncMock(return_value=None)
+
+            with pytest.raises(NotFoundError):
+                await service.add_task(mock_db, uuid.uuid4(), MagicMock())
+
+    async def test_add_task_assigns_next_order(self, service, mock_db):
+        mock_template = MagicMock()
+        mock_data = MagicMock()
+        mock_data.title = "New Task"
+        mock_data.description = None
+        mock_data.deadline_days = 3
+        mock_data.is_required = True
+
+        with patch(
+            "app.services.template_service.template_repository", autospec=True
+        ) as mock_repo, patch(
+            "app.services.template_service.template_task_repository", autospec=True
+        ) as mock_task_repo:
+            mock_repo.get_by_id = AsyncMock(return_value=mock_template)
+            mock_task_repo.get_max_order = AsyncMock(return_value=2)
+            mock_task_repo.create = AsyncMock()
+
+            await service.add_task(mock_db, uuid.uuid4(), mock_data)
+
+            created_task = mock_task_repo.create.call_args[0][1]
+            assert created_task.order == 3
+
+
 class TestCloneTemplate:
 
     async def test_clone_copies_all_tasks(self, service, mock_db):
