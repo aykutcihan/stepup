@@ -15,6 +15,7 @@ Individual tutorials explain each tool in isolation. This document shows how the
 | Axios Interceptor | Catch 401 errors, refresh token, retry silently | 013 |
 | Zustand (`useAuthStore`) | Global state — logged-in user info accessible everywhere | 014 |
 | React Router (`useNavigate`) | Navigate to a different page after an action | 012 |
+| React Router (`useParams`) | Read dynamic URL segments (e.g. `/templates/:id`) | 012 |
 
 ---
 
@@ -67,13 +68,32 @@ src/
 │   ├── routes.ts           ← all frontend route paths
 │   └── errorMessages.ts    ← error_code → human readable message map
 └── features/
-    └── department/
+    ├── department/
+    │   ├── services/
+    │   │   └── departmentService.ts
+    │   ├── hooks/
+    │   │   └── useDepartmentsPage.ts
+    │   └── pages/
+    │       └── DepartmentsPage.tsx
+    ├── template/
+    │   ├── services/
+    │   │   └── templateService.ts
+    │   ├── hooks/
+    │   │   ├── useTemplatesPage.ts      ← list page state
+    │   │   └── useTemplateDetailPage.ts ← detail page state + useParams
+    │   └── pages/
+    │       ├── TemplatesPage.tsx
+    │       └── TemplateDetailPage.tsx
+    └── users/
         ├── services/
-        │   └── departmentService.ts   ← API calls
+        │   └── userService.ts
         ├── hooks/
-        │   └── useDepartmentsPage.ts  ← state + business logic
+        │   ├── useUsersPage.ts
+        │   └── useProfilePage.ts
         └── pages/
-            └── DepartmentsPage.tsx    ← render only, no logic
+            ├── HRDashboard.tsx
+            ├── UsersPage.tsx
+            └── ProfilePage.tsx
 ```
 
 ---
@@ -236,6 +256,51 @@ Page loads → isLoading: true → RequireRole renders null
   → user set   → RequireRole shows the page
   → user null  → RequireRole redirects to /login
 ```
+
+---
+
+## Dynamic Routes — Detail Pages
+
+Some pages display a single resource identified by an ID in the URL:
+
+```
+/hr/templates         → list of all templates
+/hr/templates/abc-123 → detail page for one template
+```
+
+The route is defined with a `:id` segment in `App.tsx`:
+
+```tsx
+<Route path="/hr/templates/:id" element={<TemplateDetailPage />} />
+```
+
+The page reads the ID with `useParams`:
+
+```tsx
+const { id } = useParams<{ id: string }>()
+```
+
+The hook uses `id` to fetch the specific resource on mount:
+
+```tsx
+useEffect(() => {
+  if (!id) return
+  getTemplate(id).then(setTemplate)
+  getTasks(id).then(setTasks)
+}, [id])
+```
+
+Navigation to a detail page uses the route constant:
+
+```tsx
+// routes.ts
+HR_TEMPLATE_DETAIL: (id: string) => `/hr/templates/${id}`
+
+// In the list page
+<Link to={ROUTES.HR_TEMPLATE_DETAIL(t.id)}>View</Link>
+```
+
+See `018-ui-patterns.md` for the kebab menu and table overflow patterns used on list and detail pages.
 
 ---
 

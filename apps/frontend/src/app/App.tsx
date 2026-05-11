@@ -15,6 +15,8 @@ import HRDashboardLayout from '@/layouts/HRDashboardLayout'
 import DepartmentsPage from '@/features/department/pages/DepartmentsPage'
 import UsersPage from '@/features/users/pages/UsersPage'
 import ProfilePage from '@/features/users/pages/ProfilePage'
+import TemplatesPage from '@/features/template/pages/TemplatesPage'
+import TemplateDetailPage from '@/features/template/pages/TemplateDetailPage'
 
 
 export default function App() {
@@ -33,6 +35,8 @@ export default function App() {
           <Route path={ROUTES.HR_DEPARTMENTS} element={<DepartmentsPage />} />
           <Route path={ROUTES.HR_USERS} element={<UsersPage />} />
           <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+          <Route path={ROUTES.HR_TEMPLATES} element={<TemplatesPage />} />
+          <Route path="/hr/templates/:id" element={<TemplateDetailPage />} />
         </Route>
       </Route>
 

@@ -21,3 +21,12 @@ PERMISSION_DENIED = ("PERMISSION_DENIED", "You do not have permission to perform
 DEPARTMENT_ALREADY_EXISTS = ("DEPARTMENT_ALREADY_EXISTS", "A department with this name already exists")
 DEPARTMENT_NOT_FOUND = ("DEPARTMENT_NOT_FOUND", "Department not found")
 DEPARTMENT_HAS_ACTIVE_USERS = ("DEPARTMENT_HAS_ACTIVE_USERS", "Cannot deactivate a department with active users")
+
+# Template
+TEMPLATE_NOT_FOUND = ("TEMPLATE_NOT_FOUND", "Template not found")
+TEMPLATE_NO_TASKS = ("TEMPLATE_NO_TASKS", "Template must have at least one task before it can be activated")
+TEMPLATE_HAS_PLANS = ("TEMPLATE_HAS_PLANS", "Cannot delete a template that has associated plans")
+
+# Task
+TASK_NOT_FOUND = ("TASK_NOT_FOUND", "Task not found")
+INVALID_REORDER = ("INVALID_REORDER", "Invalid order position")

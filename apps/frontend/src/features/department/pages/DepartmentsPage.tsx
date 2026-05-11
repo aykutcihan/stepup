@@ -9,8 +9,11 @@ export default function DepartmentsPage() {
     editingName,
     setEditingName,
     pageError,
+    openMenuId,
+    setOpenMenuId,
     handleCreate,
     startEdit,
+    cancelEdit,
     handleUpdate,
     handleDeactivate,
     handleReactivate,
@@ -44,13 +47,13 @@ export default function DepartmentsPage() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50 text-left">
-              <th className="px-5 py-3.5 font-medium text-gray-600">Name</th>
+              <th className="px-5 py-3.5 font-medium text-gray-600 rounded-tl-xl">Name</th>
               <th className="px-5 py-3.5 font-medium text-gray-600">Status</th>
-              <th className="px-5 py-3.5 font-medium text-gray-600 text-right">Actions</th>
+              <th className="px-5 py-3.5 font-medium text-gray-600 text-right rounded-tr-xl">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -76,36 +79,64 @@ export default function DepartmentsPage() {
                     {d.is_active ? 'Active' : 'Inactive'}
                   </span>
                 </td>
-                <td className="px-5 py-3.5 text-right space-x-2">
+                <td className="px-5 py-3.5 text-right">
                   {editingId === d.id ? (
-                    <button
-                      onClick={handleUpdate}
-                      className="text-xs text-blue-600 hover:text-blue-800 border border-blue-200 hover:border-blue-300 px-3 py-1.5 rounded-lg transition-colors"
-                    >
-                      Save
-                    </button>
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={handleUpdate}
+                        className="text-xs text-blue-600 hover:text-blue-800 border border-blue-200 hover:border-blue-300 px-3 py-1.5 rounded-lg transition-colors"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={cancelEdit}
+                        className="text-xs text-gray-500 hover:text-gray-700 border border-gray-200 px-3 py-1.5 rounded-lg transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   ) : (
-                    <button
-                      onClick={() => startEdit(d)}
-                      className="text-xs text-gray-600 hover:text-gray-800 border border-gray-200 hover:border-gray-300 px-3 py-1.5 rounded-lg transition-colors"
-                    >
-                      Edit
-                    </button>
-                  )}
-                  {d.is_active ? (
-                    <button
-                      onClick={() => handleDeactivate(d.id)}
-                      className="text-xs text-red-600 hover:text-red-800 border border-red-200 hover:border-red-300 px-3 py-1.5 rounded-lg transition-colors"
-                    >
-                      Deactivate
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleReactivate(d.id)}
-                      className="text-xs text-green-600 hover:text-green-800 border border-green-200 hover:border-green-300 px-3 py-1.5 rounded-lg transition-colors"
-                    >
-                      Reactivate
-                    </button>
+                    <div className="relative flex justify-end">
+                      <button
+                        onClick={() => setOpenMenuId(openMenuId === d.id ? null : d.id)}
+                        className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-lg"
+                        aria-label="actions"
+                      >
+                        ⋮
+                      </button>
+
+                      {openMenuId === d.id && (
+                        <>
+                          <div
+                            className="fixed inset-0 z-10"
+                            onClick={() => setOpenMenuId(null)}
+                          />
+                          <div className="absolute right-0 bottom-full mb-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[140px]">
+                            <button
+                              onClick={() => { startEdit(d); setOpenMenuId(null) }}
+                              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            >
+                              Edit name
+                            </button>
+                            {d.is_active ? (
+                              <button
+                                onClick={() => { handleDeactivate(d.id); setOpenMenuId(null) }}
+                                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                              >
+                                Deactivate
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => { handleReactivate(d.id); setOpenMenuId(null) }}
+                                className="w-full text-left px-4 py-2 text-sm text-green-600 hover:bg-green-50 transition-colors"
+                              >
+                                Reactivate
+                              </button>
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
                   )}
                 </td>
               </tr>

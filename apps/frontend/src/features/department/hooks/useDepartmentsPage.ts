@@ -17,6 +17,7 @@ export function useDepartmentsPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
   const [pageError, setPageError] = useState('')
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
 
   useEffect(() => {
     getDepartments().then(setDepartments).catch(() => {})
@@ -32,6 +33,11 @@ export function useDepartmentsPage() {
   function startEdit(department: DepartmentResponse) {
     setEditingId(department.id)
     setEditingName(department.name)
+  }
+
+  function cancelEdit() {
+    setEditingId(null)
+    setEditingName('')
   }
 
   async function handleUpdate() {
@@ -66,8 +72,11 @@ export function useDepartmentsPage() {
     editingName,
     setEditingName,
     pageError,
+    openMenuId,
+    setOpenMenuId,
     handleCreate,
     startEdit,
+    cancelEdit,
     handleUpdate,
     handleDeactivate,
     handleReactivate,

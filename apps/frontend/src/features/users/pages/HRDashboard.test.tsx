@@ -15,8 +15,8 @@ vi.mock('@/features/users/services/userService', () => ({
   deactivateUser: mockUserServiceDeactivate,
 }))
 
-const mockCurrentUser = { id: '1', email: 'hr@example.com', first_name: 'HR', last_name: 'Admin', role: 'hr_admin' as const }
-const mockOtherUser = { id: '2', email: 'emp@example.com', first_name: 'John', last_name: 'Doe', role: 'employee' as const }
+const mockCurrentUser = { id: '1', email: 'hr@example.com', first_name: 'HR', last_name: 'Admin', role: 'hr_admin' as const, is_active: true, department_id: null }
+const mockOtherUser = { id: '2', email: 'emp@example.com', first_name: 'John', last_name: 'Doe', role: 'employee' as const, is_active: true, department_id: null }
 
 function renderPage() {
   render(
@@ -47,6 +47,7 @@ describe('HRDashboard', () => {
 
     await waitFor(() => screen.getByText(/john doe/i))
 
+    await userEvent.click(screen.getByRole('button', { name: /actions/i }))
     await userEvent.click(screen.getByRole('button', { name: /deactivate/i }))
 
     await waitFor(() => {
