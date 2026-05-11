@@ -25,6 +25,14 @@ export const API = {
     DEACTIVATE: (id: string) => `/api/v1/departments/${id}/deactivate`,
     REACTIVATE: (id: string) => `/api/v1/departments/${id}/reactivate`,
   },
+  PLANS: {
+    CREATE: '/api/v1/plans/',
+    GET: (id: string) => `/api/v1/plans/${id}`,
+    UPDATE: (id: string) => `/api/v1/plans/${id}`,
+    ADD_TASK: (planId: string) => `/api/v1/plans/${planId}/tasks`,
+    UPDATE_TASK: (planId: string, taskId: string) => `/api/v1/plans/${planId}/tasks/${taskId}`,
+    CANCEL_TASK: (planId: string, taskId: string) => `/api/v1/plans/${planId}/tasks/${taskId}/cancel`,
+  },
   TEMPLATES: {
     LIST: '/api/v1/templates/',
     CREATE: '/api/v1/templates/',
