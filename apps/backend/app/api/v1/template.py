@@ -62,3 +62,13 @@ async def activate_template(
 ) -> TemplateResponse:
     template = await template_service.activate_template(db=db, template_id=template_id)
     return TemplateResponse.model_validate(template)
+
+
+@router.patch("/{template_id}/deactivate", response_model=TemplateResponse)
+async def deactivate_template(
+    template_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
+) -> TemplateResponse:
+    template = await template_service.deactivate_template(db=db, template_id=template_id)
+    return TemplateResponse.model_validate(template)

@@ -70,3 +70,15 @@ class TemplateService:
         await db.commit()
         await db.refresh(template)
         return template
+    
+    async def deactivate_template(
+        self, db: AsyncSession, template_id: uuid.UUID
+    ) -> OnboardingTemplate:
+        template = await template_repository.get_by_id(db, template_id)
+        if not template:
+            raise NotFoundError(*messages.TEMPLATE_NOT_FOUND)
+
+        template.is_active = False
+        await db.commit()
+        await db.refresh(template)
+        return template
