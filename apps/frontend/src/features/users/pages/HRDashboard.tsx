@@ -9,6 +9,7 @@ type UserResponse = components['schemas']['UserResponse']
 export default function HRDashboard() {
   const currentUser = useAuthStore((state) => state.user)
   const [users, setUsers] = useState<UserResponse[]>([])
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
 
   useEffect(() => {
     getUsers().then(setUsers).catch(() => {})
@@ -26,14 +27,14 @@ export default function HRDashboard() {
         <p className="text-sm text-gray-500 mt-0.5">Manage your organisation's users.</p>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50 text-left">
-              <th className="px-5 py-3.5 font-medium text-gray-600">Name</th>
+              <th className="px-5 py-3.5 font-medium text-gray-600 rounded-tl-xl">Name</th>
               <th className="px-5 py-3.5 font-medium text-gray-600">Email</th>
               <th className="px-5 py-3.5 font-medium text-gray-600">Role</th>
-              <th className="px-5 py-3.5 font-medium text-gray-600 text-right">Action</th>
+              <th className="px-5 py-3.5 font-medium text-gray-600 text-right rounded-tr-xl">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -53,12 +54,32 @@ export default function HRDashboard() {
                 </td>
                 <td className="px-5 py-3.5 text-right">
                   {u.id !== currentUser?.id && (
-                    <button
-                      onClick={() => handleDeactivate(u.id)}
-                      className="text-xs text-red-600 hover:text-red-800 border border-red-200 hover:border-red-300 px-3 py-1.5 rounded-lg transition-colors"
-                    >
-                      Deactivate
-                    </button>
+                    <div className="relative flex justify-end">
+                      <button
+                        onClick={() => setOpenMenuId(openMenuId === u.id ? null : u.id)}
+                        className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-lg"
+                        aria-label="actions"
+                      >
+                        ⋮
+                      </button>
+
+                      {openMenuId === u.id && (
+                        <>
+                          <div
+                            className="fixed inset-0 z-10"
+                            onClick={() => setOpenMenuId(null)}
+                          />
+                          <div className="absolute right-0 bottom-full mb-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[140px]">
+                            <button
+                              onClick={() => { handleDeactivate(u.id); setOpenMenuId(null) }}
+                              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                            >
+                              Deactivate
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
                   )}
                 </td>
               </tr>

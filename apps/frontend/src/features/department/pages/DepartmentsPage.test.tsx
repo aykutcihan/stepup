@@ -72,7 +72,8 @@ describe('DepartmentsPage', () => {
 
     await waitFor(() => screen.getByText('Engineering'))
 
-    await userEvent.click(screen.getByRole('button', { name: /edit/i }))
+    await userEvent.click(screen.getByRole('button', { name: /actions/i }))
+    await userEvent.click(screen.getByRole('button', { name: /edit name/i }))
     const input = screen.getByDisplayValue('Engineering')
     await userEvent.clear(input)
     await userEvent.type(input, 'Engineering Updated')
@@ -90,6 +91,7 @@ describe('DepartmentsPage', () => {
     renderPage()
 
     await waitFor(() => screen.getByText('Engineering'))
+    await userEvent.click(screen.getByRole('button', { name: /actions/i }))
     await userEvent.click(screen.getByRole('button', { name: /deactivate/i }))
 
     await waitFor(() => {

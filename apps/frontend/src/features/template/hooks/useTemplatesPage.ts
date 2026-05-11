@@ -16,6 +16,7 @@ export function useTemplatesPage() {
   const [departments, setDepartments] = useState<DepartmentResponse[]>([])
   const [filterDepartmentId, setFilterDepartmentId] = useState('')
   const [filterStatus, setFilterStatus] = useState<'active' | 'inactive' | ''>('')
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
 
   useEffect(() => {
     getTemplates().then(setTemplates).catch(() => {})
@@ -55,6 +56,8 @@ export function useTemplatesPage() {
     setFilterDepartmentId,
     filterStatus,
     setFilterStatus,
+    openMenuId,
+    setOpenMenuId,
     getDepartmentName,
     handleActivate,
     handleDeactivate,

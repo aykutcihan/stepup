@@ -98,8 +98,9 @@ describe('UsersPage', () => {
 
     await waitFor(() => screen.getByText('John Doe'))
 
-    const deactivateButtons = screen.getAllByRole('button', { name: /deactivate/i })
-    await userEvent.click(deactivateButtons[0])
+    const menuButtons = screen.getAllByRole('button', { name: /actions/i })
+    await userEvent.click(menuButtons[0])
+    await userEvent.click(screen.getByRole('button', { name: /deactivate/i }))
 
     expect(mockDeactivateUser).toHaveBeenCalledWith('user-2')
   })

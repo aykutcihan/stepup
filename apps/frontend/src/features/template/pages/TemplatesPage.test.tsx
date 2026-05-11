@@ -70,8 +70,9 @@ describe('TemplatesPage', () => {
 
     await waitFor(() => screen.getByText('Engineering Onboarding'))
 
-    const cloneButtons = screen.getAllByRole('button', { name: /clone/i })
-    await userEvent.click(cloneButtons[0])
+    const menuButtons = screen.getAllByRole('button', { name: /actions/i })
+    await userEvent.click(menuButtons[0])
+    await userEvent.click(screen.getByRole('button', { name: /^clone$/i }))
 
     expect(mockCloneTemplate).toHaveBeenCalledWith('tmpl-1')
   })
@@ -81,6 +82,8 @@ describe('TemplatesPage', () => {
 
     await waitFor(() => screen.getByText('Engineering Onboarding'))
 
+    const menuButtons = screen.getAllByRole('button', { name: /actions/i })
+    await userEvent.click(menuButtons[0])
     await userEvent.click(screen.getByRole('button', { name: /deactivate/i }))
 
     expect(mockDeactivateTemplate).toHaveBeenCalledWith('tmpl-1')
@@ -91,6 +94,8 @@ describe('TemplatesPage', () => {
 
     await waitFor(() => screen.getByText('Marketing Onboarding'))
 
+    const menuButtons = screen.getAllByRole('button', { name: /actions/i })
+    await userEvent.click(menuButtons[1])
     await userEvent.click(screen.getByRole('button', { name: /^activate$/i }))
 
     expect(mockActivateTemplate).toHaveBeenCalledWith('tmpl-2')

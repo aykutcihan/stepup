@@ -10,6 +10,8 @@ export default function TemplatesPage() {
     setFilterDepartmentId,
     filterStatus,
     setFilterStatus,
+    openMenuId,
+    setOpenMenuId,
     getDepartmentName,
     handleActivate,
     handleDeactivate,
@@ -70,33 +72,54 @@ export default function TemplatesPage() {
               </div>
 
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleClone(t.id)}
-                  className="text-xs text-gray-600 hover:text-gray-800 border border-gray-200 hover:border-gray-300 px-3 py-1.5 rounded-lg transition-colors"
-                >
-                  Clone
-                </button>
-                {t.is_active ? (
-                  <button
-                    onClick={() => handleDeactivate(t.id)}
-                    className="text-xs text-red-600 hover:text-red-800 border border-red-200 hover:border-red-300 px-3 py-1.5 rounded-lg transition-colors"
-                  >
-                    Deactivate
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleActivate(t.id)}
-                    className="text-xs text-green-600 hover:text-green-800 border border-green-200 hover:border-green-300 px-3 py-1.5 rounded-lg transition-colors"
-                  >
-                    Activate
-                  </button>
-                )}
                 <Link
                   to={ROUTES.HR_TEMPLATE_DETAIL(t.id)}
                   className="text-xs text-blue-600 hover:text-blue-800 border border-blue-200 hover:border-blue-300 px-3 py-1.5 rounded-lg transition-colors"
                 >
                   View
                 </Link>
+
+                <div className="relative">
+                  <button
+                    onClick={() => setOpenMenuId(openMenuId === t.id ? null : t.id)}
+                    className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-lg"
+                    aria-label="actions"
+                  >
+                    ⋮
+                  </button>
+
+                  {openMenuId === t.id && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-10"
+                        onClick={() => setOpenMenuId(null)}
+                      />
+                      <div className="absolute right-0 bottom-full mb-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[150px]">
+                        <button
+                          onClick={() => { handleClone(t.id); setOpenMenuId(null) }}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          Clone
+                        </button>
+                        {t.is_active ? (
+                          <button
+                            onClick={() => { handleDeactivate(t.id); setOpenMenuId(null) }}
+                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                          >
+                            Deactivate
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => { handleActivate(t.id); setOpenMenuId(null) }}
+                            className="w-full text-left px-4 py-2 text-sm text-green-600 hover:bg-green-50 transition-colors"
+                          >
+                            Activate
+                          </button>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           ))}
