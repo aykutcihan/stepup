@@ -82,3 +82,18 @@ class TemplateService:
         await db.commit()
         await db.refresh(template)
         return template
+    
+    async def clone_template(
+        self, db: AsyncSession, template_id: uuid.UUID
+    ) -> OnboardingTemplate:
+        template = await template_repository.get_by_id(db, template_id)
+        if not template:
+            raise NotFoundError(*messages.TEMPLATE_NOT_FOUND)
+
+        new_template = OnboardingTemplate(
+            name=f"{template.name} (copy)",
+            department_id=template.department_id,
+            is_active=False,
+        )
+        await template_repository.create(db, new_template)
+        await db.flush()
