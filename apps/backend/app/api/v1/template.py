@@ -74,7 +74,7 @@ async def deactivate_template(
     return TemplateResponse.model_validate(template)
 
 
-@router.post("/{template_id}/clone", response_model=TemplateResponse, status_code=201)
+@router.post("/{template_id}/clone", response_model=TemplateResponse, status_code=status.HTTP_201_CREATED)
 async def clone_template(
     template_id: uuid.UUID,
     db: AsyncSession = Depends(get_db),
@@ -82,3 +82,4 @@ async def clone_template(
 ) -> TemplateResponse:
     template = await template_service.clone_template(db=db, template_id=template_id)
     return TemplateResponse.model_validate(template)
+

@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -6,8 +7,11 @@ from app.repositories.template_repository import TemplateRepository
 from app.schemas.template import TemplateCreate, TemplateUpdate
 from app.errors import NotFoundError, ValidationError
 from app.errors import messages
+from app.models.template_task import TemplateTask
+from app.repositories.template_task_repository import TemplateTaskRepository
 
 template_repository = TemplateRepository()
+template_task_repository = TemplateTaskRepository()
 
 class TemplateService:
     async def create_template(
@@ -97,3 +101,30 @@ class TemplateService:
         )
         await template_repository.create(db, new_template)
         await db.flush()
+
+        tasks = await template_task_repository.get_by_template(db, template_id)
+        for task in tasks:
+            new_task = TemplateTask(
+                template_id=new_template.id,
+                title=task.title,
+                description=task.description,
+                order=task.order,
+                deadline_days=task.deadline_days,
+                is_required=task.is_required,
+            )
+            db.add(new_task)
+
+        await db.commit()
+        await db.refresh(new_template)
+        return new_template
+
+    async def delete_template(
+        self, db: AsyncSession, template_id: uuid.UUID
+    ) -> None:
+        template = await template_repository.get_by_id(db, template_id)
+        if not template:
+            raise NotFoundError(*messages.TEMPLATE_NOT_FOUND)
+
+        template.deleted_at = datetime.now(timezone.utc)
+        template.is_active = False
+        await db.commit()

@@ -24,3 +24,5 @@ DEPARTMENT_HAS_ACTIVE_USERS = ("DEPARTMENT_HAS_ACTIVE_USERS", "Cannot deactivate
 
 # Template
 TEMPLATE_NOT_FOUND = ("TEMPLATE_NOT_FOUND", "Template not found")
+TEMPLATE_NO_TASKS = ("TEMPLATE_NO_TASKS", "Template must have at least one task before it can be activated")
+TEMPLATE_HAS_PLANS = ("TEMPLATE_HAS_PLANS", "Cannot delete a template that has associated plans")

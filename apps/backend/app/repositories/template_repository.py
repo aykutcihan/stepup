@@ -63,3 +63,4 @@ class TemplateRepository:
             )
         )
         return result.scalar_one()
+    
