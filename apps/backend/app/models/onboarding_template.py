@@ -10,6 +10,7 @@ from app.models.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
     from app.models.department import Department
+    from app.models.template_task import TemplateTask
 
 
 class OnboardingTemplate(Base, TimestampMixin):
