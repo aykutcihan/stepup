@@ -103,6 +103,26 @@ class TestAddTask:
             assert created_task.order == 3
 
 
+class TestUpdateTask:
+
+    async def test_update_task_raises_not_found_when_task_not_found(
+        self, service, mock_db
+    ):
+        mock_template = MagicMock()
+        template_id = uuid.uuid4()
+
+        with patch(
+            "app.services.template_service.template_repository", autospec=True
+        ) as mock_repo, patch(
+            "app.services.template_service.template_task_repository", autospec=True
+        ) as mock_task_repo:
+            mock_repo.get_by_id = AsyncMock(return_value=mock_template)
+            mock_task_repo.get_by_id = AsyncMock(return_value=None)
+
+            with pytest.raises(NotFoundError):
+                await service.update_task(mock_db, template_id, uuid.uuid4(), MagicMock())
+
+
 class TestCloneTemplate:
 
     async def test_clone_copies_all_tasks(self, service, mock_db):

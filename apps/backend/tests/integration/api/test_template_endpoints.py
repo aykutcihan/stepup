@@ -109,6 +109,33 @@ class TestPostTask:
         assert response.status_code == 404
 
 
+class TestPatchTask:
+
+    async def test_patch_task_returns_200_when_updated(self, authenticated_client):
+        department_id = await create_department(authenticated_client, "PatchTask Dept")
+        template = await create_template(authenticated_client, department_id, "PatchTask Template")
+        task = await add_task(authenticated_client, template["id"], "Original Title")
+
+        response = await authenticated_client.patch(
+            f"/api/v1/templates/{template['id']}/tasks/{task['id']}",
+            json={"title": "Updated Title"},
+        )
+
+        assert response.status_code == 200
+        assert response.json()["title"] == "Updated Title"
+
+    async def test_patch_task_returns_404_when_not_found(self, authenticated_client):
+        department_id = await create_department(authenticated_client, "PatchTask404 Dept")
+        template = await create_template(authenticated_client, department_id, "PatchTask404 Template")
+
+        response = await authenticated_client.patch(
+            f"/api/v1/templates/{template['id']}/tasks/00000000-0000-0000-0000-000000000000",
+            json={"title": "Anything"},
+        )
+
+        assert response.status_code == 404
+
+
 class TestGetTemplates:
 
     async def test_get_templates_returns_200_with_list(self, authenticated_client):
