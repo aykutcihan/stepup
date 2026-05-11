@@ -4,7 +4,7 @@ import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.onboarding_template import OnboardingTemplate
 from app.repositories.template_repository import TemplateRepository
-from app.schemas.template import TemplateCreate, TemplateUpdate, TaskCreate
+from app.schemas.template import TemplateCreate, TemplateUpdate, TaskCreate, TaskUpdate
 from app.errors import NotFoundError, ValidationError
 from app.errors import messages
 from app.models.template_task import TemplateTask
@@ -135,6 +135,34 @@ class TemplateService:
             is_required=data.is_required,
         )
         await template_task_repository.create(db, task)
+        await db.commit()
+        await db.refresh(task)
+        return task
+
+    async def update_task(
+        self,
+        db: AsyncSession,
+        template_id: uuid.UUID,
+        task_id: uuid.UUID,
+        data: TaskUpdate,
+    ) -> TemplateTask:
+        template = await template_repository.get_by_id(db, template_id)
+        if not template:
+            raise NotFoundError(*messages.TEMPLATE_NOT_FOUND)
+
+        task = await template_task_repository.get_by_id(db, task_id)
+        if not task or task.template_id != template_id:
+            raise NotFoundError(*messages.TASK_NOT_FOUND)
+
+        if data.title is not None:
+            task.title = data.title
+        if data.description is not None:
+            task.description = data.description
+        if data.deadline_days is not None:
+            task.deadline_days = data.deadline_days
+        if data.is_required is not None:
+            task.is_required = data.is_required
+
         await db.commit()
         await db.refresh(task)
         return task

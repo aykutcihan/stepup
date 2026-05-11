@@ -30,6 +30,17 @@ class TemplateTaskRepository:
         )
         return result.scalar_one() or 0
 
+    async def get_by_id(
+        self, db: AsyncSession, task_id: uuid.UUID
+    ) -> TemplateTask | None:
+        result = await db.execute(
+            select(TemplateTask).where(
+                TemplateTask.id == task_id,
+                TemplateTask.deleted_at.is_(None),
+            )
+        )
+        return result.scalar_one_or_none()
+
     async def create(
         self, db: AsyncSession, task: TemplateTask
     ) -> TemplateTask:

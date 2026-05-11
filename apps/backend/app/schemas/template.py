@@ -30,6 +30,13 @@ class TaskCreate(BaseModel):
     is_required: bool = True
 
 
+class TaskUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    deadline_days: int | None = None
+    is_required: bool | None = None
+
+
 class TaskResponse(BaseModel):
     id: uuid.UUID
     template_id: uuid.UUID
