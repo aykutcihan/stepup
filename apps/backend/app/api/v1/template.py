@@ -7,7 +7,7 @@ from app.core.database import get_db
 from app.core.dependencies import require_role
 from app.enums.user_role import UserRole
 from app.models.user import User
-from app.schemas.template import TemplateCreate, TemplateResponse, TemplateUpdate, TaskResponse
+from app.schemas.template import TemplateCreate, TemplateResponse, TemplateUpdate, TaskCreate, TaskResponse
 from app.services.template_service import TemplateService
 
 router = APIRouter()
@@ -82,6 +82,17 @@ async def clone_template(
 ) -> TemplateResponse:
     template = await template_service.clone_template(db=db, template_id=template_id)
     return TemplateResponse.model_validate(template)
+
+
+@router.post("/{template_id}/tasks", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
+async def add_task(
+    template_id: uuid.UUID,
+    data: TaskCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
+) -> TaskResponse:
+    task = await template_service.add_task(db=db, template_id=template_id, data=data)
+    return TaskResponse.model_validate(task)
 
 
 @router.get("/{template_id}/tasks", response_model=list[TaskResponse])

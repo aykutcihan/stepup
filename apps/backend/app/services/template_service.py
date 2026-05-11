@@ -118,6 +118,27 @@ class TemplateService:
         await db.refresh(new_template)
         return new_template
 
+    async def add_task(
+        self, db: AsyncSession, template_id: uuid.UUID, data: TaskCreate
+    ) -> TemplateTask:
+        template = await template_repository.get_by_id(db, template_id)
+        if not template:
+            raise NotFoundError(*messages.TEMPLATE_NOT_FOUND)
+
+        max_order = await template_task_repository.get_max_order(db, template_id)
+        task = TemplateTask(
+            template_id=template_id,
+            title=data.title,
+            description=data.description,
+            order=max_order + 1,
+            deadline_days=data.deadline_days,
+            is_required=data.is_required,
+        )
+        await template_task_repository.create(db, task)
+        await db.commit()
+        await db.refresh(task)
+        return task
+
     async def get_tasks(
         self, db: AsyncSession, template_id: uuid.UUID
     ) -> list[TemplateTask]:
