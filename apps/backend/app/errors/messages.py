@@ -29,3 +29,4 @@ TEMPLATE_HAS_PLANS = ("TEMPLATE_HAS_PLANS", "Cannot delete a template that has a
 
 # Task
 TASK_NOT_FOUND = ("TASK_NOT_FOUND", "Task not found")
+INVALID_REORDER = ("INVALID_REORDER", "Invalid order position")

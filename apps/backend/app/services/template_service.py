@@ -189,6 +189,43 @@ class TemplateService:
             raise NotFoundError(*messages.TEMPLATE_NOT_FOUND)
         return await template_task_repository.get_by_template(db, template_id)
 
+    async def reorder_task(
+        self,
+        db: AsyncSession,
+        template_id: uuid.UUID,
+        task_id: uuid.UUID,
+        new_order: int,
+    ) -> TemplateTask:
+        template = await template_repository.get_by_id(db, template_id)
+        if not template:
+            raise NotFoundError(*messages.TEMPLATE_NOT_FOUND)
+
+        tasks = await template_task_repository.get_by_template(db, template_id)
+        task = next((t for t in tasks if t.id == task_id), None)
+        if not task:
+            raise NotFoundError(*messages.TASK_NOT_FOUND)
+
+        if new_order < 1 or new_order > len(tasks):
+            raise ValidationError(*messages.INVALID_REORDER)
+
+        current_order = task.order
+        if new_order == current_order:
+            return task
+
+        if new_order < current_order:
+            for t in tasks:
+                if new_order <= t.order < current_order:
+                    t.order += 1
+        else:
+            for t in tasks:
+                if current_order < t.order <= new_order:
+                    t.order -= 1
+
+        task.order = new_order
+        await db.commit()
+        await db.refresh(task)
+        return task
+
     async def delete_template(
         self, db: AsyncSession, template_id: uuid.UUID
     ) -> None:

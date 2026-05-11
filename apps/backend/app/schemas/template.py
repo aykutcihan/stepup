@@ -37,6 +37,10 @@ class TaskUpdate(BaseModel):
     is_required: bool | None = None
 
 
+class TaskReorder(BaseModel):
+    new_order: int
+
+
 class TaskResponse(BaseModel):
     id: uuid.UUID
     template_id: uuid.UUID
