@@ -17,6 +17,8 @@ import UsersPage from '@/features/users/pages/UsersPage'
 import ProfilePage from '@/features/users/pages/ProfilePage'
 import TemplatesPage from '@/features/template/pages/TemplatesPage'
 import TemplateDetailPage from '@/features/template/pages/TemplateDetailPage'
+import CreatePlanPage from '@/features/plan/pages/CreatePlanPage'
+import PlanDetailPage from '@/features/plan/pages/PlanDetailPage'
 
 
 export default function App() {
@@ -37,6 +39,8 @@ export default function App() {
           <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
           <Route path={ROUTES.HR_TEMPLATES} element={<TemplatesPage />} />
           <Route path="/hr/templates/:id" element={<TemplateDetailPage />} />
+          <Route path={ROUTES.HR_PLAN_NEW} element={<CreatePlanPage />} />
+          <Route path="/hr/plans/:id" element={<PlanDetailPage />} />
         </Route>
       </Route>
 
