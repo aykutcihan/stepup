@@ -7,7 +7,7 @@ from app.core.database import get_db
 from app.core.dependencies import require_role
 from app.enums.user_role import UserRole
 from app.models.user import User
-from app.schemas.template import TemplateCreate, TemplateResponse
+from app.schemas.template import TemplateCreate, TemplateResponse, TemplateUpdate
 from app.services.template_service import TemplateService
 
 router = APIRouter()
@@ -32,7 +32,7 @@ async def get_templates(
     templates = await template_service.get_all_templates(
         db=db, department_id=department_id, is_active=is_active
     )
-    
+
     response_list = []
 
     for t in templates:
@@ -40,3 +40,16 @@ async def get_templates(
         response_list.append(validated_data)
 
     return response_list
+
+
+@router.patch("/{template_id}", response_model=TemplateResponse)
+async def update_template(
+    template_id: uuid.UUID,
+    data: TemplateUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
+) -> TemplateResponse:
+    template = await template_service.update_template(
+        db=db, template_id=template_id, data=data
+    )
+    return TemplateResponse.model_validate(template)

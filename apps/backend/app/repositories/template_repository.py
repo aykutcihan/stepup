@@ -28,3 +28,14 @@ class TemplateRepository:
             
         result = await db.execute(query)
         return list(result.scalars().all())
+    
+    async def get_by_id(
+        self, db: AsyncSession, template_id: uuid.UUID
+    ) -> OnboardingTemplate | None:
+        result = await db.execute(
+            select(OnboardingTemplate).where(
+                OnboardingTemplate.id == template_id,
+                OnboardingTemplate.deleted_at.is_(None),
+            )
+        )
+        return result.scalar_one_or_none()
