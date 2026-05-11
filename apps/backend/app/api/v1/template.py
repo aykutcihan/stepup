@@ -53,3 +53,12 @@ async def update_template(
         db=db, template_id=template_id, data=data
     )
     return TemplateResponse.model_validate(template)
+
+@router.patch("/{template_id}/activate", response_model=TemplateResponse)
+async def activate_template(
+    template_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
+) -> TemplateResponse:
+    template = await template_service.activate_template(db=db, template_id=template_id)
+    return TemplateResponse.model_validate(template)
