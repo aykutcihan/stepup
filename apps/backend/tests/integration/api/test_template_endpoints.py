@@ -17,6 +17,39 @@ async def create_template(client, department_id, name="Test Template"):
     return response.json()
 
 
+async def add_task(client, template_id, title="Test Task"):
+    response = await client.post(
+        f"/api/v1/templates/{template_id}/tasks",
+        json={"title": title, "deadline_days": 3, "is_required": True},
+    )
+    return response.json()
+
+
+class TestGetTasks:
+
+    async def test_get_tasks_returns_200_with_list(self, authenticated_client):
+        department_id = await create_department(authenticated_client, "GetTasks Dept")
+        template = await create_template(authenticated_client, department_id, "GetTasks Template")
+        await add_task(authenticated_client, template["id"], "Task A")
+
+        response = await authenticated_client.get(
+            f"/api/v1/templates/{template['id']}/tasks"
+        )
+
+        assert response.status_code == 200
+        assert len(response.json()) == 1
+        assert response.json()[0]["title"] == "Task A"
+
+    async def test_get_tasks_returns_404_when_template_not_found(
+        self, authenticated_client
+    ):
+        response = await authenticated_client.get(
+            "/api/v1/templates/00000000-0000-0000-0000-000000000000/tasks"
+        )
+
+        assert response.status_code == 404
+
+
 class TestPostTemplate:
 
     async def test_post_template_returns_201_when_request_is_valid(
