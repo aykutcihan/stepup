@@ -164,6 +164,37 @@ class TestDeleteTask:
         assert all(t["id"] != task["id"] for t in response.json())
 
 
+class TestReorderTask:
+
+    async def test_reorder_task_returns_200_with_new_order(self, authenticated_client):
+        department_id = await create_department(authenticated_client, "Reorder Dept")
+        template = await create_template(authenticated_client, department_id, "Reorder Template")
+        await add_task(authenticated_client, template["id"], "Task 1")
+        task_2 = await add_task(authenticated_client, template["id"], "Task 2")
+
+        response = await authenticated_client.patch(
+            f"/api/v1/templates/{template['id']}/tasks/{task_2['id']}/reorder",
+            json={"new_order": 1},
+        )
+
+        assert response.status_code == 200
+        assert response.json()["order"] == 1
+
+    async def test_reorder_task_returns_400_when_order_invalid(
+        self, authenticated_client
+    ):
+        department_id = await create_department(authenticated_client, "ReorderInvalid Dept")
+        template = await create_template(authenticated_client, department_id, "ReorderInvalid Template")
+        task = await add_task(authenticated_client, template["id"], "Only Task")
+
+        response = await authenticated_client.patch(
+            f"/api/v1/templates/{template['id']}/tasks/{task['id']}/reorder",
+            json={"new_order": 99},
+        )
+
+        assert response.status_code == 400
+
+
 class TestGetTemplates:
 
     async def test_get_templates_returns_200_with_list(self, authenticated_client):

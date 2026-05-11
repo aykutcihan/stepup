@@ -145,6 +145,62 @@ class TestDeleteTask:
             assert mock_task.deleted_at is not None
 
 
+class TestReorderTask:
+
+    async def test_reorder_task_shifts_tasks_correctly(self, service, mock_db):
+        template_id = uuid.uuid4()
+        task_id = uuid.uuid4()
+        mock_template = MagicMock()
+
+        task_1 = MagicMock()
+        task_1.id = uuid.uuid4()
+        task_1.order = 1
+
+        task_2 = MagicMock()
+        task_2.id = task_id
+        task_2.order = 2
+
+        task_3 = MagicMock()
+        task_3.id = uuid.uuid4()
+        task_3.order = 3
+
+        with patch(
+            "app.services.template_service.template_repository", autospec=True
+        ) as mock_repo, patch(
+            "app.services.template_service.template_task_repository", autospec=True
+        ) as mock_task_repo:
+            mock_repo.get_by_id = AsyncMock(return_value=mock_template)
+            mock_task_repo.get_by_template = AsyncMock(
+                return_value=[task_1, task_2, task_3]
+            )
+
+            await service.reorder_task(mock_db, template_id, task_id, new_order=1)
+
+            assert task_2.order == 1
+            assert task_1.order == 2
+
+    async def test_reorder_task_raises_validation_error_when_order_out_of_range(
+        self, service, mock_db
+    ):
+        template_id = uuid.uuid4()
+        task_id = uuid.uuid4()
+        mock_template = MagicMock()
+        mock_task = MagicMock()
+        mock_task.id = task_id
+        mock_task.order = 1
+
+        with patch(
+            "app.services.template_service.template_repository", autospec=True
+        ) as mock_repo, patch(
+            "app.services.template_service.template_task_repository", autospec=True
+        ) as mock_task_repo:
+            mock_repo.get_by_id = AsyncMock(return_value=mock_template)
+            mock_task_repo.get_by_template = AsyncMock(return_value=[mock_task])
+
+            with pytest.raises(ValidationError):
+                await service.reorder_task(mock_db, template_id, task_id, new_order=99)
+
+
 class TestCloneTemplate:
 
     async def test_clone_copies_all_tasks(self, service, mock_db):
