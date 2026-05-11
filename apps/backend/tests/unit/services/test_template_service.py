@@ -123,6 +123,28 @@ class TestUpdateTask:
                 await service.update_task(mock_db, template_id, uuid.uuid4(), MagicMock())
 
 
+class TestDeleteTask:
+
+    async def test_delete_task_sets_deleted_at(self, service, mock_db):
+        template_id = uuid.uuid4()
+        mock_template = MagicMock()
+        mock_task = MagicMock()
+        mock_task.template_id = template_id
+        mock_task.deleted_at = None
+
+        with patch(
+            "app.services.template_service.template_repository", autospec=True
+        ) as mock_repo, patch(
+            "app.services.template_service.template_task_repository", autospec=True
+        ) as mock_task_repo:
+            mock_repo.get_by_id = AsyncMock(return_value=mock_template)
+            mock_task_repo.get_by_id = AsyncMock(return_value=mock_task)
+
+            await service.delete_task(mock_db, template_id, uuid.uuid4())
+
+            assert mock_task.deleted_at is not None
+
+
 class TestCloneTemplate:
 
     async def test_clone_copies_all_tasks(self, service, mock_db):

@@ -136,6 +136,34 @@ class TestPatchTask:
         assert response.status_code == 404
 
 
+class TestDeleteTask:
+
+    async def test_delete_task_returns_204(self, authenticated_client):
+        department_id = await create_department(authenticated_client, "DeleteTask Dept")
+        template = await create_template(authenticated_client, department_id, "DeleteTask Template")
+        task = await add_task(authenticated_client, template["id"], "To Delete")
+
+        response = await authenticated_client.delete(
+            f"/api/v1/templates/{template['id']}/tasks/{task['id']}"
+        )
+
+        assert response.status_code == 204
+
+    async def test_delete_task_does_not_appear_in_list(self, authenticated_client):
+        department_id = await create_department(authenticated_client, "DeleteCheck Dept")
+        template = await create_template(authenticated_client, department_id, "DeleteCheck Template")
+        task = await add_task(authenticated_client, template["id"], "To Delete Check")
+
+        await authenticated_client.delete(
+            f"/api/v1/templates/{template['id']}/tasks/{task['id']}"
+        )
+
+        response = await authenticated_client.get(
+            f"/api/v1/templates/{template['id']}/tasks"
+        )
+        assert all(t["id"] != task["id"] for t in response.json())
+
+
 class TestGetTemplates:
 
     async def test_get_templates_returns_200_with_list(self, authenticated_client):
