@@ -167,6 +167,20 @@ class TemplateService:
         await db.refresh(task)
         return task
 
+    async def delete_task(
+        self, db: AsyncSession, template_id: uuid.UUID, task_id: uuid.UUID
+    ) -> None:
+        template = await template_repository.get_by_id(db, template_id)
+        if not template:
+            raise NotFoundError(*messages.TEMPLATE_NOT_FOUND)
+
+        task = await template_task_repository.get_by_id(db, task_id)
+        if not task or task.template_id != template_id:
+            raise NotFoundError(*messages.TASK_NOT_FOUND)
+
+        task.deleted_at = datetime.now(timezone.utc)
+        await db.commit()
+
     async def get_tasks(
         self, db: AsyncSession, template_id: uuid.UUID
     ) -> list[TemplateTask]:

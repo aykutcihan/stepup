@@ -95,6 +95,18 @@ async def add_task(
     return TaskResponse.model_validate(task)
 
 
+@router.delete("/{template_id}/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_task(
+    template_id: uuid.UUID,
+    task_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
+) -> None:
+    await template_service.delete_task(
+        db=db, template_id=template_id, task_id=task_id
+    )
+
+
 @router.patch("/{template_id}/tasks/{task_id}", response_model=TaskResponse)
 async def update_task(
     template_id: uuid.UUID,
