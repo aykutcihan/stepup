@@ -20,6 +20,7 @@ export default function UsersPage() {
     handleAssignDepartment,
     handleChangeRole,
     handleDeactivate,
+    handleReactivate,
   } = useUsersPage()
 
 
@@ -127,7 +128,9 @@ export default function UsersPage() {
                 <td className="px-5 py-3.5 text-right">
                   {u.id !== currentUser?.id && (
                     <KebabMenu items={[
-                      ...(u.is_active ? [{ label: 'Deactivate', onClick: () => handleDeactivate(u.id), variant: 'danger' as const }] : []),
+                      u.is_active
+                        ? { label: 'Deactivate', onClick: () => handleDeactivate(u.id), variant: 'danger' }
+                        : { label: 'Reactivate', onClick: () => handleReactivate(u.id), variant: 'success' },
                     ]} />
                   )}
                 </td>

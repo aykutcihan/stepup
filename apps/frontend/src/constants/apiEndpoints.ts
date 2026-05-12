@@ -17,6 +17,7 @@ export const API = {
     LIST: '/api/v1/users/',
     UPDATE: (id: string) => `/api/v1/users/${id}`,
     DEACTIVATE: (id: string) => `/api/v1/users/${id}/deactivate`,
+    REACTIVATE: (id: string) => `/api/v1/users/${id}/reactivate`,
   },
   DEPARTMENTS: {
     LIST: '/api/v1/departments/',
