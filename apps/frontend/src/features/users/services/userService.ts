@@ -24,3 +24,8 @@ export async function updateUser(id: string, data: UserUpdate): Promise<UserResp
 export async function deactivateUser(id: string): Promise<void> {
   await apiClient.patch(API.USERS.DEACTIVATE(id))
 }
+
+export async function reactivateUser(id: string): Promise<UserResponse> {
+  const res = await apiClient.patch(API.USERS.REACTIVATE(id))
+  return res.data
+}

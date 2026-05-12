@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 import uuid
+from datetime import date, timedelta
 
 from passlib.context import CryptContext
 from sqlalchemy import select
@@ -14,7 +15,10 @@ from app.models.department import Department
 from app.models.onboarding_template import OnboardingTemplate
 from app.models.template_task import TemplateTask
 from app.models.user import User
+from app.models.onboarding_plan import OnboardingPlan
+from app.models.onboarding_plan_task import OnboardingPlanTask
 from app.enums.user_role import UserRole
+from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 
@@ -227,6 +231,59 @@ async def seed():
             print(f"Seed task created: {seed_task['title']}")
 
         await session.commit()
+
+        result = await session.execute(
+            select(OnboardingPlan).where(
+                OnboardingPlan.user_id == uuid.UUID("00000000-0000-0000-0000-000000000003")
+            )
+        )
+        existing_plan = result.scalar_one_or_none()
+
+        if existing_plan:
+            print("Seed plan already exists")
+        else:
+            plan = OnboardingPlan(
+                id=uuid.UUID("00000000-0000-0000-0003-000000000001"),
+                user_id=uuid.UUID("00000000-0000-0000-0000-000000000003"),
+                template_id=uuid.UUID("00000000-0000-0000-0001-000000000001"),
+                manager_id=uuid.UUID("00000000-0000-0000-0000-000000000002"),
+                start_date=date(2026, 5, 1),
+                is_active=True,
+            )
+            session.add(plan)
+            await session.flush()
+
+            task_statuses = [
+                OnboardingPlanTaskStatus.CANCELLED,
+                OnboardingPlanTaskStatus.NOT_STARTED,
+                OnboardingPlanTaskStatus.NOT_STARTED,
+                OnboardingPlanTaskStatus.NOT_STARTED,
+            ]
+            template_tasks_result = await session.execute(
+                select(TemplateTask).where(
+                    TemplateTask.template_id == uuid.UUID("00000000-0000-0000-0001-000000000001"),
+                    TemplateTask.deleted_at.is_(None),
+                ).order_by(TemplateTask.order)
+            )
+            template_tasks = list(template_tasks_result.scalars().all())
+
+            for i, task in enumerate(template_tasks):
+                task_status = task_statuses[i] if i < len(task_statuses) else OnboardingPlanTaskStatus.NOT_STARTED
+                plan_task = OnboardingPlanTask(
+                    plan_id=plan.id,
+                    template_task_id=task.id,
+                    title=task.title,
+                    description=task.description,
+                    deadline=date(2026, 5, 1) + timedelta(days=task.deadline_days),
+                    status=task_status,
+                    is_required=task.is_required,
+                    order=task.order,
+                )
+                session.add(plan_task)
+                print(f"Seed plan task created: {task.title} ({task_status.value})")
+
+            await session.commit()
+            print("Seed plan created for employee")
 
     await engine.dispose()
 

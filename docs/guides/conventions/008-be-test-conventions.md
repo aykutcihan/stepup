@@ -193,6 +193,29 @@ assert something == dept_id  # safe — plain string, not an ORM attribute
 
 **Rule:** never access ORM object attributes after a request. Save what you need as plain values (`str`, `uuid.UUID`, `int`) immediately after `flush`.
 
+### In responses with nested relationships
+
+When a service commits and then returns an ORM object that has a relationship
+(e.g. `plan.tasks`), Pydantic's `model_validate` accesses the relationship
+synchronously. If the session expired the object after commit, this triggers a
+lazy load in a sync context — another `MissingGreenlet` crash.
+
+The fix is `expire_on_commit=False` on the test session so objects are never
+expired after a savepoint commit:
+
+```python
+# tests/conftest.py
+session = AsyncSession(
+    conn,
+    join_transaction_mode="create_savepoint",
+    expire_on_commit=False,   # prevents MissingGreenlet on relationship access
+)
+```
+
+This is already set in `tests/conftest.py`. If you ever recreate or replace the
+session fixture, make sure to include it — especially for any endpoint that
+returns nested objects (e.g. a plan with its tasks).
+
 ```python
 # Wrong — pytest treats `service` as `self`
 async def test_something(service, mock_db): ...

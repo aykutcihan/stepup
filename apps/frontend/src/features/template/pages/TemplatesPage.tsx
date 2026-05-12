@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTemplatesPage } from '@/features/template/hooks/useTemplatesPage'
+import KebabMenu from '@/components/KebabMenu'
 import { ROUTES } from '@/constants/routes'
 
 export default function TemplatesPage() {
@@ -10,8 +11,6 @@ export default function TemplatesPage() {
     setFilterDepartmentId,
     filterStatus,
     setFilterStatus,
-    openMenuId,
-    setOpenMenuId,
     getDepartmentName,
     handleActivate,
     handleDeactivate,
@@ -79,47 +78,12 @@ export default function TemplatesPage() {
                   View
                 </Link>
 
-                <div className="relative">
-                  <button
-                    onClick={() => setOpenMenuId(openMenuId === t.id ? null : t.id)}
-                    className="text-gray-400 hover:text-gray-600 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-lg"
-                    aria-label="actions"
-                  >
-                    ⋮
-                  </button>
-
-                  {openMenuId === t.id && (
-                    <>
-                      <div
-                        className="fixed inset-0 z-10"
-                        onClick={() => setOpenMenuId(null)}
-                      />
-                      <div className="absolute right-0 bottom-full mb-1 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[150px]">
-                        <button
-                          onClick={() => { handleClone(t.id); setOpenMenuId(null) }}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                        >
-                          Clone
-                        </button>
-                        {t.is_active ? (
-                          <button
-                            onClick={() => { handleDeactivate(t.id); setOpenMenuId(null) }}
-                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                          >
-                            Deactivate
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => { handleActivate(t.id); setOpenMenuId(null) }}
-                            className="w-full text-left px-4 py-2 text-sm text-green-600 hover:bg-green-50 transition-colors"
-                          >
-                            Activate
-                          </button>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </div>
+                <KebabMenu items={[
+                  { label: 'Clone', onClick: () => handleClone(t.id) },
+                  t.is_active
+                    ? { label: 'Deactivate', onClick: () => handleDeactivate(t.id), variant: 'danger' }
+                    : { label: 'Activate', onClick: () => handleActivate(t.id), variant: 'success' },
+                ]} />
               </div>
             </div>
           ))}

@@ -231,7 +231,7 @@ Invalid transitions return HTTP 400 with a descriptive error message.
 - Adjust plan after creation if needed
 
 **3. User Management**
-- Create, edit, deactivate user accounts
+- Create, edit, deactivate and reactivate user accounts
 - Assign roles (Employee, Manager, HR Admin)
 - Manage department structure
 
@@ -574,11 +574,11 @@ template_tasks      → id, template_id, title, description, order,
                       deadline_days, is_required, deleted_at
 
 onboarding_plans    → id, user_id, template_id, manager_id,
-                      start_date, status, deleted_at, created_at
+                      start_date, is_active, deleted_at, created_at
 
-plan_tasks          → id, plan_id, template_task_id, title,
-                      status, deadline, completed_at,
-                      approved_by, approved_at, version
+onboarding_plan_tasks → id, plan_id, template_task_id, title,
+                        description, status, deadline,
+                        is_required, order, deleted_at, created_at
 
 task_comments       → id, plan_task_id, user_id, content, created_at
 
@@ -718,31 +718,31 @@ ADR-007: Structured logging to GCP Cloud Logging
 - GitHub Actions CI pipeline
 - Database schema + Alembic migrations (User model)
 
-### Sprint 2 — Authentication
+### Sprint 2 — Authentication ✅ Done
 - User invitation by email with role assignment
 - Registration via invitation token link
 - Login, logout, token refresh (HttpOnly cookies)
 - Role-based access control (RBAC) on all endpoints
 - Force logout on user deactivation
 
-### Sprint 3 — User, Department & Profile Management
+### Sprint 3 — User, Department & Profile Management ✅ Done
 - Department CRUD + soft delete
-- User management (list, assign to department, deactivate)
+- User management (list, assign to department, deactivate, reactivate)
 - My Profile (view + update name)
 - Seed data: users and departments
 
-### Sprint 4 — Onboarding Template Management
+### Sprint 4 — Onboarding Template Management ✅ Done
 - Template CRUD per department (create, edit, activate, deactivate)
 - Task management within templates (add, edit, reorder, delete)
 - Clone template
 - Seed data: templates and template tasks
-- ADR-003 (Zustand + React Query) + ADR-004 (HttpOnly cookies)
+- ADR documentation sprint
 
-### Sprint 5 — Onboarding Plan & Task Workflow
-- Create onboarding plan from template (auto-generate tasks)
-- Employee: view plan, start/complete tasks, upload attachments, add comments
-- Manager: approve or return tasks with feedback, view documents
-- HR Admin: cancel tasks, adjust deadlines, change manager, add tasks to active plan
+### Sprint 5 — Onboarding Plan & Task Workflow 🚧 In Progress
+- ✅ HR Admin: create onboarding plan from template (auto-generate tasks with deadlines)
+- ✅ HR Admin: cancel tasks, adjust deadlines, change manager, add tasks to active plan
+- ⬜ Employee: view plan, start/complete tasks, upload attachments, add comments
+- ⬜ Manager: approve or return tasks with feedback, view documents
 
 ### Sprint 6 — Notifications, Scheduler & Dashboards
 - Email notifications via SendGrid (plan started, task completed, approved, returned, deadline reminder)
@@ -828,6 +828,7 @@ A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
 | 1.0 | 2026-04-21 | Initial product vision document |
 | 1.1 | 2026-04-21 | Added error handling strategy, frontend constants, logging strategy, API versioning, removed intern references |
 | 1.2 | 2026-05-03 | Updated error handling to app/errors/ package, updated monorepo structure |
+| 1.3 | 2026-05-12 | Sprints 2–4 marked done, Sprint 5 in progress; added reactivate to user management; updated onboarding_plans schema to match implementation |
 
 **Review Frequency:** After each sprint  
 **Status:** Living document — will evolve throughout the project

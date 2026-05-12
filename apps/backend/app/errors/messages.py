@@ -30,3 +30,10 @@ TEMPLATE_HAS_PLANS = ("TEMPLATE_HAS_PLANS", "Cannot delete a template that has a
 # Task
 TASK_NOT_FOUND = ("TASK_NOT_FOUND", "Task not found")
 INVALID_REORDER = ("INVALID_REORDER", "Invalid order position")
+
+# Onboarding Plan
+PLAN_NOT_FOUND = ("PLAN_NOT_FOUND", "Plan not found")
+PLAN_TASK_NOT_FOUND = ("PLAN_TASK_NOT_FOUND", "Plan task not found")
+EMPLOYEE_ALREADY_HAS_ACTIVE_PLAN = ("EMPLOYEE_ALREADY_HAS_ACTIVE_PLAN", "This employee already has an active onboarding plan")
+TEMPLATE_NOT_ACTIVE = ("TEMPLATE_NOT_ACTIVE", "Template must be active to create a plan")
+TASK_ALREADY_TERMINAL = ("TASK_ALREADY_TERMINAL", "This task is already in a terminal state and cannot be cancelled")

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getUsers, updateUser, deactivateUser } from '@/features/users/services/userService'
+import { getUsers, updateUser, deactivateUser, reactivateUser } from '@/features/users/services/userService'
 import { getDepartments } from '@/features/department/services/departmentService'
 import type { components } from '@/types/api'
 
@@ -13,7 +13,6 @@ export function useUsersPage() {
   const [filterRole, setFilterRole] = useState<UserRole | ''>('')
   const [filterDepartmentId, setFilterDepartmentId] = useState<string>('')
   const [filterStatus, setFilterStatus] = useState<'active' | 'inactive' | ''>('')
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
 
   useEffect(() => {
     getUsers().then(setUsers).catch(() => {})
@@ -50,6 +49,11 @@ export function useUsersPage() {
     setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, is_active: false } : u)))
   }
 
+  async function handleReactivate(userId: string) {
+    const updated = await reactivateUser(userId)
+    setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)))
+  }
+
   return {
     filteredUsers,
     departments,
@@ -61,10 +65,9 @@ export function useUsersPage() {
     filterStatus,
     setFilterStatus,
     getDepartmentName,
-    openMenuId,
-    setOpenMenuId,
     handleAssignDepartment,
     handleChangeRole,
     handleDeactivate,
+    handleReactivate,
   }
 }

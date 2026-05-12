@@ -73,3 +73,16 @@ class UserService:
         user.is_active = False
         await refresh_token_repository.delete_by_user_id(db, user_id)
         await db.commit()
+
+    async def reactivate_user(
+        self,
+        db: AsyncSession,
+        user_id: uuid.UUID,
+    ) -> User:
+        user = await user_repository.get_by_id(db, user_id)
+        if not user:
+            raise NotFoundError(*messages.USER_NOT_FOUND)
+
+        user.is_active = True
+        await db.commit()
+        return await user_repository.get_by_id(db, user_id)

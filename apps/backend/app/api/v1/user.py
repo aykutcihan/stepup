@@ -66,3 +66,13 @@ async def deactivate_user(
         user_id=user_id,
         current_user_id=current_user.id,
     )
+
+
+@router.patch("/{user_id}/reactivate", response_model=UserResponse)
+async def reactivate_user(
+    user_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
+) -> UserResponse:
+    user = await user_service.reactivate_user(db=db, user_id=user_id)
+    return UserResponse.model_validate(user)
