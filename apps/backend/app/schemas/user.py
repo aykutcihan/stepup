@@ -12,11 +12,26 @@ class RegisterRequest(BaseModel):
     password: str
 
 
+class UserUpdate(BaseModel):
+    department_id: uuid.UUID | None = None
+    role: UserRole | None = None
+
+
+class UserProfileUpdate(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+
+    model_config = ConfigDict(extra='forbid')
+
+
 class UserResponse(BaseModel):
     id: uuid.UUID
     email: EmailStr
     role: UserRole
     first_name: str
     last_name: str
+    is_active: bool
+    department_id: uuid.UUID | None
+    department_name: str | None = None
 
     model_config = ConfigDict(from_attributes=True)

@@ -61,6 +61,18 @@ apiClient.interceptors.response.use(
 
 **`_retry` flag:** Prevents infinite loops. If the retried request also returns 401, the interceptor does not trigger again — it falls through to `Promise.reject`.
 
+**`isAuthEndpoint` check:** The interceptor must not trigger for `/me` or `/refresh` endpoints. If it did:
+- `App.tsx` calls `/me` on load to restore auth state (user not logged in → 401)
+- Interceptor catches it → calls `/refresh` → also 401 → interceptor catches again → infinite loop
+
+The fix: skip the interceptor for auth endpoints that are expected to return 401 when the user is not logged in.
+
+```typescript
+const isAuthEndpoint = original.url === API.AUTH.ME || original.url === API.AUTH.REFRESH
+
+if (error.response?.status === 401 && !original._retry && !isAuthEndpoint) {
+```
+
 **`window.location.href`:** Used instead of `navigate()` because the interceptor lives outside React — React Router's `useNavigate` can only be called inside a component.
 
 ---

@@ -11,6 +11,13 @@ export default defineConfig({
     },
   },
   server: {
+    allowedHosts: ['frontend'],
+    proxy: {
+      '/api': {
+        target: process.env.BACKEND_URL || 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    },
     watch: {
       usePolling: true,
     },

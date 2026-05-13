@@ -55,6 +55,43 @@ async function onSubmit(data: FormData) {
 
 ---
 
+## useParams — Read Dynamic Route Segments
+
+```tsx
+import { useParams } from 'react-router-dom'
+
+const { id } = useParams<{ id: string }>()
+```
+
+**Used when the route has a variable segment:**
+
+```tsx
+// App.tsx
+<Route path="/hr/templates/:id" element={<TemplateDetailPage />} />
+
+// URL: /hr/templates/abc-123
+// id → 'abc-123'
+```
+
+The segment name (`:id`) must match the key in `useParams`. TypeScript type parameter makes `id` typed as `string | undefined` — always guard against `undefined`:
+
+```tsx
+useEffect(() => {
+  if (!id) return
+  getTasks(id).then(setTasks)
+}, [id])
+```
+
+**Difference from `useSearchParams`:**
+
+| | `useParams` | `useSearchParams` |
+|---|---|---|
+| URL shape | `/templates/abc-123` | `/register?token=abc-123` |
+| Use case | Identify a resource | Optional filters or tokens |
+| Value always present | Yes (if route matches) | No — `.get()` can return null |
+
+---
+
 ## useSearchParams — Read URL Query Parameters
 
 ```tsx

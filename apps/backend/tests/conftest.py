@@ -28,7 +28,7 @@ async def setup_database():
 async def db_session():
     async with test_engine.connect() as conn:
         await conn.begin()
-        session = AsyncSession(conn, join_transaction_mode="create_savepoint")
+        session = AsyncSession(conn, join_transaction_mode="create_savepoint", expire_on_commit=False)
         yield session
         await session.close()
         await conn.rollback()

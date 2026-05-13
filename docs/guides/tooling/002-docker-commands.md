@@ -210,6 +210,34 @@ Mapping to 5433 on the host avoids the port conflict.
 
 ---
 
+## Backend-Specific Commands
+
+```powershell
+# Run backend tests
+docker-compose run --rm backend pytest
+
+# Apply database migrations
+docker-compose run --rm backend alembic upgrade head
+
+# Seed the database with initial data (HR Admin user)
+# Creates: admin@stepup.com / Admin1234!
+docker-compose run --rm backend python scripts/seed.py
+```
+
+---
+
+## E2E Tests
+
+```powershell
+# Start the full stack first
+docker-compose up -d db backend frontend
+
+# Run E2E tests (builds playwright container on first run)
+docker-compose run --rm playwright sh -c "pnpm install && pnpm e2e"
+```
+
+---
+
 ## Frontend-Specific Commands
 
 ```powershell

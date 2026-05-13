@@ -46,18 +46,29 @@ New entries are added as needed — one US at a time. US-002 will add `AUTH.LOGI
 
 ## src/constants/routes.ts
 
-All frontend page paths in one place.
+All frontend page paths in one place. Split into two exports:
 
 ```typescript
 export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
+  HR_DASHBOARD: '/hr/dashboard',
+  MANAGER_DASHBOARD: '/manager/dashboard',
+  EMPLOYEE_DASHBOARD: '/employee/dashboard',
+}
+
+export const ERROR_ROUTES = {
+  FORBIDDEN: '/403',
 }
 ```
+
+`ROUTES` holds normal page paths. `ERROR_ROUTES` holds error page paths — kept separate so it is obvious at a glance which routes are error states.
 
 Usage:
 ```typescript
 navigate(ROUTES.LOGIN)
+navigate(ROUTES.HR_DASHBOARD)
+<Navigate to={ERROR_ROUTES.FORBIDDEN} />
 <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
 ```
 
@@ -94,21 +105,61 @@ This separation means:
 
 ---
 
-## src/services/
+## src/constants/userRoles.ts
 
-Service files contain the actual API calls. They use `axios`, the constants from above, and the types from `api.ts`.
+BE role values as typed constants — eliminates magic strings like `'hr_admin'` scattered across the codebase.
 
+```typescript
+export type UserRole = components['schemas']['UserRole']
+
+export const USER_ROLE_VALUES = ['employee', 'manager', 'hr_admin'] as const satisfies readonly UserRole[]
+
+export const USER_ROLES = {
+  HR_ADMIN: 'hr_admin' as UserRole,
+  MANAGER: 'manager' as UserRole,
+  EMPLOYEE: 'employee' as UserRole,
+}
 ```
-src/services/
-  authService.ts      ← login, logout, register, validateInvitation
-  invitationService.ts ← create, list, resend (added when needed)
+
+**`USER_ROLE_VALUES`** — a tuple for Zod validation:
+```typescript
+role: z.enum(USER_ROLE_VALUES)
 ```
 
-One file per domain — same grouping as BE routers.
+**`USER_ROLES`** — an object for comparisons:
+```typescript
+if (user.role === USER_ROLES.HR_ADMIN) navigate(ROUTES.HR_DASHBOARD)
+```
+
+**Rule:** Never write `'hr_admin'`, `'manager'`, or `'employee'` as raw strings. Use these constants.
 
 ---
 
-## src/services/apiClient.ts
+## Services
+
+Service files contain the actual API calls. They use `axios`, the constants from above, and the types from `api.ts`. Services live inside their feature folder:
+
+```
+src/
+  lib/
+    apiClient.ts                          ← shared axios instance
+  features/
+    auth/
+      services/
+        authService.ts                    ← login, logout, register, validateInvitation, getMe
+    invitation/
+      services/
+        invitationService.ts              ← create, list, resend
+    users/
+      services/
+        userService.ts                    ← getUsers, deactivateUser
+```
+
+One file per feature domain — same grouping as BE routers.
+
+---
+
+## src/lib/apiClient.ts
 
 Every API call in the project goes through a single axios instance defined here.
 
@@ -139,16 +190,16 @@ The BE uses HttpOnly cookies for auth tokens. Browsers block cookies on cross-or
 
 Without this, login would succeed but every subsequent request would be unauthenticated.
 
-### Why in `services/`?
+### Why in `lib/`?
 
-`apiClient.ts` is the shared foundation all service files depend on. Keeping it in `services/` means one folder holds everything API-related. No separate `lib/` or `config/` folder needed.
+`apiClient.ts` is shared infrastructure — not tied to any single feature. `lib/` holds shared technical utilities used across features. Feature-specific code (services, hooks, schemas) lives in `features/`.
 
 ---
 
-## src/services/authService.ts Explained
+## src/features/auth/services/authService.ts Explained
 
 ```typescript
-import apiClient from '@/services/apiClient'
+import apiClient from '@/lib/apiClient'
 import type { components } from '@/types/api'
 import { API } from '@/constants/apiEndpoints'
 

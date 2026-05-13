@@ -62,12 +62,24 @@ from sqlalchemy import Enum as SAEnum
 from app.enums.user_role import UserRole
 
 role: Mapped[UserRole] = mapped_column(
-    SAEnum(UserRole, name="user_role"), nullable=False
+    SAEnum(
+        UserRole,
+        name="user_role",
+        values_callable=lambda obj: [e.value for e in obj],
+    ),
+    nullable=False,
 )
 ```
 
 `name="user_role"` sets the PostgreSQL TYPE name in snake_case.
 All models using the same enum must reference the same `name`.
+
+`values_callable=lambda obj: [e.value for e in obj]` tells SQLAlchemy to use
+the enum **values** (`"employee"`, `"manager"`) rather than the Python member
+**names** (`"EMPLOYEE"`, `"MANAGER"`) when creating the PostgreSQL TYPE.
+Without this, `alembic revision --autogenerate` produces uppercase enum values
+in the migration file, which creates a mismatch between the DB type and the
+application code at runtime.
 
 ---
 

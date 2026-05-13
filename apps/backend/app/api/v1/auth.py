@@ -10,7 +10,7 @@ from app.schemas.user import RegisterRequest, UserResponse
 from app.services.auth_service import AuthService
 from app.services.invitation_service import InvitationService
 
-from app.core.limiter import limiter
+from app.core.limiter import limiter, LOGIN_RATE_LIMIT
 
 router = APIRouter()
 invitation_service = InvitationService()
@@ -33,7 +33,7 @@ async def register(
 
 
 @router.post("/login", status_code=status.HTTP_200_OK)
-@limiter.limit("5/minute")
+@limiter.limit(LOGIN_RATE_LIMIT)
 async def login(
     request: Request,
     data: LoginRequest,
@@ -104,8 +104,3 @@ async def refresh(
     )
 
 
-@router.get("/me", response_model=UserResponse)
-async def get_me(
-    current_user: User = Depends(get_current_user),
-) -> UserResponse:
-    return UserResponse.model_validate(current_user)
