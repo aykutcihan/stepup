@@ -4,9 +4,9 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     DATABASE_URL: str
     TEST_DATABASE_URL: str = ""
-    FRONTEND_URL: str
-    SENDGRID_API_KEY: str
-    SENDGRID_FROM_EMAIL: str
+    FRONTEND_URL: str = ""
+    SENDGRID_API_KEY: str = ""
+    SENDGRID_FROM_EMAIL: str = ""
 
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
