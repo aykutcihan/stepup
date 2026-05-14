@@ -24,5 +24,10 @@ All three roles have a dedicated dashboard with real system stats. Every key act
 ## Sprint 8 — Notifications, Scheduler, Reports & Attachments
 Email notifications are sent at every key workflow stage. APScheduler automatically marks overdue tasks daily and sends deadline reminders. HR Admins have access to basic onboarding reports. Employees can upload documents to tasks stored in GCP Cloud Storage.
 
+- ✅ US-016 Email Notifications
+- ⬜ US-017 Automated Scheduler
+- ⬜ US-020 Admin Reports
+- ⬜ US-014b File Upload
+
 ## Sprint 9 — Quality & Polish
 All list endpoints are paginated. Seed data creates a realistic demo dataset. Full E2E regression suite passes in CI pipeline. README and Swagger polished for demo.

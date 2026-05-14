@@ -755,10 +755,10 @@ ADR-007: Structured logging to GCP Cloud Logging
 - ✅ Bug fixes: deactivated user login rejection, login form error display, return_comment persistence, playwright baseURL env var
 
 ### Sprint 8 — Notifications, Scheduler & Reports
-- Email notifications via SendGrid (task completed, approved/returned, deadline reminder)
-- APScheduler: daily overdue detection + deadline reminders
-- Admin reports (completion rates, avg time per department, bottlenecks)
-- File upload (US-014b, GCS integration)
+- ✅ Email notifications via SendGrid — plan started (employee), task completed (manager), task approved/returned (employee)
+- ⬜ APScheduler: daily overdue detection + deadline reminders (US-017)
+- ⬜ Admin reports (completion rates, avg time per department) (US-020)
+- ⬜ File upload (US-014b, GCS integration)
 
 ### Bonus (If Time Allows)
 - Multi-tenancy (organization_id on all tables)
@@ -831,6 +831,7 @@ A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
 | 1.3 | 2026-05-12 | Sprints 2–4 marked done, Sprint 5 in progress; added reactivate to user management; updated onboarding_plans schema to match implementation |
 | 1.4 | 2026-05-14 | Sprint 5 done, Sprint 6 done; task workflow and manager review complete; department added to invitation; US-014b deferred to Sprint 8; sprint numbering adjusted |
 | 1.5 | 2026-05-14 | Sprint 7 done; role-based dashboards (US-018) and audit trail (US-019) complete; bug fixes (auth is_active, login error display, return_comment, playwright config); Sprint 8 scope updated |
+| 1.6 | 2026-05-14 | US-016 email notifications done; plan started, task completed/approved/returned emails added via SendGrid |
 
 **Review Frequency:** After each sprint  
 **Status:** Living document — will evolve throughout the project
