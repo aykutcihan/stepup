@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import RegisterPage from '@/features/invitation/pages/RegisterPage'
 import InviteUserPage from '@/features/invitation/pages/InviteUserPage'
 import LoginPage from '@/features/auth/pages/LoginPage'
@@ -57,6 +57,8 @@ export default function App() {
           <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         </Route>
       </Route>
+
+      <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />
     </Routes>
   )
 }
