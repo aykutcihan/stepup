@@ -46,6 +46,7 @@ describe('DashboardLayout', () => {
   it('navigates to login after logout', async () => {
     renderLayout()
 
+    await userEvent.click(screen.getByRole('button', { name: /user menu/i }))
     await userEvent.click(screen.getByRole('button', { name: /logout/i }))
 
     await waitFor(() => {

@@ -565,6 +565,8 @@ export interface components {
              */
             email: string;
             role: components["schemas"]["UserRole"];
+            /** Department Id */
+            department_id?: string | null;
         };
         /** InvitationResponse */
         InvitationResponse: {
@@ -584,6 +586,8 @@ export interface components {
              * Format: date-time
              */
             expires_at: string;
+            /** Department Id */
+            department_id: string | null;
         };
         /** InvitationValidateResponse */
         InvitationValidateResponse: {
@@ -623,6 +627,39 @@ export interface components {
              * Format: date
              */
             start_date: string;
+        };
+        /** ApprovalTaskResponse */
+        ApprovalTaskResponse: {
+            /** Id */
+            id: string;
+            /** Plan Id */
+            plan_id: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string | null;
+            /**
+             * Deadline
+             * Format: date
+             */
+            deadline: string;
+            status: components["schemas"]["OnboardingPlanTaskStatus"];
+            /** Is Required */
+            is_required: boolean;
+            /** Order */
+            order: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Employee Name */
+            employee_name: string;
+            /**
+             * Plan Start Date
+             * Format: date
+             */
+            plan_start_date: string;
         };
         /** OnboardingPlanResponse */
         OnboardingPlanResponse: {
@@ -716,7 +753,7 @@ export interface components {
          * OnboardingPlanTaskStatus
          * @enum {string}
          */
-        OnboardingPlanTaskStatus: "not_started" | "cancelled";
+        OnboardingPlanTaskStatus: "not_started" | "in_progress" | "completed" | "approved" | "returned" | "cancelled";
         /** OnboardingPlanTaskUpdate */
         OnboardingPlanTaskUpdate: {
             /**

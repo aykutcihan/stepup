@@ -4,11 +4,12 @@ import { MemoryRouter } from 'react-router-dom'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import InviteUserPage from './InviteUserPage'
 
-const { mockInvitationServiceGetInvitations, mockInvitationServiceCreate, mockInvitationServiceResend } = vi.hoisted(
+const { mockInvitationServiceGetInvitations, mockInvitationServiceCreate, mockInvitationServiceResend, mockGetDepartments } = vi.hoisted(
   () => ({
     mockInvitationServiceGetInvitations: vi.fn(),
     mockInvitationServiceCreate: vi.fn(),
     mockInvitationServiceResend: vi.fn(),
+    mockGetDepartments: vi.fn(),
   }),
 )
 
@@ -16,6 +17,10 @@ vi.mock('@/features/invitation/services/invitationService', () => ({
   getInvitations: mockInvitationServiceGetInvitations,
   createInvitation: mockInvitationServiceCreate,
   resendInvitation: mockInvitationServiceResend,
+}))
+
+vi.mock('@/features/department/services/departmentService', () => ({
+  getDepartments: mockGetDepartments,
 }))
 
 const mockInvitation = {
@@ -37,6 +42,7 @@ describe('InviteUserPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockInvitationServiceGetInvitations.mockResolvedValue([])
+    mockGetDepartments.mockResolvedValue([])
   })
 
   it('displays pending invitations on load', async () => {
@@ -55,7 +61,7 @@ describe('InviteUserPage', () => {
 
     renderPage()
 
-    await userEvent.type(screen.getByPlaceholderText(/email/i), 'newuser@example.com')
+    await userEvent.type(screen.getByPlaceholderText(/name@company.com/i), 'newuser@example.com')
     await userEvent.click(screen.getByRole('button', { name: /send invitation/i }))
 
     await waitFor(() => {

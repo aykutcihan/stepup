@@ -19,6 +19,9 @@ import TemplatesPage from '@/features/template/pages/TemplatesPage'
 import TemplateDetailPage from '@/features/template/pages/TemplateDetailPage'
 import CreatePlanPage from '@/features/plan/pages/CreatePlanPage'
 import PlanDetailPage from '@/features/plan/pages/PlanDetailPage'
+import EmployeePlanPage from '@/features/plan/pages/EmployeePlanPage'
+import ManagerApprovalsPage from '@/features/plan/pages/ManagerApprovalsPage'
+import ManagerTaskReviewPage from '@/features/plan/pages/ManagerTaskReviewPage'
 
 
 export default function App() {
@@ -47,14 +50,17 @@ export default function App() {
       <Route element={<RequireRole roles={[USER_ROLES.MANAGER]} />}>
         <Route element={<DashboardLayout />}>
           <Route path={ROUTES.MANAGER_DASHBOARD} element={<ManagerDashboard />} />
-          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+          <Route path={ROUTES.MANAGER_APPROVALS} element={<ManagerApprovalsPage />} />
+          <Route path="/manager/tasks/:id" element={<ManagerTaskReviewPage />} />
+          <Route path={ROUTES.MANAGER_PROFILE} element={<ProfilePage />} />
         </Route>
       </Route>
 
       <Route element={<RequireRole roles={[USER_ROLES.EMPLOYEE]} />}>
         <Route element={<DashboardLayout />}>
           <Route path={ROUTES.EMPLOYEE_DASHBOARD} element={<EmployeeDashboard />} />
-          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+          <Route path={ROUTES.EMPLOYEE_PLAN} element={<EmployeePlanPage />} />
+          <Route path={ROUTES.EMPLOYEE_PROFILE} element={<ProfilePage />} />
         </Route>
       </Route>
 

@@ -22,9 +22,23 @@ class OnboardingPlanRepository:
         )
         return result.scalar_one_or_none()
 
+    async def get_all_by_manager(self, db: AsyncSession, manager_id: uuid.UUID) -> list[OnboardingPlan]:
+        result = await db.execute(
+            select(OnboardingPlan)
+            .options(selectinload(OnboardingPlan.tasks), selectinload(OnboardingPlan.employee))
+            .where(
+                OnboardingPlan.manager_id == manager_id,
+                OnboardingPlan.is_active.is_(True),
+                OnboardingPlan.deleted_at.is_(None),
+            )
+        )
+        return list(result.scalars().all())
+
     async def get_active_by_user(self, db: AsyncSession, user_id: uuid.UUID) -> OnboardingPlan | None:
         result = await db.execute(
-            select(OnboardingPlan).where(
+            select(OnboardingPlan)
+            .options(selectinload(OnboardingPlan.tasks))
+            .where(
                 OnboardingPlan.user_id == user_id,
                 OnboardingPlan.is_active.is_(True),
                 OnboardingPlan.deleted_at.is_(None),

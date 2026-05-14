@@ -231,8 +231,8 @@ Invalid transitions return HTTP 400 with a descriptive error message.
 - Adjust plan after creation if needed
 
 **3. User Management**
-- Create, edit, deactivate and reactivate user accounts
-- Assign roles (Employee, Manager, HR Admin)
+- Invite new users by email with role and department pre-assigned
+- Edit, deactivate and reactivate user accounts
 - Manage department structure
 
 **4. Reporting & Analytics**
@@ -738,13 +738,18 @@ ADR-007: Structured logging to GCP Cloud Logging
 - Seed data: templates and template tasks
 - ADR documentation sprint
 
-### Sprint 5 — Onboarding Plan & Task Workflow 🚧 In Progress
+### Sprint 5 — Onboarding Plan & Task Workflow ✅ Done
 - ✅ HR Admin: create onboarding plan from template (auto-generate tasks with deadlines)
 - ✅ HR Admin: cancel tasks, adjust deadlines, change manager, add tasks to active plan
-- ⬜ Employee: view plan, start/complete tasks, upload attachments, add comments
-- ⬜ Manager: approve or return tasks with feedback, view documents
 
-### Sprint 6 — Notifications, Scheduler & Dashboards
+### Sprint 6 — Task Workflow & Manager Review ✅ Done
+- ✅ Employee: view onboarding plan, start/complete tasks (state machine enforced)
+- ✅ Manager: pending approvals queue, approve or return tasks with mandatory feedback
+- ✅ Department added to invitation — user auto-assigned on registration
+- ✅ UI polish: user dropdown menu, template creation, clickable cards, role-specific profile routes
+- ⬜ US-014b (file upload) deferred to Sprint 8
+
+### Sprint 7 — Notifications, Scheduler & Dashboards
 - Email notifications via SendGrid (plan started, task completed, approved, returned, deadline reminder)
 - APScheduler: daily overdue detection + deadline reminders
 - Employee dashboard (progress, tasks by status, upcoming deadlines)
@@ -829,6 +834,7 @@ A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
 | 1.1 | 2026-04-21 | Added error handling strategy, frontend constants, logging strategy, API versioning, removed intern references |
 | 1.2 | 2026-05-03 | Updated error handling to app/errors/ package, updated monorepo structure |
 | 1.3 | 2026-05-12 | Sprints 2–4 marked done, Sprint 5 in progress; added reactivate to user management; updated onboarding_plans schema to match implementation |
+| 1.4 | 2026-05-14 | Sprint 5 done, Sprint 6 done; task workflow and manager review complete; department added to invitation; US-014b deferred to Sprint 8; sprint numbering adjusted |
 
 **Review Frequency:** After each sprint  
 **Status:** Living document — will evolve throughout the project

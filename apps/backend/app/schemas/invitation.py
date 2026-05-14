@@ -9,6 +9,7 @@ from app.enums.user_role import UserRole
 class InvitationCreate(BaseModel):
     email: EmailStr
     role: UserRole
+    department_id: uuid.UUID | None = None
 
 
 class InvitationResponse(BaseModel):
@@ -16,6 +17,7 @@ class InvitationResponse(BaseModel):
     email: EmailStr
     role: UserRole
     expires_at: datetime
+    department_id: uuid.UUID | None
 
     model_config = ConfigDict(from_attributes=True)
 
