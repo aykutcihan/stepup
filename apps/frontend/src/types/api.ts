@@ -565,6 +565,8 @@ export interface components {
              */
             email: string;
             role: components["schemas"]["UserRole"];
+            /** Department Id */
+            department_id?: string | null;
         };
         /** InvitationResponse */
         InvitationResponse: {
@@ -584,6 +586,8 @@ export interface components {
              * Format: date-time
              */
             expires_at: string;
+            /** Department Id */
+            department_id: string | null;
         };
         /** InvitationValidateResponse */
         InvitationValidateResponse: {
