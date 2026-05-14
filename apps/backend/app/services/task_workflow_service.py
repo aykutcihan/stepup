@@ -91,6 +91,7 @@ class TaskWorkflowService:
         if not data.content or not data.content.strip():
             raise ValidationError(*messages.RETURN_COMMENT_REQUIRED)
         task.status = OnboardingPlanTaskStatus.IN_PROGRESS
+        task.return_comment = data.content
         await db.commit()
         await db.refresh(task)
         return task

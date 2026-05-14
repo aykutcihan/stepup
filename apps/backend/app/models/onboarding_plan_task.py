@@ -41,5 +41,6 @@ class OnboardingPlanTask(Base, TimestampMixin):
     )
     is_required: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     order: Mapped[int] = mapped_column(Integer, nullable=False)
+    return_comment: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     plan: Mapped["OnboardingPlan"] = relationship("OnboardingPlan", back_populates="tasks")
