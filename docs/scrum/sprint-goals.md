@@ -35,8 +35,8 @@ APScheduler marks overdue tasks daily and sends deadline reminders. HR Admin rep
 - ✅ US-017 Automated Scheduler (APScheduler lifespan, mark_overdue_tasks, send_deadline_reminders, OVERDUE enum)
 - ✅ US-020 Admin Reports & Export (3 endpoints, CSV export, ReportsPage with date filter)
 - ✅ Comprehensive seed data (alice, bob, manager2, Product template, 3 plans, 17 audit logs)
-- ⬜ US-014b File Upload
+- ✅ US-014b File Upload & Comments (GCS bucket, TaskAttachment, TaskComment, signed URLs, EmployeePlanPage panel)
 - ⬜ US-021 Technical Quality & Polish
 
-## Sprint 10 — Final Polish & File Upload
-All list endpoints are paginated. File upload via GCS. Full E2E regression suite passes in CI. README and Swagger polished for demo.
+## Sprint 10 — Final Polish
+All list endpoints are paginated. Full E2E regression suite passes in CI. README and Swagger polished for demo. US-021 quality & polish.
