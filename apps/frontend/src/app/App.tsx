@@ -19,6 +19,7 @@ import TemplatesPage from '@/features/template/pages/TemplatesPage'
 import TemplateDetailPage from '@/features/template/pages/TemplateDetailPage'
 import CreatePlanPage from '@/features/plan/pages/CreatePlanPage'
 import PlanDetailPage from '@/features/plan/pages/PlanDetailPage'
+import EmployeePlanPage from '@/features/plan/pages/EmployeePlanPage'
 
 
 export default function App() {
@@ -54,6 +55,7 @@ export default function App() {
       <Route element={<RequireRole roles={[USER_ROLES.EMPLOYEE]} />}>
         <Route element={<DashboardLayout />}>
           <Route path={ROUTES.EMPLOYEE_DASHBOARD} element={<EmployeeDashboard />} />
+          <Route path={ROUTES.EMPLOYEE_PLAN} element={<EmployeePlanPage />} />
           <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         </Route>
       </Route>
