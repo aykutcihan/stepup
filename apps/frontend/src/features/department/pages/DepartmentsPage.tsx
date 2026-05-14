@@ -108,7 +108,7 @@ export default function DepartmentsPage() {
                     </div>
                   ) : (
                     <KebabMenu items={[
-                      { label: 'Edit name', onClick: () => startEdit(d) },
+                      { label: 'Rename', onClick: () => startEdit(d) },
                       d.is_active
                         ? { label: 'Deactivate', onClick: () => handleDeactivate(d.id), variant: 'danger' }
                         : { label: 'Reactivate', onClick: () => handleReactivate(d.id), variant: 'success' },
