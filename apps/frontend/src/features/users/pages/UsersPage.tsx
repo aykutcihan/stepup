@@ -1,7 +1,9 @@
+import { Link } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
 import { ROLE_LABELS } from '@/constants/userRoles'
 import { useUsersPage } from '@/features/users/hooks/useUsersPage'
 import KebabMenu from '@/components/KebabMenu'
+import { ROUTES } from '@/constants/routes'
 import type { components } from '@/types/api'
 
 type UserRole = components['schemas']['UserRole']
@@ -26,9 +28,17 @@ export default function UsersPage() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">Users</h2>
-        <p className="text-sm text-gray-500 mt-0.5">Manage users, roles and department assignments.</p>
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">Users</h2>
+          <p className="text-sm text-gray-500 mt-0.5">Manage users, roles and department assignments.</p>
+        </div>
+        <Link
+          to={ROUTES.HR_INVITE_USER}
+          className="text-sm bg-blue-700 hover:bg-blue-800 text-white font-medium px-4 py-2 rounded-lg transition-colors"
+        >
+          + Invite User
+        </Link>
       </div>
 
       <div className="flex gap-3 mb-6">
