@@ -5,6 +5,24 @@ from pydantic import BaseModel, ConfigDict
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
 
 
+class ReturnTask(BaseModel):
+    content: str
+
+
+class ApprovalTaskResponse(BaseModel):
+    id: uuid.UUID
+    plan_id: uuid.UUID
+    title: str
+    description: str | None
+    deadline: date
+    status: OnboardingPlanTaskStatus
+    is_required: bool
+    order: int
+    created_at: datetime
+    employee_name: str
+    plan_start_date: date
+
+
 class OnboardingPlanCreate(BaseModel):
     user_id: uuid.UUID
     template_id: uuid.UUID
