@@ -40,3 +40,9 @@ TASK_ALREADY_TERMINAL = ("TASK_ALREADY_TERMINAL", "This task is already in a ter
 INVALID_TASK_TRANSITION = ("INVALID_TASK_TRANSITION", "This task cannot transition from its current status")
 TASK_NOT_APPROVABLE = ("TASK_NOT_APPROVABLE", "Only completed tasks can be approved or returned")
 RETURN_COMMENT_REQUIRED = ("RETURN_COMMENT_REQUIRED", "Feedback comment is required when returning a task")
+
+# Attachments
+ATTACHMENT_NOT_FOUND = ("ATTACHMENT_NOT_FOUND", "Attachment not found")
+ATTACHMENT_LOCKED = ("ATTACHMENT_LOCKED", "Attachment cannot be deleted after task is approved")
+INVALID_FILE_TYPE = ("INVALID_FILE_TYPE", "Only PDF, DOCX, PNG and JPEG files are allowed")
+FILE_TOO_LARGE = ("FILE_TOO_LARGE", "File size must not exceed 10 MB")

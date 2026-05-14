@@ -754,6 +754,25 @@ export interface components {
          * @enum {string}
          */
         OnboardingPlanTaskStatus: "not_started" | "in_progress" | "completed" | "approved" | "returned" | "overdue" | "cancelled";
+        /** TaskAttachmentResponse */
+        TaskAttachmentResponse: {
+            id: string;
+            plan_task_id: string;
+            uploaded_by: string;
+            file_name: string;
+            file_type: string;
+            file_size: number;
+            download_url: string;
+            created_at: string;
+        };
+        /** TaskCommentResponse */
+        TaskCommentResponse: {
+            id: string;
+            plan_task_id: string;
+            user_id: string;
+            content: string;
+            created_at: string;
+        };
         /** OnboardingPlanTaskUpdate */
         OnboardingPlanTaskUpdate: {
             /**

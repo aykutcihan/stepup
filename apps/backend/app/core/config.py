@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     FRONTEND_URL: str = ""
     SENDGRID_API_KEY: str = ""
     SENDGRID_FROM_EMAIL: str = ""
+    GCS_BUCKET_NAME: str = ""
     COOKIE_SECURE: bool = False
 
     JWT_SECRET_KEY: str
