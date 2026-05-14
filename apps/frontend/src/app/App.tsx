@@ -52,7 +52,7 @@ export default function App() {
           <Route path={ROUTES.MANAGER_DASHBOARD} element={<ManagerDashboard />} />
           <Route path={ROUTES.MANAGER_APPROVALS} element={<ManagerApprovalsPage />} />
           <Route path="/manager/tasks/:id" element={<ManagerTaskReviewPage />} />
-          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+          <Route path={ROUTES.MANAGER_PROFILE} element={<ProfilePage />} />
         </Route>
       </Route>
 
@@ -60,7 +60,7 @@ export default function App() {
         <Route element={<DashboardLayout />}>
           <Route path={ROUTES.EMPLOYEE_DASHBOARD} element={<EmployeeDashboard />} />
           <Route path={ROUTES.EMPLOYEE_PLAN} element={<EmployeePlanPage />} />
-          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+          <Route path={ROUTES.EMPLOYEE_PROFILE} element={<ProfilePage />} />
         </Route>
       </Route>
 

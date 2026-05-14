@@ -14,6 +14,8 @@ export const ROUTES = {
   HR_PLAN_NEW: '/hr/plans/new',
   HR_PLAN_DETAIL: (id: string) => `/hr/plans/${id}`,
   EMPLOYEE_PLAN: '/employee/plan',
+  EMPLOYEE_PROFILE: '/employee/profile',
+  MANAGER_PROFILE: '/manager/profile',
   MANAGER_APPROVALS: '/manager/approvals',
   MANAGER_TASK_REVIEW: (id: string) => `/manager/tasks/${id}`,
 }

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { logout } from '@/features/auth/services/authService'
 import { useAuthStore } from '@/stores/authStore'
 import { ROUTES } from '@/constants/routes'
+import { USER_ROLES } from '@/constants/userRoles'
 
 export default function DashboardLayout() {
   const user = useAuthStore((state) => state.user)
@@ -51,7 +52,7 @@ export default function DashboardLayout() {
                   <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                 </div>
                 <Link
-                  to={ROUTES.PROFILE}
+                  to={user?.role === USER_ROLES.MANAGER ? ROUTES.MANAGER_PROFILE : ROUTES.EMPLOYEE_PROFILE}
                   onClick={() => setOpen(false)}
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
