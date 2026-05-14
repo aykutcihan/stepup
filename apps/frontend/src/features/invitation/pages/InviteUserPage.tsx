@@ -3,7 +3,7 @@ import { useInviteUserForm } from '@/features/invitation/hooks/useInviteUserForm
 import { ROLE_LABELS } from '@/constants/userRoles'
 
 export default function InviteUserPage() {
-  const { register, handleSubmit, errors, onSubmit, handleResend, invitations, pageError, success } = useInviteUserForm()
+  const { register, handleSubmit, errors, onSubmit, handleResend, invitations, departments, pageError, success } = useInviteUserForm()
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -35,6 +35,19 @@ export default function InviteUserPage() {
               <option value="hr_admin">HR Admin</option>
             </select>
             {errors.role && <p className="text-xs text-red-600 mt-1">{errors.role.message}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+            <select
+              {...register('department_id')}
+              className="w-full border border-gray-300 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">No department</option>
+              {departments.map((d) => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
           </div>
 
           {pageError && (
