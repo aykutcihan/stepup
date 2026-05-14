@@ -33,9 +33,6 @@ export default function HRDashboardLayout() {
       <nav className="bg-blue-800 text-white px-6 py-3 flex items-center justify-between shadow-md">
         <span className="text-xl font-bold tracking-tight">StepUp</span>
         <div className="flex items-center gap-3">
-          <span className="text-xs bg-blue-600 px-2.5 py-0.5 rounded-full font-medium uppercase tracking-wide">
-            HR Admin
-          </span>
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setOpen((v) => !v)}
