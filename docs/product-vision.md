@@ -757,15 +757,15 @@ ADR-007: Structured logging to GCP Cloud Logging
 ### Sprint 8 — Notifications ✅ Done
 - ✅ Email notifications via SendGrid — plan started (employee), task completed (manager), task approved/returned (employee)
 
-### Sprint 9 — Scheduler, Reports & Seed ✅ Done
+### Sprint 9 — Scheduler, Reports, Seed & File Upload ✅ Done
 - ✅ APScheduler wired into FastAPI lifespan — `mark_overdue_tasks` (00:05 UTC) and `send_deadline_reminders` (00:00 UTC) run daily
 - ✅ `OVERDUE` task status added — tasks past deadline auto-marked; employee and manager emailed; overdue tasks remain actionable
 - ✅ Admin reports — 3 endpoints (completion time by dept, task rates by template, bottlenecks) + CSV export + `ReportsPage` with date range filter
 - ✅ Comprehensive seed data — 6 users, 3 templates, 10 template tasks, 3 plans with realistic task statuses, 17 audit log entries
 - ✅ Fixed broken `audit_logs` migration chain
+- ✅ File upload & comments (US-014b) — GCS bucket (`stepup-494114-attachments`, europe-west4), `TaskAttachment` + `TaskComment` models, signed URL download, MIME/size validation, expandable task panel in `EmployeePlanPage`
 
-### Sprint 10 — File Upload & Quality
-- ⬜ File upload per task (US-014b, GCS integration)
+### Sprint 10 — Final Polish
 - ⬜ Technical quality & polish (US-021)
 
 ### Bonus (If Time Allows)
@@ -841,6 +841,7 @@ A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
 | 1.5 | 2026-05-14 | Sprint 7 done; role-based dashboards (US-018) and audit trail (US-019) complete; bug fixes (auth is_active, login error display, return_comment, playwright config); Sprint 8 scope updated |
 | 1.6 | 2026-05-14 | US-016 email notifications done; plan started, task completed/approved/returned emails added via SendGrid |
 | 1.7 | 2026-05-14 | Sprint 9 done; US-017 scheduler (OVERDUE status + APScheduler lifespan + 2 daily jobs), US-020 reports (3 endpoints + CSV + ReportsPage), comprehensive seed data, audit_log migration fix; Sprint 8 closed, Sprint 9 added, Sprint 10 scoped |
+| 1.8 | 2026-05-14 | US-014b done; GCS bucket created, TaskAttachment + TaskComment models, signed URL downloads, EmployeePlanPage expandable panel; Sprint 9 updated, Sprint 10 reduced to US-021 only |
 
 **Review Frequency:** After each sprint  
 **Status:** Living document — will evolve throughout the project

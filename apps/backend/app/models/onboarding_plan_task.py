@@ -13,6 +13,8 @@ from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
 
 if TYPE_CHECKING:
     from app.models.onboarding_plan import OnboardingPlan
+    from app.models.task_attachment import TaskAttachment
+    from app.models.task_comment import TaskComment
 
 
 class OnboardingPlanTask(Base, TimestampMixin):
@@ -43,3 +45,5 @@ class OnboardingPlanTask(Base, TimestampMixin):
     order: Mapped[int] = mapped_column(Integer, nullable=False)
 
     plan: Mapped["OnboardingPlan"] = relationship("OnboardingPlan", back_populates="tasks")
+    attachments: Mapped[list["TaskAttachment"]] = relationship("TaskAttachment", back_populates="task", order_by="TaskAttachment.created_at")
+    comments: Mapped[list["TaskComment"]] = relationship("TaskComment", back_populates="task", order_by="TaskComment.created_at")

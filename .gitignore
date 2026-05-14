@@ -223,3 +223,9 @@ apps/frontend/test-results/
 apps/frontend/.pnpm-store/
 
 apps/frontend/.firebase/
+
+# GCP service account keys
+*.json
+!package.json
+!tsconfig*.json
+!turbo.json
