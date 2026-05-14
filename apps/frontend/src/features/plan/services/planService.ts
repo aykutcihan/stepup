@@ -38,3 +38,18 @@ export async function cancelTask(planId: string, taskId: string): Promise<Onboar
   const res = await apiClient.patch(API.PLANS.CANCEL_TASK(planId, taskId))
   return res.data
 }
+
+export async function getMyPlan(): Promise<OnboardingPlanResponse> {
+  const res = await apiClient.get(API.PLANS.MY_PLAN)
+  return res.data
+}
+
+export async function startTask(taskId: string): Promise<OnboardingPlanTaskResponse> {
+  const res = await apiClient.patch(API.TASKS.START(taskId))
+  return res.data
+}
+
+export async function completeTask(taskId: string): Promise<OnboardingPlanTaskResponse> {
+  const res = await apiClient.patch(API.TASKS.COMPLETE(taskId))
+  return res.data
+}

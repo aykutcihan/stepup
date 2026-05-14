@@ -33,6 +33,11 @@ export const API = {
     ADD_TASK: (planId: string) => `/api/v1/plans/${planId}/tasks`,
     UPDATE_TASK: (planId: string, taskId: string) => `/api/v1/plans/${planId}/tasks/${taskId}`,
     CANCEL_TASK: (planId: string, taskId: string) => `/api/v1/plans/${planId}/tasks/${taskId}/cancel`,
+    MY_PLAN: '/api/v1/plans/me',
+  },
+  TASKS: {
+    START: (id: string) => `/api/v1/tasks/${id}/start`,
+    COMPLETE: (id: string) => `/api/v1/tasks/${id}/complete`,
   },
   TEMPLATES: {
     LIST: '/api/v1/templates/',

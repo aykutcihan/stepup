@@ -13,6 +13,7 @@ export const ROUTES = {
   HR_PLANS: '/hr/plans',
   HR_PLAN_NEW: '/hr/plans/new',
   HR_PLAN_DETAIL: (id: string) => `/hr/plans/${id}`,
+  EMPLOYEE_PLAN: '/employee/plan',
 }
 
 export const ERROR_ROUTES = {
