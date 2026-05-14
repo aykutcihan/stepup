@@ -1,5 +1,6 @@
+import os
 from logging.config import fileConfig
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import engine_from_config, pool, create_engine
 from alembic import context
 from app.models.base import Base
 import app.models  # noqa: F401
@@ -10,10 +11,15 @@ fileConfig(config.config_file_name)
 target_metadata = Base.metadata
 
 
+def get_url() -> str:
+    url = os.environ.get("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
+    # alembic requires a sync driver; swap asyncpg for psycopg2
+    return url.replace("postgresql+asyncpg://", "postgresql+psycopg2://")
+
+
 def run_migrations_offline() -> None:
-    url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url,
+        url=get_url(),
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -23,11 +29,7 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    connectable = create_engine(get_url(), poolclass=pool.NullPool)
     with connectable.connect() as connection:
         context.configure(
             connection=connection,
