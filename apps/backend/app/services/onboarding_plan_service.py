@@ -18,6 +18,9 @@ from app.schemas.onboarding_plan import (
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
 from app.errors import NotFoundError, ValidationError
 from app.errors import messages
+from app.services.audit_service import AuditService
+
+audit_service = AuditService()
 
 plan_repository = OnboardingPlanRepository()
 plan_task_repository = OnboardingPlanTaskRepository()
@@ -28,7 +31,7 @@ TERMINAL_STATUSES = {OnboardingPlanTaskStatus.CANCELLED}
 
 
 class OnboardingPlanService:
-    async def create_plan(self, db: AsyncSession, data: OnboardingPlanCreate) -> OnboardingPlan:
+    async def create_plan(self, db: AsyncSession, data: OnboardingPlanCreate, actor_id: uuid.UUID | None = None) -> OnboardingPlan:
         existing = await plan_repository.get_active_by_user(db, data.user_id)
         if existing:
             raise ValidationError(*messages.EMPLOYEE_ALREADY_HAS_ACTIVE_PLAN)
@@ -63,6 +66,9 @@ class OnboardingPlanService:
             ))
 
         await db.commit()
+        if actor_id:
+            await audit_service.log(db, actor_id=actor_id, action="plan.created", entity_type="plan", entity_id=plan.id)
+            await db.commit()
         return await plan_repository.get_by_id(db, plan.id)
 
     async def get_plan(self, db: AsyncSession, plan_id: uuid.UUID) -> OnboardingPlan:
@@ -119,7 +125,7 @@ class OnboardingPlanService:
         await db.refresh(task)
         return task
 
-    async def cancel_task(self, db: AsyncSession, plan_id: uuid.UUID, task_id: uuid.UUID) -> OnboardingPlanTask:
+    async def cancel_task(self, db: AsyncSession, plan_id: uuid.UUID, task_id: uuid.UUID, actor_id: uuid.UUID | None = None) -> OnboardingPlanTask:
         plan = await plan_repository.get_by_id(db, plan_id)
         if not plan:
             raise NotFoundError(*messages.PLAN_NOT_FOUND)
@@ -134,4 +140,7 @@ class OnboardingPlanService:
         task.status = OnboardingPlanTaskStatus.CANCELLED
         await db.commit()
         await db.refresh(task)
+        if actor_id:
+            await audit_service.log(db, actor_id=actor_id, action="plan.task_cancelled", entity_type="task", entity_id=task.id)
+            await db.commit()
         return task

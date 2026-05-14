@@ -26,7 +26,7 @@ async def create_plan(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
 ) -> OnboardingPlanResponse:
-    plan = await onboarding_plan_service.create_plan(db=db, data=data)
+    plan = await onboarding_plan_service.create_plan(db=db, data=data, actor_id=current_user.id)
     return OnboardingPlanResponse.model_validate(plan)
 
 
@@ -81,5 +81,5 @@ async def cancel_task(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
 ) -> OnboardingPlanTaskResponse:
-    task = await onboarding_plan_service.cancel_task(db=db, plan_id=plan_id, task_id=task_id)
+    task = await onboarding_plan_service.cancel_task(db=db, plan_id=plan_id, task_id=task_id, actor_id=current_user.id)
     return OnboardingPlanTaskResponse.model_validate(task)

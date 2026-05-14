@@ -749,21 +749,16 @@ ADR-007: Structured logging to GCP Cloud Logging
 - ✅ UI polish: user dropdown menu, template creation, clickable cards, role-specific profile routes
 - ⬜ US-014b (file upload) deferred to Sprint 8
 
-### Sprint 7 — Notifications, Scheduler & Dashboards
-- Email notifications via SendGrid (plan started, task completed, approved, returned, deadline reminder)
-- APScheduler: daily overdue detection + deadline reminders
-- Employee dashboard (progress, tasks by status, upcoming deadlines)
-- Manager dashboard (team overview, pending approvals, overdue alerts)
-- HR Admin dashboard (system-wide stats, avg completion time)
+### Sprint 7 — Dashboards & Audit Trail ✅ Done
+- ✅ Role-based dashboards: HR Admin (active users, plans, departments, pending approvals), Manager (active plans, pending approvals, team size), Employee (progress bar, task breakdown, next deadline)
+- ✅ Audit trail: all key actions logged (user invited/registered/deactivated, plan created, task started/completed/approved/returned), HR Admin filter page
+- ✅ Bug fixes: deactivated user login rejection, login form error display, return_comment persistence, playwright baseURL env var
 
-### Sprint 7 — Audit Trail, Reports & Quality
-- Audit trail (complete, uneditable, filterable, paginated)
-- Admin reports + CSV export
-- Pagination on all list endpoints
-- Health check endpoint + request ID middleware
-- Full E2E regression suite (Playwright)
-- README + Swagger polish
-- Demo seed data finalized
+### Sprint 8 — Notifications, Scheduler & Reports
+- Email notifications via SendGrid (task completed, approved/returned, deadline reminder)
+- APScheduler: daily overdue detection + deadline reminders
+- Admin reports (completion rates, avg time per department, bottlenecks)
+- File upload (US-014b, GCS integration)
 
 ### Bonus (If Time Allows)
 - Multi-tenancy (organization_id on all tables)
@@ -835,6 +830,7 @@ A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
 | 1.2 | 2026-05-03 | Updated error handling to app/errors/ package, updated monorepo structure |
 | 1.3 | 2026-05-12 | Sprints 2–4 marked done, Sprint 5 in progress; added reactivate to user management; updated onboarding_plans schema to match implementation |
 | 1.4 | 2026-05-14 | Sprint 5 done, Sprint 6 done; task workflow and manager review complete; department added to invitation; US-014b deferred to Sprint 8; sprint numbering adjusted |
+| 1.5 | 2026-05-14 | Sprint 7 done; role-based dashboards (US-018) and audit trail (US-019) complete; bug fixes (auth is_active, login error display, return_comment, playwright config); Sprint 8 scope updated |
 
 **Review Frequency:** After each sprint  
 **Status:** Living document — will evolve throughout the project

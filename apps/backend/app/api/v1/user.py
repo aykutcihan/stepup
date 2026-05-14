@@ -51,7 +51,7 @@ async def update_user(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
 ) -> UserResponse:
-    user = await user_service.update_user(db=db, user_id=user_id, data=data)
+    user = await user_service.update_user(db=db, user_id=user_id, data=data, actor_id=current_user.id)
     return UserResponse.model_validate(user)
 
 
@@ -74,5 +74,5 @@ async def reactivate_user(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
 ) -> UserResponse:
-    user = await user_service.reactivate_user(db=db, user_id=user_id)
+    user = await user_service.reactivate_user(db=db, user_id=user_id, actor_id=current_user.id)
     return UserResponse.model_validate(user)
