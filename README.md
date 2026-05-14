@@ -18,11 +18,8 @@ StepUp replaces email chains and spreadsheets with a structured onboarding workf
 | Role | Email | Password |
 |---|---|---|
 | HR Admin | admin@stepup.com | Admin1234! |
-| Manager (Engineering) | manager@stepup.com | Manager1234! |
-| Manager (Product) | manager2@stepup.com | Manager1234! |
-| Employee (Engineering, in progress) | employee@stepup.com | Employee1234! |
-| Employee (Engineering, completed) | alice@stepup.com | Employee1234! |
-| Employee (Product, stuck) | bob@stepup.com | Employee1234! |
+| Manager | manager@stepup.com | Manager1234! |
+| Employee | employee@stepup.com | Employee1234! |
 
 ---
 
