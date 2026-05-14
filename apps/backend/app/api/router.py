@@ -13,3 +13,4 @@ api_router.include_router(template.router, prefix="/templates", tags=["templates
 api_router.include_router(task_workflow.plans_router, prefix="/plans", tags=["employee-tasks"])
 api_router.include_router(onboarding_plan.router, prefix="/plans", tags=["plans"])
 api_router.include_router(task_workflow.tasks_router, prefix="/tasks", tags=["employee-tasks"])
+api_router.include_router(task_workflow.manager_router, prefix="/manager", tags=["manager-tasks"])

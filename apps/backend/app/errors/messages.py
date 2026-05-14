@@ -38,3 +38,5 @@ EMPLOYEE_ALREADY_HAS_ACTIVE_PLAN = ("EMPLOYEE_ALREADY_HAS_ACTIVE_PLAN", "This em
 TEMPLATE_NOT_ACTIVE = ("TEMPLATE_NOT_ACTIVE", "Template must be active to create a plan")
 TASK_ALREADY_TERMINAL = ("TASK_ALREADY_TERMINAL", "This task is already in a terminal state and cannot be cancelled")
 INVALID_TASK_TRANSITION = ("INVALID_TASK_TRANSITION", "This task cannot transition from its current status")
+TASK_NOT_APPROVABLE = ("TASK_NOT_APPROVABLE", "Only completed tasks can be approved or returned")
+RETURN_COMMENT_REQUIRED = ("RETURN_COMMENT_REQUIRED", "Feedback comment is required when returning a task")

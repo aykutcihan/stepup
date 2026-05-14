@@ -38,6 +38,11 @@ export const API = {
   TASKS: {
     START: (id: string) => `/api/v1/tasks/${id}/start`,
     COMPLETE: (id: string) => `/api/v1/tasks/${id}/complete`,
+    APPROVE: (id: string) => `/api/v1/tasks/${id}/approve`,
+    RETURN: (id: string) => `/api/v1/tasks/${id}/return`,
+  },
+  MANAGER: {
+    APPROVALS: '/api/v1/manager/approvals',
   },
   TEMPLATES: {
     LIST: '/api/v1/templates/',

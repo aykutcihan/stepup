@@ -10,6 +10,7 @@ from app.models.onboarding_plan_task import OnboardingPlanTask
 from app.models.user import User
 from app.repositories.onboarding_plan_repository import OnboardingPlanRepository
 from app.repositories.onboarding_plan_task_repository import OnboardingPlanTaskRepository
+from app.schemas.onboarding_plan import ApprovalTaskResponse, ReturnTask
 
 plan_repository = OnboardingPlanRepository()
 plan_task_repository = OnboardingPlanTaskRepository()
@@ -45,6 +46,64 @@ class TaskWorkflowService:
         task.status = OnboardingPlanTaskStatus.COMPLETED
         await db.commit()
         await db.refresh(task)
+        return task
+
+    async def get_pending_approvals(
+        self, db: AsyncSession, current_user: User
+    ) -> list[ApprovalTaskResponse]:
+        plans = await plan_repository.get_all_by_manager(db, current_user.id)
+        result = []
+        for plan in plans:
+            for task in plan.tasks:
+                if task.status == OnboardingPlanTaskStatus.COMPLETED and task.deleted_at is None:
+                    result.append(ApprovalTaskResponse(
+                        id=task.id,
+                        plan_id=task.plan_id,
+                        title=task.title,
+                        description=task.description,
+                        deadline=task.deadline,
+                        status=task.status,
+                        is_required=task.is_required,
+                        order=task.order,
+                        created_at=task.created_at,
+                        employee_name=f"{plan.employee.first_name} {plan.employee.last_name}",
+                        plan_start_date=plan.start_date,
+                    ))
+        return result
+
+    async def approve_task(
+        self, db: AsyncSession, task_id: uuid.UUID, current_user: User
+    ) -> OnboardingPlanTask:
+        task = await self._get_task_for_manager(db, task_id, current_user)
+        if task.status != OnboardingPlanTaskStatus.COMPLETED:
+            raise ValidationError(*messages.TASK_NOT_APPROVABLE)
+        task.status = OnboardingPlanTaskStatus.APPROVED
+        await db.commit()
+        await db.refresh(task)
+        return task
+
+    async def return_task(
+        self, db: AsyncSession, task_id: uuid.UUID, current_user: User, data: ReturnTask
+    ) -> OnboardingPlanTask:
+        task = await self._get_task_for_manager(db, task_id, current_user)
+        if task.status != OnboardingPlanTaskStatus.COMPLETED:
+            raise ValidationError(*messages.TASK_NOT_APPROVABLE)
+        if not data.content or not data.content.strip():
+            raise ValidationError(*messages.RETURN_COMMENT_REQUIRED)
+        task.status = OnboardingPlanTaskStatus.IN_PROGRESS
+        await db.commit()
+        await db.refresh(task)
+        return task
+
+    async def _get_task_for_manager(
+        self, db: AsyncSession, task_id: uuid.UUID, current_user: User
+    ) -> OnboardingPlanTask:
+        task = await plan_task_repository.get_by_id(db, task_id)
+        if not task:
+            raise NotFoundError(*messages.PLAN_TASK_NOT_FOUND)
+        plan = await plan_repository.get_by_id(db, task.plan_id)
+        if not plan or plan.manager_id != current_user.id:
+            raise NotFoundError(*messages.PLAN_TASK_NOT_FOUND)
         return task
 
     async def _get_task_for_user(

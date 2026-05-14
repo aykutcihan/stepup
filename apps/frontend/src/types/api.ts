@@ -624,6 +624,39 @@ export interface components {
              */
             start_date: string;
         };
+        /** ApprovalTaskResponse */
+        ApprovalTaskResponse: {
+            /** Id */
+            id: string;
+            /** Plan Id */
+            plan_id: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string | null;
+            /**
+             * Deadline
+             * Format: date
+             */
+            deadline: string;
+            status: components["schemas"]["OnboardingPlanTaskStatus"];
+            /** Is Required */
+            is_required: boolean;
+            /** Order */
+            order: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Employee Name */
+            employee_name: string;
+            /**
+             * Plan Start Date
+             * Format: date
+             */
+            plan_start_date: string;
+        };
         /** OnboardingPlanResponse */
         OnboardingPlanResponse: {
             /**
