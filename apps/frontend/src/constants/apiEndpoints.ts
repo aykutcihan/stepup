@@ -44,6 +44,9 @@ export const API = {
   MANAGER: {
     APPROVALS: '/api/v1/manager/approvals',
   },
+  AUDIT: {
+    LIST: '/api/v1/audit/',
+  },
   DASHBOARD: {
     HR: '/api/v1/dashboard/hr',
     MANAGER: '/api/v1/dashboard/manager',
