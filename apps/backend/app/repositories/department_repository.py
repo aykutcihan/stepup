@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.department import Department
@@ -27,3 +27,12 @@ class DepartmentRepository:
     async def create(self, db: AsyncSession, department: Department) -> Department:
         db.add(department)
         return department
+
+    async def count_active(self, db: AsyncSession) -> int:
+        result = await db.execute(
+            select(func.count()).where(
+                Department.is_active.is_(True),
+                Department.deleted_at.is_(None),
+            )
+        )
+        return result.scalar_one()

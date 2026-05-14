@@ -36,6 +36,15 @@ class UserRepository:
         )
         return result.scalar_one()
 
+    async def count_active(self, db: AsyncSession) -> int:
+        result = await db.execute(
+            select(func.count()).where(
+                User.is_active.is_(True),
+                User.deleted_at.is_(None),
+            )
+        )
+        return result.scalar_one()
+
     async def get_all(
         self,
         db: AsyncSession,

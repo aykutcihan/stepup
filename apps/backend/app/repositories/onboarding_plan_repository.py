@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -45,3 +45,12 @@ class OnboardingPlanRepository:
             )
         )
         return result.scalar_one_or_none()
+
+    async def count_active(self, db: AsyncSession) -> int:
+        result = await db.execute(
+            select(func.count()).where(
+                OnboardingPlan.is_active.is_(True),
+                OnboardingPlan.deleted_at.is_(None),
+            )
+        )
+        return result.scalar_one()
