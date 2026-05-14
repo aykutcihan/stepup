@@ -19,6 +19,7 @@ export const ROUTES = {
   MANAGER_APPROVALS: '/manager/approvals',
   MANAGER_TASK_REVIEW: (id: string) => `/manager/tasks/${id}`,
   HR_AUDIT: '/hr/audit',
+  HR_REPORTS: '/hr/reports',
 }
 
 export const ERROR_ROUTES = {

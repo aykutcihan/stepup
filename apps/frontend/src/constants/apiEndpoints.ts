@@ -52,6 +52,11 @@ export const API = {
     MANAGER: '/api/v1/dashboard/manager',
     EMPLOYEE: '/api/v1/dashboard/employee',
   },
+  REPORTS: {
+    COMPLETION_TIME: '/api/v1/reports/completion-time',
+    TASK_COMPLETION_RATES: '/api/v1/reports/task-completion-rates',
+    BOTTLENECKS: '/api/v1/reports/bottlenecks',
+  },
   TEMPLATES: {
     LIST: '/api/v1/templates/',
     CREATE: '/api/v1/templates/',
