@@ -9,6 +9,7 @@ const STATUS_LABELS: Record<OnboardingPlanTaskStatus, string> = {
   completed: 'Completed',
   approved: 'Approved',
   returned: 'Returned',
+  overdue: 'Overdue',
   cancelled: 'Cancelled',
 }
 
@@ -18,6 +19,7 @@ const STATUS_STYLES: Record<OnboardingPlanTaskStatus, string> = {
   completed: 'bg-green-50 text-green-700 border-green-100',
   approved: 'bg-green-100 text-green-800 border-green-200',
   returned: 'bg-red-50 text-red-700 border-red-100',
+  overdue: 'bg-red-100 text-red-800 border-red-200',
   cancelled: 'bg-gray-100 text-gray-400 border-gray-200',
 }
 
@@ -73,7 +75,7 @@ export default function EmployeePlanPage() {
                 </div>
 
                 <div className="shrink-0">
-                  {task.status === 'not_started' && (
+                  {(task.status === 'not_started' || task.status === 'overdue') && (
                     <button
                       onClick={() => handleStartTask(task.id)}
                       className="text-xs bg-blue-700 hover:bg-blue-800 text-white font-medium px-3 py-1.5 rounded-lg transition-colors"
@@ -81,7 +83,7 @@ export default function EmployeePlanPage() {
                       Start
                     </button>
                   )}
-                  {task.status === 'in_progress' && (
+                  {(task.status === 'in_progress' || task.status === 'overdue') && (
                     <button
                       onClick={() => handleCompleteTask(task.id)}
                       className="text-xs bg-green-700 hover:bg-green-800 text-white font-medium px-3 py-1.5 rounded-lg transition-colors"
