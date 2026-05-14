@@ -13,6 +13,7 @@ type DepartmentResponse = components['schemas']['DepartmentResponse']
 
 export function useDepartmentsPage() {
   const [departments, setDepartments] = useState<DepartmentResponse[]>([])
+  const [showAddForm, setShowAddForm] = useState(false)
   const [newName, setNewName] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
@@ -27,6 +28,7 @@ export function useDepartmentsPage() {
     const created = await createDepartment({ name: newName.trim() })
     setDepartments((prev) => [...prev, created])
     setNewName('')
+    setShowAddForm(false)
   }
 
   function startEdit(department: DepartmentResponse) {
@@ -65,6 +67,8 @@ export function useDepartmentsPage() {
 
   return {
     departments,
+    showAddForm,
+    setShowAddForm,
     newName,
     setNewName,
     editingId,

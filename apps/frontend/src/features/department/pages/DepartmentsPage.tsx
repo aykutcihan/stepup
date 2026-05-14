@@ -4,6 +4,8 @@ import KebabMenu from '@/components/KebabMenu'
 export default function DepartmentsPage() {
   const {
     departments,
+    showAddForm,
+    setShowAddForm,
     newName,
     setNewName,
     editingId,
@@ -20,9 +22,17 @@ export default function DepartmentsPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">Departments</h2>
-        <p className="text-sm text-gray-500 mt-0.5">Manage your organisation's departments.</p>
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">Departments</h2>
+          <p className="text-sm text-gray-500 mt-0.5">Manage your organisation's departments.</p>
+        </div>
+        <button
+          onClick={() => setShowAddForm((v) => !v)}
+          className="text-sm bg-blue-700 hover:bg-blue-800 text-white font-medium px-4 py-2 rounded-lg transition-colors"
+        >
+          {showAddForm ? 'Cancel' : '+ Add Department'}
+        </button>
       </div>
 
       {pageError && (
@@ -31,20 +41,22 @@ export default function DepartmentsPage() {
         </div>
       )}
 
-      <div className="flex gap-2 mb-6">
-        <input
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          placeholder="New department name"
-          className="flex-1 border border-gray-300 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          onClick={handleCreate}
-          className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-        >
-          Add
-        </button>
-      </div>
+      {showAddForm && (
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-5 py-4 mb-4 flex gap-2">
+          <input
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            placeholder="Department name"
+            className="flex-1 border border-gray-300 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={handleCreate}
+            className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          >
+            Add
+          </button>
+        </div>
+      )}
 
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
         <table className="w-full text-sm">
