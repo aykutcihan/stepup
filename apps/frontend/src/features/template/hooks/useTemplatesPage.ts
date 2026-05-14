@@ -1,21 +1,28 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   getTemplates,
+  createTemplate,
   activateTemplate,
   deactivateTemplate,
   cloneTemplate,
 } from '@/features/template/services/templateService'
 import { getDepartments } from '@/features/department/services/departmentService'
+import { ROUTES } from '@/constants/routes'
 import type { components } from '@/types/api'
 
 type TemplateResponse = components['schemas']['TemplateResponse']
 type DepartmentResponse = components['schemas']['DepartmentResponse']
 
 export function useTemplatesPage() {
+  const navigate = useNavigate()
   const [templates, setTemplates] = useState<TemplateResponse[]>([])
   const [departments, setDepartments] = useState<DepartmentResponse[]>([])
   const [filterDepartmentId, setFilterDepartmentId] = useState('')
   const [filterStatus, setFilterStatus] = useState<'active' | 'inactive' | ''>('')
+  const [showCreateForm, setShowCreateForm] = useState(false)
+  const [newTemplateName, setNewTemplateName] = useState('')
+  const [newTemplateDepartmentId, setNewTemplateDepartmentId] = useState('')
 
   useEffect(() => {
     getTemplates().then(setTemplates).catch(() => {})
@@ -31,6 +38,18 @@ export function useTemplatesPage() {
 
   function getDepartmentName(departmentId: string): string {
     return departments.find((d) => d.id === departmentId)?.name ?? '—'
+  }
+
+  async function handleCreate() {
+    if (!newTemplateName.trim() || !newTemplateDepartmentId) return
+    const created = await createTemplate({
+      name: newTemplateName.trim(),
+      department_id: newTemplateDepartmentId,
+    })
+    setShowCreateForm(false)
+    setNewTemplateName('')
+    setNewTemplateDepartmentId('')
+    navigate(ROUTES.HR_TEMPLATE_DETAIL(created.id))
   }
 
   async function handleActivate(id: string) {
@@ -55,7 +74,14 @@ export function useTemplatesPage() {
     setFilterDepartmentId,
     filterStatus,
     setFilterStatus,
+    showCreateForm,
+    setShowCreateForm,
+    newTemplateName,
+    setNewTemplateName,
+    newTemplateDepartmentId,
+    setNewTemplateDepartmentId,
     getDepartmentName,
+    handleCreate,
     handleActivate,
     handleDeactivate,
     handleClone,
