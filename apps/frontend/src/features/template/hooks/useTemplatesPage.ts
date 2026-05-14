@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   getTemplates,
   createTemplate,
+  updateTemplate,
   activateTemplate,
   deactivateTemplate,
   cloneTemplate,
@@ -23,6 +24,8 @@ export function useTemplatesPage() {
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [newTemplateName, setNewTemplateName] = useState('')
   const [newTemplateDepartmentId, setNewTemplateDepartmentId] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editingName, setEditingName] = useState('')
 
   useEffect(() => {
     getTemplates().then(setTemplates).catch(() => {})
@@ -50,6 +53,24 @@ export function useTemplatesPage() {
     setNewTemplateName('')
     setNewTemplateDepartmentId('')
     navigate(ROUTES.HR_TEMPLATE_DETAIL(created.id))
+  }
+
+  function startRename(id: string, currentName: string) {
+    setEditingId(id)
+    setEditingName(currentName)
+  }
+
+  function cancelRename() {
+    setEditingId(null)
+    setEditingName('')
+  }
+
+  async function handleRename() {
+    if (!editingId || !editingName.trim()) return
+    const updated = await updateTemplate(editingId, { name: editingName.trim() })
+    setTemplates((prev) => prev.map((t) => (t.id === updated.id ? updated : t)))
+    setEditingId(null)
+    setEditingName('')
   }
 
   async function handleActivate(id: string) {
@@ -80,8 +101,14 @@ export function useTemplatesPage() {
     setNewTemplateName,
     newTemplateDepartmentId,
     setNewTemplateDepartmentId,
+    editingId,
+    editingName,
+    setEditingName,
     getDepartmentName,
     handleCreate,
+    startRename,
+    cancelRename,
+    handleRename,
     handleActivate,
     handleDeactivate,
     handleClone,

@@ -17,8 +17,14 @@ export default function TemplatesPage() {
     setNewTemplateName,
     newTemplateDepartmentId,
     setNewTemplateDepartmentId,
+    editingId,
+    editingName,
+    setEditingName,
     getDepartmentName,
     handleCreate,
+    startRename,
+    cancelRename,
+    handleRename,
     handleActivate,
     handleDeactivate,
     handleClone,
@@ -95,32 +101,58 @@ export default function TemplatesPage() {
       ) : (
         <div className="grid gap-4">
           {filteredTemplates.map((t) => (
-            <div key={t.id} className="relative">
-              <Link
-                to={ROUTES.HR_TEMPLATE_DETAIL(t.id)}
-                className="block bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-5 hover:border-blue-200 hover:shadow-md transition-all"
-              >
-                <div className="flex items-center gap-3 pr-10">
-                  <h3 className="text-sm font-semibold text-gray-900">{t.name}</h3>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${
-                    t.is_active
-                      ? 'bg-green-50 text-green-700 border-green-100'
-                      : 'bg-gray-100 text-gray-500 border-gray-200'
-                  }`}>
-                    {t.is_active ? 'Active' : 'Inactive'}
-                  </span>
+            <div key={t.id} className="relative bg-white rounded-xl border border-gray-200 shadow-sm">
+              {editingId === t.id ? (
+                <div className="px-6 py-4 flex items-center gap-2">
+                  <input
+                    value={editingName}
+                    onChange={(e) => setEditingName(e.target.value)}
+                    className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleRename}
+                    className="text-xs text-blue-600 hover:text-blue-800 border border-blue-200 px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={cancelRename}
+                    className="text-xs text-gray-500 hover:text-gray-700 border border-gray-200 px-3 py-1.5 rounded-lg transition-colors"
+                  >
+                    Cancel
+                  </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">{getDepartmentName(t.department_id)}</p>
-              </Link>
+              ) : (
+                <Link
+                  to={ROUTES.HR_TEMPLATE_DETAIL(t.id)}
+                  className="block px-6 py-5 hover:bg-slate-50 rounded-xl transition-colors pr-14"
+                >
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-sm font-semibold text-gray-900">{t.name}</h3>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${
+                      t.is_active
+                        ? 'bg-green-50 text-green-700 border-green-100'
+                        : 'bg-gray-100 text-gray-500 border-gray-200'
+                    }`}>
+                      {t.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{getDepartmentName(t.department_id)}</p>
+                </Link>
+              )}
 
-              <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                <KebabMenu items={[
-                  { label: 'Clone', onClick: () => handleClone(t.id) },
-                  t.is_active
-                    ? { label: 'Deactivate', onClick: () => handleDeactivate(t.id), variant: 'danger' }
-                    : { label: 'Activate', onClick: () => handleActivate(t.id), variant: 'success' },
-                ]} />
-              </div>
+              {editingId !== t.id && (
+                <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                  <KebabMenu items={[
+                    { label: 'Rename', onClick: () => startRename(t.id, t.name) },
+                    { label: 'Clone', onClick: () => handleClone(t.id) },
+                    t.is_active
+                      ? { label: 'Deactivate', onClick: () => handleDeactivate(t.id), variant: 'danger' }
+                      : { label: 'Activate', onClick: () => handleActivate(t.id), variant: 'success' },
+                  ]} />
+                </div>
+              )}
             </div>
           ))}
         </div>
