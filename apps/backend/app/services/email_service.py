@@ -68,6 +68,55 @@ class EmailService:
         client = SendGridAPIClient(settings.SENDGRID_API_KEY)
         client.send(message)
 
+    async def send_task_overdue_email(self, to_email: str, first_name: str, task_title: str, deadline: str) -> None:
+        plan_url = f"{settings.FRONTEND_URL}/employee/plan"
+        message = Mail(
+            from_email=settings.SENDGRID_FROM_EMAIL,
+            to_emails=to_email,
+            subject=f"Task overdue: {task_title}",
+            html_content=f"""
+                <p>Hi {first_name},</p>
+                <p>The following task has passed its deadline and is now marked as overdue:</p>
+                <p><strong>{task_title}</strong> — was due on {deadline}</p>
+                <p>Please complete it as soon as possible.</p>
+                <p><a href="{plan_url}">View my onboarding plan</a></p>
+            """,
+        )
+        client = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        client.send(message)
+
+    async def send_task_overdue_manager_email(self, to_email: str, manager_first_name: str, employee_name: str, task_title: str, deadline: str) -> None:
+        approvals_url = f"{settings.FRONTEND_URL}/manager/approvals"
+        message = Mail(
+            from_email=settings.SENDGRID_FROM_EMAIL,
+            to_emails=to_email,
+            subject=f"Overdue task: {task_title} — {employee_name}",
+            html_content=f"""
+                <p>Hi {manager_first_name},</p>
+                <p><strong>{employee_name}</strong> has an overdue task:</p>
+                <p><strong>{task_title}</strong> — was due on {deadline}</p>
+                <p><a href="{approvals_url}">View team tasks</a></p>
+            """,
+        )
+        client = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        client.send(message)
+
+    async def send_deadline_reminder_email(self, to_email: str, first_name: str, task_title: str, deadline: str) -> None:
+        plan_url = f"{settings.FRONTEND_URL}/employee/plan"
+        message = Mail(
+            from_email=settings.SENDGRID_FROM_EMAIL,
+            to_emails=to_email,
+            subject=f"Reminder: '{task_title}' is due in 2 days",
+            html_content=f"""
+                <p>Hi {first_name},</p>
+                <p>This is a reminder that the following task is due in 2 days:</p>
+                <p><strong>{task_title}</strong> — due on {deadline}</p>
+                <p><a href="{plan_url}">View my onboarding plan</a></p>
+            """,
+        )
+        client = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        client.send(message)
+
     async def send_task_returned_email(self, to_email: str, first_name: str, task_title: str, comment: str) -> None:
         plan_url = f"{settings.FRONTEND_URL}/employee/plan"
         message = Mail(

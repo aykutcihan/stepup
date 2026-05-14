@@ -25,9 +25,10 @@ user_repository = UserRepository()
 audit_service = AuditService()
 email_service = EmailService()
 
-VALID_TRANSITIONS = {
-    OnboardingPlanTaskStatus.NOT_STARTED: OnboardingPlanTaskStatus.IN_PROGRESS,
-    OnboardingPlanTaskStatus.IN_PROGRESS: OnboardingPlanTaskStatus.COMPLETED,
+VALID_TRANSITIONS: dict[OnboardingPlanTaskStatus, set[OnboardingPlanTaskStatus]] = {
+    OnboardingPlanTaskStatus.NOT_STARTED: {OnboardingPlanTaskStatus.IN_PROGRESS},
+    OnboardingPlanTaskStatus.IN_PROGRESS: {OnboardingPlanTaskStatus.COMPLETED},
+    OnboardingPlanTaskStatus.OVERDUE: {OnboardingPlanTaskStatus.IN_PROGRESS, OnboardingPlanTaskStatus.COMPLETED},
 }
 
 
@@ -178,5 +179,5 @@ class TaskWorkflowService:
     def _assert_transition(
         self, task: OnboardingPlanTask, target: OnboardingPlanTaskStatus
     ) -> None:
-        if VALID_TRANSITIONS.get(task.status) != target:
+        if target not in VALID_TRANSITIONS.get(task.status, set()):
             raise ValidationError(*messages.INVALID_TASK_TRANSITION)

@@ -753,7 +753,7 @@ export interface components {
          * OnboardingPlanTaskStatus
          * @enum {string}
          */
-        OnboardingPlanTaskStatus: "not_started" | "in_progress" | "completed" | "approved" | "returned" | "cancelled";
+        OnboardingPlanTaskStatus: "not_started" | "in_progress" | "completed" | "approved" | "returned" | "overdue" | "cancelled";
         /** OnboardingPlanTaskUpdate */
         OnboardingPlanTaskUpdate: {
             /**
