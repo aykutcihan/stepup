@@ -56,8 +56,9 @@ describe('DepartmentsPage', () => {
 
     await waitFor(() => screen.getByText('Engineering'))
 
-    await userEvent.type(screen.getByPlaceholderText(/new department name/i), 'Marketing')
-    await userEvent.click(screen.getByRole('button', { name: /add/i }))
+    await userEvent.click(screen.getByRole('button', { name: /\+ add department/i }))
+    await userEvent.type(screen.getByPlaceholderText(/department name/i), 'Marketing')
+    await userEvent.click(screen.getByRole('button', { name: /^add$/i }))
 
     await waitFor(() => {
       expect(screen.getByText('Marketing')).toBeInTheDocument()
@@ -73,7 +74,7 @@ describe('DepartmentsPage', () => {
     await waitFor(() => screen.getByText('Engineering'))
 
     await userEvent.click(screen.getByRole('button', { name: /actions/i }))
-    await userEvent.click(screen.getByRole('button', { name: /edit name/i }))
+    await userEvent.click(screen.getByRole('button', { name: /rename/i }))
     const input = screen.getByDisplayValue('Engineering')
     await userEvent.clear(input)
     await userEvent.type(input, 'Engineering Updated')
