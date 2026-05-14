@@ -23,6 +23,8 @@ class AuthService:
         user = await user_repository.get_by_email(db, email)
         if not user or not pwd_context.verify(password, user.password_hash):
             raise AuthenticationError(*messages.INVALID_CREDENTIALS)
+        if not user.is_active:
+            raise AuthenticationError(*messages.USER_DEACTIVATED)
 
         access_token = create_access_token(user.id)
         refresh_token_value = create_refresh_token()
