@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Response, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.core.config import settings
 from app.core.constants import ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
@@ -49,16 +50,16 @@ async def login(
         key=ACCESS_TOKEN_COOKIE,
         value=access_token,
         httponly=True,
-        samesite="none",
-        secure=True,
+        samesite="none" if settings.COOKIE_SECURE else "strict",
+        secure=settings.COOKIE_SECURE,
         max_age=60 * 15,
     )
     response.set_cookie(
         key=REFRESH_TOKEN_COOKIE,
         value=refresh_token,
         httponly=True,
-        samesite="none",
-        secure=True,
+        samesite="none" if settings.COOKIE_SECURE else "strict",
+        secure=settings.COOKIE_SECURE,
         max_age=60 * 60 * 24 * 7,
     )
     return {"message": "Login successful"}
@@ -94,16 +95,16 @@ async def refresh(
         key=ACCESS_TOKEN_COOKIE,
         value=access_token,
         httponly=True,
-        samesite="none",
-        secure=True,
+        samesite="none" if settings.COOKIE_SECURE else "strict",
+        secure=settings.COOKIE_SECURE,
         max_age=60 * 15,
     )
     response.set_cookie(
         key=REFRESH_TOKEN_COOKIE,
         value=refresh_token,
         httponly=True,
-        samesite="none",
-        secure=True,
+        samesite="none" if settings.COOKIE_SECURE else "strict",
+        secure=settings.COOKIE_SECURE,
         max_age=60 * 60 * 24 * 7,
     )
 
