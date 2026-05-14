@@ -34,6 +34,7 @@ class InvitationService:
         email: str,
         role: UserRole,
         invited_by: uuid.UUID,
+        department_id: uuid.UUID | None = None,
     ) -> Invitation:
         existing_user = await user_repository.get_by_email(db, email)
         if existing_user:
@@ -45,6 +46,7 @@ class InvitationService:
             token=secrets.token_urlsafe(32),
             invited_by=invited_by,
             expires_at=datetime.now(timezone.utc) + timedelta(days=INVITATION_EXPIRY_DAYS),
+            department_id=department_id,
         )
         await invitation_repository.create(db, invitation)
         await db.commit()
@@ -98,6 +100,7 @@ class InvitationService:
             first_name=first_name,
             last_name=last_name,
             password_hash=pwd_context.hash(password),
+            department_id=invitation.department_id,
         )
         db.add(user)
         invitation.used_at = datetime.now(timezone.utc)

@@ -25,6 +25,7 @@ async def invite_user(
         email=data.email,
         role=data.role,
         invited_by=current_user.id,
+        department_id=data.department_id,
     )
     return InvitationResponse.model_validate(invitation)
 
