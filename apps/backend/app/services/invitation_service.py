@@ -12,6 +12,7 @@ from app.models.invitation import Invitation
 from app.models.user import User
 from app.repositories.invitation_repository import InvitationRepository
 from app.repositories.user_repository import UserRepository
+from app.services.audit_service import AuditService
 from app.services.email_service import EmailService
 
 import logging
@@ -23,6 +24,7 @@ INVITATION_EXPIRY_DAYS = 7
 invitation_repository = InvitationRepository()
 user_repository = UserRepository()
 email_service = EmailService()
+audit_service = AuditService()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
@@ -51,6 +53,8 @@ class InvitationService:
         await invitation_repository.create(db, invitation)
         await db.commit()
         await db.refresh(invitation)
+        await audit_service.log(db, actor_id=invited_by, action="user.invited", entity_type="invitation", entity_id=invitation.id, detail=email)
+        await db.commit()
 
         try:
             await email_service.send_invitation_email(
@@ -104,8 +108,11 @@ class InvitationService:
         )
         db.add(user)
         invitation.used_at = datetime.now(timezone.utc)
+        await db.flush()
         await db.commit()
         await db.refresh(user)
+        await audit_service.log(db, actor_id=user.id, action="user.registered", entity_type="user", entity_id=user.id)
+        await db.commit()
         return user
     
     async def get_invitations(self, db: AsyncSession) -> list[Invitation]:

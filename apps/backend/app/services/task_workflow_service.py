@@ -11,9 +11,11 @@ from app.models.user import User
 from app.repositories.onboarding_plan_repository import OnboardingPlanRepository
 from app.repositories.onboarding_plan_task_repository import OnboardingPlanTaskRepository
 from app.schemas.onboarding_plan import ApprovalTaskResponse, ReturnTask
+from app.services.audit_service import AuditService
 
 plan_repository = OnboardingPlanRepository()
 plan_task_repository = OnboardingPlanTaskRepository()
+audit_service = AuditService()
 
 VALID_TRANSITIONS = {
     OnboardingPlanTaskStatus.NOT_STARTED: OnboardingPlanTaskStatus.IN_PROGRESS,
@@ -36,6 +38,8 @@ class TaskWorkflowService:
         task.status = OnboardingPlanTaskStatus.IN_PROGRESS
         await db.commit()
         await db.refresh(task)
+        await audit_service.log(db, actor_id=current_user.id, action="task.started", entity_type="task", entity_id=task.id)
+        await db.commit()
         return task
 
     async def complete_task(
@@ -46,6 +50,8 @@ class TaskWorkflowService:
         task.status = OnboardingPlanTaskStatus.COMPLETED
         await db.commit()
         await db.refresh(task)
+        await audit_service.log(db, actor_id=current_user.id, action="task.completed", entity_type="task", entity_id=task.id)
+        await db.commit()
         return task
 
     async def get_pending_approvals(
@@ -80,6 +86,8 @@ class TaskWorkflowService:
         task.status = OnboardingPlanTaskStatus.APPROVED
         await db.commit()
         await db.refresh(task)
+        await audit_service.log(db, actor_id=current_user.id, action="task.approved", entity_type="task", entity_id=task.id)
+        await db.commit()
         return task
 
     async def return_task(
@@ -91,8 +99,11 @@ class TaskWorkflowService:
         if not data.content or not data.content.strip():
             raise ValidationError(*messages.RETURN_COMMENT_REQUIRED)
         task.status = OnboardingPlanTaskStatus.IN_PROGRESS
+        task.return_comment = data.content
         await db.commit()
         await db.refresh(task)
+        await audit_service.log(db, actor_id=current_user.id, action="task.returned", entity_type="task", entity_id=task.id, detail=data.content)
+        await db.commit()
         return task
 
     async def _get_task_for_manager(
