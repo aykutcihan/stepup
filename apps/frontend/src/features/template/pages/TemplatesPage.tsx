@@ -95,12 +95,12 @@ export default function TemplatesPage() {
       ) : (
         <div className="grid gap-4">
           {filteredTemplates.map((t) => (
-            <div
-              key={t.id}
-              className="bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-5 flex items-center justify-between"
-            >
-              <div>
-                <div className="flex items-center gap-3">
+            <div key={t.id} className="relative">
+              <Link
+                to={ROUTES.HR_TEMPLATE_DETAIL(t.id)}
+                className="block bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-5 hover:border-blue-200 hover:shadow-md transition-all"
+              >
+                <div className="flex items-center gap-3 pr-10">
                   <h3 className="text-sm font-semibold text-gray-900">{t.name}</h3>
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${
                     t.is_active
@@ -111,16 +111,9 @@ export default function TemplatesPage() {
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">{getDepartmentName(t.department_id)}</p>
-              </div>
+              </Link>
 
-              <div className="flex items-center gap-2">
-                <Link
-                  to={ROUTES.HR_TEMPLATE_DETAIL(t.id)}
-                  className="text-xs text-blue-600 hover:text-blue-800 border border-blue-200 hover:border-blue-300 px-3 py-1.5 rounded-lg transition-colors"
-                >
-                  View
-                </Link>
-
+              <div className="absolute right-4 top-1/2 -translate-y-1/2">
                 <KebabMenu items={[
                   { label: 'Clone', onClick: () => handleClone(t.id) },
                   t.is_active
