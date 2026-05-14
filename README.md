@@ -6,6 +6,23 @@ StepUp streamlines the process of onboarding new employees — structured task a
 
 ---
 
+## Live Demo
+
+| | URL |
+|---|---|
+| **Frontend** | https://stepup-494114.web.app |
+| **Backend API** | https://stepup-backend-943378472223.europe-west4.run.app/docs |
+
+**Demo credentials:**
+
+| Role | Email | Password |
+|---|---|---|
+| HR Admin | admin@stepup.com | Admin1234! |
+| Manager | manager@stepup.com | Manager1234! |
+| Employee | employee@stepup.com | Employee1234! |
+
+---
+
 ## Status
 
 | Sprint | Theme | Status |
