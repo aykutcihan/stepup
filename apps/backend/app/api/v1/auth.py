@@ -49,14 +49,16 @@ async def login(
         key=ACCESS_TOKEN_COOKIE,
         value=access_token,
         httponly=True,
-        samesite="strict",
+        samesite="none",
+        secure=True,
         max_age=60 * 15,
     )
     response.set_cookie(
         key=REFRESH_TOKEN_COOKIE,
         value=refresh_token,
         httponly=True,
-        samesite="strict",
+        samesite="none",
+        secure=True,
         max_age=60 * 60 * 24 * 7,
     )
     return {"message": "Login successful"}
@@ -92,14 +94,16 @@ async def refresh(
         key=ACCESS_TOKEN_COOKIE,
         value=access_token,
         httponly=True,
-        samesite="strict",
+        samesite="none",
+        secure=True,
         max_age=60 * 15,
     )
     response.set_cookie(
         key=REFRESH_TOKEN_COOKIE,
         value=refresh_token,
         httponly=True,
-        samesite="strict",
+        samesite="none",
+        secure=True,
         max_age=60 * 60 * 24 * 7,
     )
 
