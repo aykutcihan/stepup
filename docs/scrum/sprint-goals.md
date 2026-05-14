@@ -25,9 +25,18 @@ All three roles have a dedicated dashboard with real system stats. Every key act
 Email notifications are sent at every key workflow stage. APScheduler automatically marks overdue tasks daily and sends deadline reminders. HR Admins have access to basic onboarding reports. Employees can upload documents to tasks stored in GCP Cloud Storage.
 
 - ✅ US-016 Email Notifications
-- ⬜ US-017 Automated Scheduler
-- ⬜ US-020 Admin Reports
-- ⬜ US-014b File Upload
+- ⬜ US-017 Automated Scheduler (deferred to Sprint 9)
+- ⬜ US-020 Admin Reports (deferred to Sprint 9)
+- ⬜ US-014b File Upload (deferred to Sprint 9)
 
-## Sprint 9 — Quality & Polish
-All list endpoints are paginated. Seed data creates a realistic demo dataset. Full E2E regression suite passes in CI pipeline. README and Swagger polished for demo.
+## Sprint 9 — Scheduler, Reports & Quality
+APScheduler marks overdue tasks daily and sends deadline reminders. HR Admin reports are live. Seed data covers all features. Quality polish and remaining US-021 work.
+
+- ✅ US-017 Automated Scheduler (APScheduler lifespan, mark_overdue_tasks, send_deadline_reminders, OVERDUE enum)
+- ✅ US-020 Admin Reports & Export (3 endpoints, CSV export, ReportsPage with date filter)
+- ✅ Comprehensive seed data (alice, bob, manager2, Product template, 3 plans, 17 audit logs)
+- ⬜ US-014b File Upload
+- ⬜ US-021 Technical Quality & Polish
+
+## Sprint 10 — Final Polish & File Upload
+All list endpoints are paginated. File upload via GCS. Full E2E regression suite passes in CI. README and Swagger polished for demo.

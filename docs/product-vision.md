@@ -754,11 +754,19 @@ ADR-007: Structured logging to GCP Cloud Logging
 - ✅ Audit trail: all key actions logged (user invited/registered/deactivated, plan created, task started/completed/approved/returned), HR Admin filter page
 - ✅ Bug fixes: deactivated user login rejection, login form error display, return_comment persistence, playwright baseURL env var
 
-### Sprint 8 — Notifications, Scheduler & Reports
+### Sprint 8 — Notifications ✅ Done
 - ✅ Email notifications via SendGrid — plan started (employee), task completed (manager), task approved/returned (employee)
-- ⬜ APScheduler: daily overdue detection + deadline reminders (US-017)
-- ⬜ Admin reports (completion rates, avg time per department) (US-020)
-- ⬜ File upload (US-014b, GCS integration)
+
+### Sprint 9 — Scheduler, Reports & Seed ✅ Done
+- ✅ APScheduler wired into FastAPI lifespan — `mark_overdue_tasks` (00:05 UTC) and `send_deadline_reminders` (00:00 UTC) run daily
+- ✅ `OVERDUE` task status added — tasks past deadline auto-marked; employee and manager emailed; overdue tasks remain actionable
+- ✅ Admin reports — 3 endpoints (completion time by dept, task rates by template, bottlenecks) + CSV export + `ReportsPage` with date range filter
+- ✅ Comprehensive seed data — 6 users, 3 templates, 10 template tasks, 3 plans with realistic task statuses, 17 audit log entries
+- ✅ Fixed broken `audit_logs` migration chain
+
+### Sprint 10 — File Upload & Quality
+- ⬜ File upload per task (US-014b, GCS integration)
+- ⬜ Technical quality & polish (US-021)
 
 ### Bonus (If Time Allows)
 - Multi-tenancy (organization_id on all tables)
@@ -832,6 +840,7 @@ A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
 | 1.4 | 2026-05-14 | Sprint 5 done, Sprint 6 done; task workflow and manager review complete; department added to invitation; US-014b deferred to Sprint 8; sprint numbering adjusted |
 | 1.5 | 2026-05-14 | Sprint 7 done; role-based dashboards (US-018) and audit trail (US-019) complete; bug fixes (auth is_active, login error display, return_comment, playwright config); Sprint 8 scope updated |
 | 1.6 | 2026-05-14 | US-016 email notifications done; plan started, task completed/approved/returned emails added via SendGrid |
+| 1.7 | 2026-05-14 | Sprint 9 done; US-017 scheduler (OVERDUE status + APScheduler lifespan + 2 daily jobs), US-020 reports (3 endpoints + CSV + ReportsPage), comprehensive seed data, audit_log migration fix; Sprint 8 closed, Sprint 9 added, Sprint 10 scoped |
 
 **Review Frequency:** After each sprint  
 **Status:** Living document — will evolve throughout the project
