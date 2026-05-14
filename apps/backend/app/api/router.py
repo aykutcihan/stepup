@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1 import auth, invitation, user, department, template, onboarding_plan, task_workflow, dashboard, audit
+from app.api.v1 import auth, invitation, user, department, template, onboarding_plan, task_workflow, dashboard, audit, reports
 
 
 api_router = APIRouter()
@@ -16,3 +16,4 @@ api_router.include_router(task_workflow.tasks_router, prefix="/tasks", tags=["em
 api_router.include_router(task_workflow.manager_router, prefix="/manager", tags=["manager-tasks"])
 api_router.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
 api_router.include_router(audit.router, prefix="/audit", tags=["audit"])
+api_router.include_router(reports.router, prefix="/reports", tags=["reports"])
