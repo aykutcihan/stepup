@@ -8,7 +8,7 @@ export default defineConfig({
   },
   workers: 1,
   use: {
-    baseURL: 'http://frontend:3000',
+    baseURL: process.env.BASE_URL ?? 'http://localhost:5173',
   },
   projects: [
     {
