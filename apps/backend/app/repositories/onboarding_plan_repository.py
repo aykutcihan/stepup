@@ -24,7 +24,9 @@ class OnboardingPlanRepository:
 
     async def get_active_by_user(self, db: AsyncSession, user_id: uuid.UUID) -> OnboardingPlan | None:
         result = await db.execute(
-            select(OnboardingPlan).where(
+            select(OnboardingPlan)
+            .options(selectinload(OnboardingPlan.tasks))
+            .where(
                 OnboardingPlan.user_id == user_id,
                 OnboardingPlan.is_active.is_(True),
                 OnboardingPlan.deleted_at.is_(None),
