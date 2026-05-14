@@ -18,11 +18,19 @@ from app.schemas.onboarding_plan import (
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
 from app.errors import NotFoundError, ValidationError
 from app.errors import messages
+from app.repositories.user_repository import UserRepository
 from app.services.audit_service import AuditService
+from app.services.email_service import EmailService
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 audit_service = AuditService()
+email_service = EmailService()
 
 plan_repository = OnboardingPlanRepository()
+user_repository = UserRepository()
 plan_task_repository = OnboardingPlanTaskRepository()
 template_repository = TemplateRepository()
 template_task_repository = TemplateTaskRepository()
@@ -69,6 +77,15 @@ class OnboardingPlanService:
         if actor_id:
             await audit_service.log(db, actor_id=actor_id, action="plan.created", entity_type="plan", entity_id=plan.id)
             await db.commit()
+        try:
+            employee = await user_repository.get_by_id(db, data.user_id)
+            if employee:
+                await email_service.send_plan_started_email(
+                    to_email=employee.email,
+                    first_name=employee.first_name,
+                )
+        except Exception as e:
+            logger.error(f"Failed to send plan_started email: {e}")
         return await plan_repository.get_by_id(db, plan.id)
 
     async def get_plan(self, db: AsyncSession, plan_id: uuid.UUID) -> OnboardingPlan:
