@@ -44,6 +44,11 @@ export const API = {
   MANAGER: {
     APPROVALS: '/api/v1/manager/approvals',
   },
+  DASHBOARD: {
+    HR: '/api/v1/dashboard/hr',
+    MANAGER: '/api/v1/dashboard/manager',
+    EMPLOYEE: '/api/v1/dashboard/employee',
+  },
   TEMPLATES: {
     LIST: '/api/v1/templates/',
     CREATE: '/api/v1/templates/',
