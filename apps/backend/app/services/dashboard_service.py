@@ -6,9 +6,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
 from app.repositories.department_repository import DepartmentRepository
 from app.repositories.onboarding_plan_repository import OnboardingPlanRepository
-from app.repositories.onboarding_plan_task_repository import OnboardingPlanTaskRepository
+from app.repositories.onboarding_plan_task_repository import (
+    OnboardingPlanTaskRepository,
+)
 from app.repositories.user_repository import UserRepository
-from app.schemas.dashboard import EmployeeDashboardResponse, HRDashboardResponse, ManagerDashboardResponse
+from app.schemas.dashboard import (
+    EmployeeDashboardResponse,
+    HRDashboardResponse,
+    ManagerDashboardResponse,
+)
 
 user_repository = UserRepository()
 plan_repository = OnboardingPlanRepository()

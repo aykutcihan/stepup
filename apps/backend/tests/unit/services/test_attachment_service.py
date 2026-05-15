@@ -1,9 +1,10 @@
-import pytest
 import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
+
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
-from app.errors import ValidationError, PermissionError
+from app.errors import PermissionError, ValidationError
 from app.services.attachment_service import AttachmentService
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")

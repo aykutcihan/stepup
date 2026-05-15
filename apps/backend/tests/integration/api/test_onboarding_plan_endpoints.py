@@ -1,11 +1,11 @@
-import pytest
-from datetime import date
 
+import pytest
+
+from app.enums.user_role import UserRole
 from app.models.department import Department
 from app.models.onboarding_template import OnboardingTemplate
 from app.models.template_task import TemplateTask
 from app.models.user import User
-from app.enums.user_role import UserRole
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 

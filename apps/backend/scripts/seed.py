@@ -404,10 +404,8 @@ async def seed_departments(session: AsyncSession) -> None:
     for d in SEED_DEPARTMENTS:
         exists = (await session.execute(select(Department).where(Department.id == d["id"]))).scalar_one_or_none()
         if exists:
-            print(f"  skip dept: {d['name']}")
             continue
         session.add(Department(id=d["id"], name=d["name"]))
-        print(f"  + dept: {d['name']}")
     await session.commit()
 
 
@@ -415,7 +413,6 @@ async def seed_users(session: AsyncSession) -> None:
     for u in SEED_USERS:
         exists = (await session.execute(select(User).where(User.email == u["email"]))).scalar_one_or_none()
         if exists:
-            print(f"  skip user: {u['email']}")
             continue
         session.add(User(
             id=u["id"],
@@ -426,7 +423,6 @@ async def seed_users(session: AsyncSession) -> None:
             role=u["role"],
             department_id=u["department_id"],
         ))
-        print(f"  + user: {u['email']} / {u['password']}")
     await session.commit()
 
 
@@ -434,10 +430,8 @@ async def seed_templates(session: AsyncSession) -> None:
     for t in SEED_TEMPLATES:
         exists = (await session.execute(select(OnboardingTemplate).where(OnboardingTemplate.id == t["id"]))).scalar_one_or_none()
         if exists:
-            print(f"  skip template: {t['name']}")
             continue
         session.add(OnboardingTemplate(id=t["id"], name=t["name"], department_id=t["department_id"], is_active=t["is_active"]))
-        print(f"  + template: {t['name']}")
     await session.commit()
 
 
@@ -445,7 +439,6 @@ async def seed_template_tasks(session: AsyncSession) -> None:
     for t in SEED_TEMPLATE_TASKS:
         exists = (await session.execute(select(TemplateTask).where(TemplateTask.id == t["id"]))).scalar_one_or_none()
         if exists:
-            print(f"  skip template task: {t['title']}")
             continue
         session.add(TemplateTask(
             id=t["id"],
@@ -456,7 +449,6 @@ async def seed_template_tasks(session: AsyncSession) -> None:
             deadline_days=t["deadline_days"],
             is_required=t["is_required"],
         ))
-        print(f"  + template task: {t['title']}")
     await session.commit()
 
 
@@ -464,7 +456,6 @@ async def seed_plans(session: AsyncSession) -> None:
     for p in SEED_PLANS:
         exists = (await session.execute(select(OnboardingPlan).where(OnboardingPlan.id == p["id"]))).scalar_one_or_none()
         if exists:
-            print(f"  skip plan: {p['id']}")
             continue
         plan = OnboardingPlan(
             id=p["id"],
@@ -487,17 +478,14 @@ async def seed_plans(session: AsyncSession) -> None:
                 is_required=t["is_required"],
                 order=t["order"],
             ))
-            print(f"  + plan task: {t['title']} ({t['status'].value})")
 
         await session.commit()
-        print(f"  + plan: {p['id']}")
 
 
 async def seed_audit_logs(session: AsyncSession) -> None:
     for a in SEED_AUDIT_LOGS:
         exists = (await session.execute(select(AuditLog).where(AuditLog.id == a["id"]))).scalar_one_or_none()
         if exists:
-            print(f"  skip audit: {a['action']}")
             continue
         session.add(AuditLog(
             id=a["id"],
@@ -507,7 +495,6 @@ async def seed_audit_logs(session: AsyncSession) -> None:
             entity_id=a["entity_id"],
             detail=a["detail"],
         ))
-        print(f"  + audit: {a['action']} — {a['detail']}")
     await session.commit()
 
 
@@ -518,26 +505,19 @@ async def seed() -> None:
     async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
     async with async_session() as session:
-        print("\n[Departments]")
         await seed_departments(session)
 
-        print("\n[Users]")
         await seed_users(session)
 
-        print("\n[Templates]")
         await seed_templates(session)
 
-        print("\n[Template Tasks]")
         await seed_template_tasks(session)
 
-        print("\n[Plans]")
         await seed_plans(session)
 
-        print("\n[Audit Logs]")
         await seed_audit_logs(session)
 
     await engine.dispose()
-    print("\nSeed complete.")
 
 
 if __name__ == "__main__":

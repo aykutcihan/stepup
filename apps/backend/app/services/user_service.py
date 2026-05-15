@@ -3,12 +3,11 @@ import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enums.user_role import UserRole
-from app.errors import NotFoundError, ValidationError
-from app.errors import messages
+from app.errors import NotFoundError, ValidationError, messages
 from app.models.user import User
 from app.repositories.refresh_token_repository import RefreshTokenRepository
 from app.repositories.user_repository import UserRepository
-from app.schemas.user import UserUpdate, UserProfileUpdate
+from app.schemas.user import UserProfileUpdate, UserUpdate
 from app.services.audit_service import AuditService
 
 user_repository = UserRepository()

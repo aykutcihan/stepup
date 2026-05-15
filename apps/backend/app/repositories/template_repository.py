@@ -1,8 +1,11 @@
 import uuid
+
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.onboarding_template import OnboardingTemplate
 from app.models.template_task import TemplateTask
+
 
 class TemplateRepository:
     async def create(

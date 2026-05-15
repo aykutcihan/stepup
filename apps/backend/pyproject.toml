@@ -5,7 +5,32 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 88
-select = ["E", "F", "I"]
+target-version = "py311"
+exclude = [
+  ".git",
+  ".venv",
+  "__pycache__",
+  ".ruff_cache",
+]
 
-[tool.ruff.isort]
+[tool.ruff.lint]
+select = [
+  "E",      # pycodestyle errors
+  "F",      # pyflakes
+  "I",      # isort
+  "B",      # flake8-bugbear
+  "UP",     # pyupgrade
+  "T201",   # print statements
+]
+ignore = [
+  "E501",   # line too long (handled by formatter)
+  "B008",   # function call in default argument
+  "B904",   # raise from e (for HTTPException)
+]
+
+[tool.ruff.lint.isort]
 known-first-party = ["app"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

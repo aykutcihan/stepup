@@ -48,14 +48,21 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run tests
+      - name: Lint (ruff)
         working-directory: apps/backend
         run: |
-          if [ -d "tests" ] && [ "$(ls -A tests)" ]; then
-            python -m pytest --tb=short -q
-          else
-            echo "No tests found, skipping..."
-          fi
+          pip install ruff
+          ruff check .
+
+      - name: Run migrations
+        working-directory: apps/backend
+        run: python -m alembic upgrade head
+        env:
+          DATABASE_URL: postgresql+asyncpg://stepup:stepup123@localhost:5432/stepup_test
+
+      - name: Run tests
+        working-directory: apps/backend
+        run: python -m pytest --tb=short -q
 
   test-frontend:
     runs-on: ubuntu-latest
@@ -67,7 +74,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3
@@ -78,6 +85,18 @@ jobs:
         working-directory: apps/frontend
         run: pnpm install
 
+      - name: Type check
+        working-directory: apps/frontend
+        run: pnpm exec tsc --noEmit
+
+      - name: Lint
+        working-directory: apps/frontend
+        run: pnpm lint
+
       - name: Run tests
         working-directory: apps/frontend
         run: pnpm test
+
+      - name: Build
+        working-directory: apps/frontend
+        run: pnpm build

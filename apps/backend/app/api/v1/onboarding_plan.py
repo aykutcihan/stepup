@@ -1,4 +1,5 @@
 import uuid
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,11 +9,11 @@ from app.enums.user_role import UserRole
 from app.models.user import User
 from app.schemas.onboarding_plan import (
     OnboardingPlanCreate,
-    OnboardingPlanUpdate,
     OnboardingPlanResponse,
     OnboardingPlanTaskAdd,
-    OnboardingPlanTaskUpdate,
     OnboardingPlanTaskResponse,
+    OnboardingPlanTaskUpdate,
+    OnboardingPlanUpdate,
 )
 from app.services.onboarding_plan_service import OnboardingPlanService
 

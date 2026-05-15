@@ -5,6 +5,12 @@ import type { components } from '@/types/api'
 type OnboardingPlanTaskStatus = components['schemas']['OnboardingPlanTaskStatus']
 type TaskAttachmentResponse = components['schemas']['TaskAttachmentResponse']
 type TaskCommentResponse = components['schemas']['TaskCommentResponse']
+type OnboardingPlanTaskResponse = components['schemas']['OnboardingPlanTaskResponse']
+
+interface TaskWithExtras extends OnboardingPlanTaskResponse {
+  attachments?: TaskAttachmentResponse[]
+  comments?: TaskCommentResponse[]
+}
 
 const STATUS_LABELS: Record<OnboardingPlanTaskStatus, string> = {
   not_started: 'Not started',
@@ -117,8 +123,8 @@ export default function EmployeePlanPage() {
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm divide-y divide-gray-100 dark:divide-gray-700">
         {plan.tasks.map((task) => {
           const isExpanded = expandedTask === task.id
-          const attachments: TaskAttachmentResponse[] = (task as any).attachments ?? []
-          const comments: TaskCommentResponse[] = (task as any).comments ?? []
+          const attachments: TaskAttachmentResponse[] = (task as TaskWithExtras).attachments ?? []
+          const comments: TaskCommentResponse[] = (task as TaskWithExtras).comments ?? []
           const canDelete = task.status !== 'approved' && task.status !== 'cancelled'
 
           return (

@@ -1,5 +1,6 @@
 import uuid
-from sqlalchemy import select, func
+
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus

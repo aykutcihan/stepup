@@ -1,7 +1,7 @@
 import enum
 
 
-class OnboardingPlanTaskStatus(str, enum.Enum):
+class OnboardingPlanTaskStatus(enum.StrEnum):
     NOT_STARTED = "not_started"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"

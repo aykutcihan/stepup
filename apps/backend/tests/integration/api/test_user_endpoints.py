@@ -1,5 +1,5 @@
 import pytest
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 from passlib.context import CryptContext
 
 from app.core.database import get_db
@@ -240,8 +240,7 @@ class TestDeactivatedUserAccess:
     async def test_deactivated_user_gets_401_on_next_request(
         self, db_session, client
     ):
-        from app.errors import AuthenticationError
-        from app.errors import messages
+        from app.errors import AuthenticationError, messages
 
         async def override_get_db():
             yield db_session

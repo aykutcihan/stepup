@@ -1,0 +1,131 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+jobs:
+  test-before-deploy:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: stepup
+          POSTGRES_PASSWORD: stepup123
+          POSTGRES_DB: stepup_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql+asyncpg://stepup:stepup123@localhost:5432/stepup_test
+      TEST_DATABASE_URL: postgresql+asyncpg://stepup:stepup123@localhost:5432/stepup_test
+      FRONTEND_URL: http://localhost:3000
+      SENDGRID_API_KEY: ci-placeholder
+      SENDGRID_FROM_EMAIL: noreply@stepup.local
+      JWT_SECRET_KEY: ci-test-secret-key
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install backend dependencies
+        working-directory: apps/backend
+        run: pip install --upgrade pip && pip install -r requirements.txt
+
+      - name: Run backend tests
+        working-directory: apps/backend
+        run: python -m pytest --tb=short -q
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Install frontend dependencies
+        working-directory: apps/frontend
+        run: pnpm install
+
+      - name: Run frontend tests
+        working-directory: apps/frontend
+        run: pnpm test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test-before-deploy
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Staging VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.STAGING_VPS_HOST }}
+          username: ${{ secrets.STAGING_VPS_USER }}
+          key: ${{ secrets.STAGING_VPS_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+            DEPLOY_PATH="${{ secrets.STAGING_VPS_DEPLOY_PATH || '/opt/stepup' }}"
+
+            echo "Changing to deploy directory: $DEPLOY_PATH"
+            cd "$DEPLOY_PATH" || { echo "Error: Directory not found"; exit 1; }
+
+            echo "Pulling latest changes from develop..."
+            git fetch origin develop
+            git reset --hard origin/develop
+
+            echo "Updating .env file..."
+            cat > .env << 'EOF'
+            DATABASE_URL=${{ secrets.STAGING_DATABASE_URL }}
+            FRONTEND_URL=${{ secrets.STAGING_FRONTEND_URL }}
+            SENDGRID_API_KEY=${{ secrets.STAGING_SENDGRID_API_KEY }}
+            SENDGRID_FROM_EMAIL=${{ secrets.STAGING_SENDGRID_FROM_EMAIL }}
+            JWT_SECRET_KEY=${{ secrets.STAGING_JWT_SECRET_KEY }}
+            GCS_BUCKET_NAME=${{ secrets.STAGING_GCS_BUCKET_NAME }}
+            LOGIN_RATE_LIMIT=1000/minute
+            EOF
+
+            if docker compose version >/dev/null 2>&1; then
+              COMPOSE_CMD="docker compose"
+            else
+              COMPOSE_CMD="docker-compose"
+            fi
+
+            echo "Stopping existing containers..."
+            $COMPOSE_CMD down || true
+
+            echo "Building new images..."
+            $COMPOSE_CMD build --no-cache backend
+
+            echo "Starting database..."
+            $COMPOSE_CMD up -d db
+
+            echo "Waiting for PostgreSQL..."
+            until $COMPOSE_CMD exec -T db pg_isready -U ${POSTGRES_USER:-stepup}; do
+              echo "Postgres not ready, retrying in 2s..."
+              sleep 2
+            done
+
+            echo "Running migrations..."
+            $COMPOSE_CMD run --rm backend python -m alembic upgrade head
+
+            echo "Starting all services..."
+            $COMPOSE_CMD up -d
+
+            echo "Deployment completed!"
+            $COMPOSE_CMD ps

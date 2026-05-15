@@ -1,5 +1,4 @@
 import uuid
-from typing import List
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,7 +7,12 @@ from app.core.database import get_db
 from app.core.dependencies import require_role
 from app.enums.user_role import UserRole
 from app.models.user import User
-from app.schemas.onboarding_plan import ApprovalTaskResponse, OnboardingPlanResponse, OnboardingPlanTaskResponse, ReturnTask
+from app.schemas.onboarding_plan import (
+    ApprovalTaskResponse,
+    OnboardingPlanResponse,
+    OnboardingPlanTaskResponse,
+    ReturnTask,
+)
 from app.services.task_workflow_service import TaskWorkflowService
 
 plans_router = APIRouter()
@@ -46,11 +50,11 @@ async def complete_task(
     return OnboardingPlanTaskResponse.model_validate(task)
 
 
-@manager_router.get("/approvals", response_model=List[ApprovalTaskResponse])
+@manager_router.get("/approvals", response_model=list[ApprovalTaskResponse])
 async def get_pending_approvals(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.MANAGER)),
-) -> List[ApprovalTaskResponse]:
+) -> list[ApprovalTaskResponse]:
     return await task_workflow_service.get_pending_approvals(db=db, current_user=current_user)
 
 

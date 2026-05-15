@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import uuid
 from typing import TYPE_CHECKING
+
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin
 
@@ -33,4 +34,4 @@ class Department(Base, TimestampMixin):
         default=True,
         nullable=False,
     )
-    users: Mapped[list["User"]] = relationship("User", back_populates="department")
+    users: Mapped[list[User]] = relationship("User", back_populates="department")

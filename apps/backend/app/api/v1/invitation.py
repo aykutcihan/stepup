@@ -7,7 +7,11 @@ from app.core.database import get_db
 from app.core.dependencies import require_role
 from app.enums.user_role import UserRole
 from app.models.user import User
-from app.schemas.invitation import InvitationCreate, InvitationResponse, InvitationValidateResponse
+from app.schemas.invitation import (
+    InvitationCreate,
+    InvitationResponse,
+    InvitationValidateResponse,
+)
 from app.services.invitation_service import InvitationService
 
 router = APIRouter()

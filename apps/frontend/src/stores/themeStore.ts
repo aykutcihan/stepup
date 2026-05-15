@@ -8,7 +8,9 @@ export function readTheme(): Theme {
   try {
     const v = localStorage.getItem(KEY)
     if (v === 'light' || v === 'dark' || v === 'system') return v
-  } catch {}
+  } catch {
+    // localStorage not available (SSR or private browsing)
+  }
   return 'system'
 }
 

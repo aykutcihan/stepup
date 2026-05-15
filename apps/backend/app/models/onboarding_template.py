@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import uuid
 from typing import TYPE_CHECKING
-from sqlalchemy import String, Boolean, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from sqlalchemy import Boolean, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin
 
@@ -29,7 +30,7 @@ class OnboardingTemplate(Base, TimestampMixin):
     )
     is_active: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
-    department: Mapped["Department"] = relationship("Department")
-    tasks: Mapped[list["TemplateTask"]] = relationship(
+    department: Mapped[Department] = relationship("Department")
+    tasks: Mapped[list[TemplateTask]] = relationship(
         "TemplateTask", back_populates="template"
     )
