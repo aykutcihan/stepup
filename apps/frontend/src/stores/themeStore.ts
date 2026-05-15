@@ -1,11 +1,15 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
 export type Theme = 'light' | 'dark' | 'system'
 
-interface ThemeState {
-  theme: Theme
-  setTheme: (theme: Theme) => void
+const STORAGE_KEY = 'stepup-theme'
+
+function getStoredTheme(): Theme {
+  try {
+    return (localStorage.getItem(STORAGE_KEY) as Theme) || 'system'
+  } catch {
+    return 'system'
+  }
 }
 
 export function applyTheme(theme: Theme) {
@@ -19,20 +23,16 @@ export function applyTheme(theme: Theme) {
   }
 }
 
-export const useThemeStore = create<ThemeState>()(
-  persist(
-    (set) => ({
-      theme: 'system',
-      setTheme: (theme) => {
-        applyTheme(theme)
-        set({ theme })
-      },
-    }),
-    {
-      name: 'stepup-theme',
-      onRehydrateStorage: () => (state) => {
-        if (state) applyTheme(state.theme)
-      },
-    }
-  )
-)
+interface ThemeState {
+  theme: Theme
+  setTheme: (theme: Theme) => void
+}
+
+export const useThemeStore = create<ThemeState>()((set) => ({
+  theme: getStoredTheme(),
+  setTheme: (theme) => {
+    localStorage.setItem(STORAGE_KEY, theme)
+    applyTheme(theme)
+    set({ theme })
+  },
+}))
