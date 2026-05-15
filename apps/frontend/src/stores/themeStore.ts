@@ -2,26 +2,30 @@ import { create } from 'zustand'
 
 export type Theme = 'light' | 'dark' | 'system'
 
-const STORAGE_KEY = 'stepup-theme'
+const KEY = 'stepup-theme'
 
-function getStoredTheme(): Theme {
+function readTheme(): Theme {
   try {
-    return (localStorage.getItem(STORAGE_KEY) as Theme) || 'system'
-  } catch {
-    return 'system'
-  }
+    const v = localStorage.getItem(KEY)
+    if (v === 'light' || v === 'dark' || v === 'system') return v
+  } catch {}
+  return 'system'
 }
 
 export function applyTheme(theme: Theme) {
-  const root = document.documentElement
-  if (theme === 'dark') {
-    root.classList.add('dark')
-  } else if (theme === 'light') {
-    root.classList.remove('dark')
-  } else {
-    root.classList.toggle('dark', window.matchMedia('(prefers-color-scheme: dark)').matches)
-  }
+  const isDark =
+    theme === 'dark' ||
+    (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  document.documentElement.classList.toggle('dark', isDark)
 }
+
+// Apply immediately when this module loads (before React mounts)
+applyTheme(readTheme())
+
+// Keep dark class in sync when OS preference changes and theme is 'system'
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (readTheme() === 'system') applyTheme('system')
+})
 
 interface ThemeState {
   theme: Theme
@@ -29,9 +33,9 @@ interface ThemeState {
 }
 
 export const useThemeStore = create<ThemeState>()((set) => ({
-  theme: getStoredTheme(),
+  theme: readTheme(),
   setTheme: (theme) => {
-    localStorage.setItem(STORAGE_KEY, theme)
+    localStorage.setItem(KEY, theme)
     applyTheme(theme)
     set({ theme })
   },
