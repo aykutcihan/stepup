@@ -1,10 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useManagerTaskReviewPage } from '@/features/plan/hooks/useManagerTaskReviewPage'
 import { ROUTES } from '@/constants/routes'
-import type { components } from '@/types/api'
-
-type TaskAttachmentResponse = components['schemas']['TaskAttachmentResponse']
-
 export default function ManagerTaskReviewPage() {
   const {
     task,
