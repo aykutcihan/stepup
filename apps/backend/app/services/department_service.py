@@ -1,12 +1,11 @@
+import uuid
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.errors import ValidationError, NotFoundError
-from app.errors import messages
+from app.errors import NotFoundError, ValidationError, messages
 from app.models.department import Department
 from app.repositories.department_repository import DepartmentRepository
 from app.repositories.user_repository import UserRepository
-import uuid
-
 from app.schemas.department import DepartmentCreate, DepartmentUpdate
 
 department_repository = DepartmentRepository()

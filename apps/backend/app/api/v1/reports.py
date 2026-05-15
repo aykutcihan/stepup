@@ -8,7 +8,11 @@ from app.core.database import get_db
 from app.core.dependencies import require_role
 from app.enums.user_role import UserRole
 from app.models.user import User
-from app.schemas.reports import DepartmentCompletionRow, TemplateCompletionRow, BottleneckRow
+from app.schemas.reports import (
+    BottleneckRow,
+    DepartmentCompletionRow,
+    TemplateCompletionRow,
+)
 from app.services.reports_service import ReportsService
 
 router = APIRouter()

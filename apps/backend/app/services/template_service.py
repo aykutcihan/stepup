@@ -1,14 +1,14 @@
-from datetime import datetime, timezone
 import uuid
+from datetime import UTC, datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.errors import NotFoundError, ValidationError, messages
 from app.models.onboarding_template import OnboardingTemplate
-from app.repositories.template_repository import TemplateRepository
-from app.schemas.template import TemplateCreate, TemplateUpdate, TaskCreate, TaskUpdate
-from app.errors import NotFoundError, ValidationError
-from app.errors import messages
 from app.models.template_task import TemplateTask
+from app.repositories.template_repository import TemplateRepository
 from app.repositories.template_task_repository import TemplateTaskRepository
+from app.schemas.template import TaskCreate, TaskUpdate, TemplateCreate, TemplateUpdate
 
 template_repository = TemplateRepository()
 template_task_repository = TemplateTaskRepository()
@@ -178,7 +178,7 @@ class TemplateService:
         if not task or task.template_id != template_id:
             raise NotFoundError(*messages.TASK_NOT_FOUND)
 
-        task.deleted_at = datetime.now(timezone.utc)
+        task.deleted_at = datetime.now(UTC)
         await db.commit()
 
     async def get_tasks(
@@ -233,6 +233,6 @@ class TemplateService:
         if not template:
             raise NotFoundError(*messages.TEMPLATE_NOT_FOUND)
 
-        template.deleted_at = datetime.now(timezone.utc)
+        template.deleted_at = datetime.now(UTC)
         template.is_active = False
         await db.commit()

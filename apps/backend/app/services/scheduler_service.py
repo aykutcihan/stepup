@@ -1,9 +1,8 @@
 import logging
 from datetime import date, timedelta
 
-from sqlalchemy import select, and_
-from sqlalchemy.orm import sessionmaker, selectinload
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import and_, select
+from sqlalchemy.orm import selectinload, sessionmaker
 
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
 from app.models.onboarding_plan import OnboardingPlan

@@ -1,28 +1,28 @@
+import logging
 import uuid
 from datetime import timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
+from app.errors import NotFoundError, ValidationError, messages
 from app.models.onboarding_plan import OnboardingPlan
 from app.models.onboarding_plan_task import OnboardingPlanTask
 from app.repositories.onboarding_plan_repository import OnboardingPlanRepository
-from app.repositories.onboarding_plan_task_repository import OnboardingPlanTaskRepository
+from app.repositories.onboarding_plan_task_repository import (
+    OnboardingPlanTaskRepository,
+)
 from app.repositories.template_repository import TemplateRepository
 from app.repositories.template_task_repository import TemplateTaskRepository
+from app.repositories.user_repository import UserRepository
 from app.schemas.onboarding_plan import (
     OnboardingPlanCreate,
-    OnboardingPlanUpdate,
-    OnboardingPlanTaskUpdate,
     OnboardingPlanTaskAdd,
+    OnboardingPlanTaskUpdate,
+    OnboardingPlanUpdate,
 )
-from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
-from app.errors import NotFoundError, ValidationError
-from app.errors import messages
-from app.repositories.user_repository import UserRepository
 from app.services.audit_service import AuditService
 from app.services.email_service import EmailService
-
-import logging
 
 logger = logging.getLogger(__name__)
 

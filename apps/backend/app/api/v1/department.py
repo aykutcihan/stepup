@@ -7,7 +7,11 @@ from app.core.database import get_db
 from app.core.dependencies import require_role
 from app.enums.user_role import UserRole
 from app.models.user import User
-from app.schemas.department import DepartmentCreate, DepartmentUpdate, DepartmentResponse
+from app.schemas.department import (
+    DepartmentCreate,
+    DepartmentResponse,
+    DepartmentUpdate,
+)
 from app.services.department_service import DepartmentService
 
 router = APIRouter()
