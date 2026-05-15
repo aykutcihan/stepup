@@ -1,7 +1,7 @@
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.invitation import Invitation
@@ -25,13 +25,25 @@ class InvitationRepository:
         )
         return result.scalar_one_or_none()
 
-    async def get_all(self, db: AsyncSession) -> list[Invitation]:
+    async def get_all(self, db: AsyncSession, page: int = 1, page_size: int = 20) -> tuple[list[Invitation], int]:
         now = datetime.now(UTC)
-        result = await db.execute(
-            select(Invitation).where(
-                Invitation.used_at.is_(None),
-                Invitation.expires_at > now,
-            )
+        filters = [
+            Invitation.used_at.is_(None),
+            Invitation.expires_at > now,
+        ]
+
+        count_result = await db.execute(
+            select(func.count()).select_from(Invitation).where(*filters)
         )
-        return list(result.scalars().all())
+        total = count_result.scalar_one()
+
+        query = (
+            select(Invitation)
+            .where(*filters)
+            .order_by(Invitation.created_at.desc())
+            .limit(page_size)
+            .offset((page - 1) * page_size)
+        )
+        result = await db.execute(query)
+        return list(result.scalars().all()), total
 
