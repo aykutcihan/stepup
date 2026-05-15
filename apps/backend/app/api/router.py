@@ -1,7 +1,18 @@
 from fastapi import APIRouter
 
-from app.api.v1 import auth, invitation, user, department, template, onboarding_plan, task_workflow, dashboard, audit, reports, attachments
-
+from app.api.v1 import (
+    attachments,
+    audit,
+    auth,
+    dashboard,
+    department,
+    invitation,
+    onboarding_plan,
+    reports,
+    task_workflow,
+    template,
+    user,
+)
 
 api_router = APIRouter()
 

@@ -1,0 +1,98 @@
+name: CI – Main (Release Gate)
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: stepup
+          POSTGRES_PASSWORD: stepup123
+          POSTGRES_DB: stepup_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql+asyncpg://stepup:stepup123@localhost:5432/stepup_test
+      TEST_DATABASE_URL: postgresql+asyncpg://stepup:stepup123@localhost:5432/stepup_test
+      FRONTEND_URL: http://localhost:3000
+      SENDGRID_API_KEY: ci-placeholder
+      SENDGRID_FROM_EMAIL: noreply@stepup.local
+      JWT_SECRET_KEY: ci-test-secret-key
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        working-directory: apps/backend
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint (ruff)
+        working-directory: apps/backend
+        run: |
+          pip install ruff
+          ruff check .
+
+      - name: Run migrations
+        working-directory: apps/backend
+        run: python -m alembic upgrade head
+
+      - name: Run tests (strict – no skip)
+        working-directory: apps/backend
+        run: python -m pytest --tb=short -q
+
+  test-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Install dependencies
+        working-directory: apps/frontend
+        run: pnpm install
+
+      - name: Type check
+        working-directory: apps/frontend
+        run: pnpm exec tsc --noEmit
+
+      - name: Lint
+        working-directory: apps/frontend
+        run: pnpm lint
+
+      - name: Run tests (strict – no skip)
+        working-directory: apps/frontend
+        run: pnpm test
+
+      - name: Build
+        working-directory: apps/frontend
+        run: pnpm build

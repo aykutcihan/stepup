@@ -4,6 +4,9 @@ import { MemoryRouter } from 'react-router-dom'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import CreatePlanPage from './CreatePlanPage'
 import { useAuthStore } from '@/stores/authStore'
+import type { components } from '@/types/api'
+
+type User = components['schemas']['UserResponse']
 
 const { mockGetUsers, mockGetTemplates, mockCreatePlan, mockNavigate } = vi.hoisted(() => ({
   mockGetUsers: vi.fn(),
@@ -31,7 +34,7 @@ function renderPage() {
 describe('CreatePlanPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    useAuthStore.setState({ user: { id: 'admin-1', role: 'hr_admin' } as any, isLoading: false })
+    useAuthStore.setState({ user: { id: 'admin-1', role: 'hr_admin', email: '', first_name: '', last_name: '', is_active: true, department_id: null } as User, isLoading: false })
     mockGetUsers.mockResolvedValue([mockEmployee, mockManager])
     mockGetTemplates.mockResolvedValue([mockTemplate])
     mockCreatePlan.mockResolvedValue({ id: 'plan-1' })

@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import select, func, and_
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -31,7 +31,7 @@ class UserRepository:
         result = await db.execute(
             select(func.count()).where(
                 User.department_id == department_id,
-                User.is_active == True,
+                User.is_active,
             )
         )
         return result.scalar_one()

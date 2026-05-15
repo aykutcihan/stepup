@@ -119,6 +119,64 @@ Three directives that Tailwind replaces with generated CSS:
 
 ---
 
+## Dark Mode
+
+The project uses Tailwind's class-based dark mode strategy.
+
+### Configuration
+
+```javascript
+// tailwind.config.js
+export default {
+  darkMode: 'class',  // ← dark: variants activate when <html> has class="dark"
+  content: ['./index.html', './src/**/*.{ts,tsx}'],
+  ...
+}
+```
+
+With `darkMode: 'class'`, every `dark:` prefixed utility only applies when an ancestor element has the `dark` class. In practice this means `<html class="dark">`.
+
+> **Important:** After changing `darkMode` in `tailwind.config.js`, you must restart the Vite dev server. PostCSS reads the Tailwind config at startup and caches the CSS. Without a restart, dark: variants may still use the old strategy (`media` or none).
+
+### Applying dark styles
+
+Add a `dark:` variant alongside the light class:
+
+```tsx
+// background
+<div className="bg-white dark:bg-gray-800">
+
+// text
+<p className="text-gray-900 dark:text-gray-100">
+
+// border
+<div className="border-gray-200 dark:border-gray-700">
+
+// hover
+<button className="hover:bg-gray-50 dark:hover:bg-gray-700">
+```
+
+### How the class is set
+
+The `.dark` class on `<html>` is managed by `themeStore.ts`:
+
+```typescript
+export function applyTheme(theme: Theme) {
+  const isDark =
+    theme === 'dark' ||
+    (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  if (isDark) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
+}
+```
+
+An inline script in `index.html` also runs before React mounts to prevent a flash of the wrong theme on page load.
+
+---
+
 ## The @tailwind Warnings in VSCode
 
 VSCode's built-in CSS linter does not know about `@tailwind`. It shows yellow warnings: "Unknown at rule @tailwind".

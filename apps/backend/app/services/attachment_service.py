@@ -3,17 +3,26 @@ import uuid
 from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.errors import NotFoundError, ValidationError, PermissionError
-from app.errors import messages
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
+from app.errors import NotFoundError, PermissionError, ValidationError, messages
 from app.models.task_attachment import TaskAttachment
 from app.models.task_comment import TaskComment
 from app.models.user import User
-from app.repositories.onboarding_plan_task_repository import OnboardingPlanTaskRepository
+from app.repositories.onboarding_plan_task_repository import (
+    OnboardingPlanTaskRepository,
+)
 from app.repositories.task_attachment_repository import TaskAttachmentRepository
 from app.repositories.task_comment_repository import TaskCommentRepository
-from app.schemas.attachment import TaskAttachmentResponse, TaskCommentCreate, TaskCommentResponse
-from app.services.storage_service import StorageService, ALLOWED_CONTENT_TYPES, MAX_FILE_SIZE
+from app.schemas.attachment import (
+    TaskAttachmentResponse,
+    TaskCommentCreate,
+    TaskCommentResponse,
+)
+from app.services.storage_service import (
+    ALLOWED_CONTENT_TYPES,
+    MAX_FILE_SIZE,
+    StorageService,
+)
 
 plan_task_repository = OnboardingPlanTaskRepository()
 attachment_repository = TaskAttachmentRepository()

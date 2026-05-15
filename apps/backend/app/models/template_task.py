@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import uuid
 from typing import TYPE_CHECKING
-from sqlalchemy import String, Text, Integer, Boolean, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from sqlalchemy import Boolean, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin
 
@@ -31,6 +32,6 @@ class TemplateTask(Base, TimestampMixin):
     deadline_days: Mapped[int] = mapped_column(Integer, nullable=False)
     is_required: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
-    template: Mapped["OnboardingTemplate"] = relationship(
+    template: Mapped[OnboardingTemplate] = relationship(
         "OnboardingTemplate", back_populates="tasks"
     )

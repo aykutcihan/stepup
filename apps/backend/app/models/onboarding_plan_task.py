@@ -3,13 +3,14 @@ from __future__ import annotations
 import uuid
 from datetime import date
 from typing import TYPE_CHECKING
-from sqlalchemy import ForeignKey, Date, String, Text, Integer, Boolean
-from sqlalchemy import Enum as SAEnum
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import UUID
 
-from app.models.base import Base, TimestampMixin
+from sqlalchemy import Boolean, Date, ForeignKey, Integer, String, Text
+from sqlalchemy import Enum as SAEnum
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
+from app.models.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
     from app.models.onboarding_plan import OnboardingPlan
@@ -45,6 +46,6 @@ class OnboardingPlanTask(Base, TimestampMixin):
     order: Mapped[int] = mapped_column(Integer, nullable=False)
     return_comment: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    plan: Mapped["OnboardingPlan"] = relationship("OnboardingPlan", back_populates="tasks")
-    attachments: Mapped[list["TaskAttachment"]] = relationship("TaskAttachment", back_populates="task", order_by="TaskAttachment.created_at")
-    comments: Mapped[list["TaskComment"]] = relationship("TaskComment", back_populates="task", order_by="TaskComment.created_at")
+    plan: Mapped[OnboardingPlan] = relationship("OnboardingPlan", back_populates="tasks")
+    attachments: Mapped[list[TaskAttachment]] = relationship("TaskAttachment", back_populates="task", order_by="TaskAttachment.created_at")
+    comments: Mapped[list[TaskComment]] = relationship("TaskComment", back_populates="task", order_by="TaskComment.created_at")

@@ -1,10 +1,12 @@
 import uuid
-from sqlalchemy import ForeignKey, String
+
 from sqlalchemy import Enum as SAEnum
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
-from app.models.base import Base, TimestampMixin
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from app.enums.user_role import UserRole
+from app.models.base import Base, TimestampMixin
 from app.models.department import Department
 
 

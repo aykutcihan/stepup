@@ -1,10 +1,10 @@
 import uuid
-
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from app.services.user_service import UserService
+import pytest
+
 from app.errors import NotFoundError, ValidationError
+from app.services.user_service import UserService
 
 
 @pytest.fixture

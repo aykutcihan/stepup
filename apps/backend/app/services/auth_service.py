@@ -1,11 +1,10 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import create_access_token, create_refresh_token
-from app.errors import AuthenticationError
-from app.errors import messages
+from app.errors import AuthenticationError, messages
 from app.models.refresh_token import RefreshToken
 from app.repositories.refresh_token_repository import RefreshTokenRepository
 from app.repositories.user_repository import UserRepository
@@ -32,7 +31,7 @@ class AuthService:
         refresh_token = RefreshToken(
             user_id=user.id,
             token=refresh_token_value,
-            expires_at=datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
+            expires_at=datetime.now(UTC) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
         )
         await refresh_token_repository.create(db, refresh_token)
         await db.commit()
@@ -42,7 +41,7 @@ class AuthService:
     async def refresh(self, db: AsyncSession, token: str) -> tuple[str, str]:
         refresh_token = await refresh_token_repository.get_by_token(db, token)
 
-        if not refresh_token or refresh_token.expires_at < datetime.now(timezone.utc):
+        if not refresh_token or refresh_token.expires_at < datetime.now(UTC):
             raise AuthenticationError(*messages.INVALID_TOKEN)
 
         await refresh_token_repository.delete_by_token(db, token)
@@ -53,7 +52,7 @@ class AuthService:
         new_refresh_token = RefreshToken(
             user_id=refresh_token.user_id,
             token=new_refresh_token_value,
-            expires_at=datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
+            expires_at=datetime.now(UTC) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS),
         )
         await refresh_token_repository.create(db, new_refresh_token)
         await db.commit()

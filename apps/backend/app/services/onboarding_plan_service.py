@@ -1,28 +1,29 @@
+import logging
 import uuid
 from datetime import timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.enums.audit_enums import AuditActionType, AuditEntityType
+from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
+from app.errors import NotFoundError, ValidationError, messages
 from app.models.onboarding_plan import OnboardingPlan
 from app.models.onboarding_plan_task import OnboardingPlanTask
 from app.repositories.onboarding_plan_repository import OnboardingPlanRepository
-from app.repositories.onboarding_plan_task_repository import OnboardingPlanTaskRepository
+from app.repositories.onboarding_plan_task_repository import (
+    OnboardingPlanTaskRepository,
+)
 from app.repositories.template_repository import TemplateRepository
 from app.repositories.template_task_repository import TemplateTaskRepository
+from app.repositories.user_repository import UserRepository
 from app.schemas.onboarding_plan import (
     OnboardingPlanCreate,
-    OnboardingPlanUpdate,
-    OnboardingPlanTaskUpdate,
     OnboardingPlanTaskAdd,
+    OnboardingPlanTaskUpdate,
+    OnboardingPlanUpdate,
 )
-from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
-from app.errors import NotFoundError, ValidationError
-from app.errors import messages
-from app.repositories.user_repository import UserRepository
 from app.services.audit_service import AuditService
 from app.services.email_service import EmailService
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +76,7 @@ class OnboardingPlanService:
 
         await db.commit()
         if actor_id:
-            await audit_service.log(db, actor_id=actor_id, action="plan.created", entity_type="plan", entity_id=plan.id)
+            await audit_service.log(db, actor_id=actor_id, action=AuditActionType.plan_created, entity_type=AuditEntityType.plan, entity_id=plan.id)
             await db.commit()
         try:
             employee = await user_repository.get_by_id(db, data.user_id)
@@ -159,6 +160,6 @@ class OnboardingPlanService:
         await db.commit()
         task = await plan_task_repository.get_by_id(db, task_id)
         if actor_id:
-            await audit_service.log(db, actor_id=actor_id, action="plan.task_cancelled", entity_type="task", entity_id=task.id)
+            await audit_service.log(db, actor_id=actor_id, action=AuditActionType.plan_task_cancelled, entity_type=AuditEntityType.task, entity_id=task.id)
             await db.commit()
         return task

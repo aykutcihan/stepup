@@ -33,8 +33,8 @@ We use **React Query** (TanStack Query) for server state and **Zustand** for cli
 - Optimistic updates (future)
 
 **Zustand handles:**
-- Logged-in user info (id, name, role) — stored after login, cleared on logout
-- Nothing else in Sprint 2
+- Logged-in user info (id, name, role) — stored after login, cleared on logout (`authStore`)
+- Selected UI theme (light / dark / system) — persisted in `localStorage`, applied to `<html>` class (`themeStore`)
 
 ---
 
@@ -89,3 +89,19 @@ StepUp's client state is minimal — logged-in user and a few UI flags. The atom
 > If the data never touches the server, it is client state → Zustand.
 
 When in doubt, default to React Query. Avoid putting API data in Zustand.
+
+---
+
+## Amendment — Theme State (US-198)
+
+`themeStore` was added as a second Zustand store for the theme toggle feature. It is a good example of the rule above: theme preference never touches the server, so it belongs in Zustand, not React Query.
+
+`themeStore` deliberately does **not** use the `persist` middleware. Instead, it reads and writes `localStorage` directly inside `setTheme`. This avoids the async `onRehydrateStorage` race condition where the old persisted value could re-apply dark mode after the user had already switched to light.
+
+```typescript
+setTheme: (theme) => {
+  localStorage.setItem(KEY, theme)   // persist synchronously
+  applyTheme(theme)                  // apply class synchronously
+  set({ theme })                     // update store
+}
+```

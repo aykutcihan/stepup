@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import uuid
 from typing import TYPE_CHECKING
-from sqlalchemy import ForeignKey, String, Integer
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin
 
@@ -24,5 +25,5 @@ class TaskAttachment(Base, TimestampMixin):
     file_type: Mapped[str] = mapped_column(String(128), nullable=False)
     file_size: Mapped[int] = mapped_column(Integer, nullable=False)
 
-    task: Mapped["OnboardingPlanTask"] = relationship("OnboardingPlanTask", back_populates="attachments")
-    uploader: Mapped["User"] = relationship("User", foreign_keys=[uploaded_by])
+    task: Mapped[OnboardingPlanTask] = relationship("OnboardingPlanTask", back_populates="attachments")
+    uploader: Mapped[User] = relationship("User", foreign_keys=[uploaded_by])

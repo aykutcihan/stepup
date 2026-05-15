@@ -1,9 +1,10 @@
 import uuid
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
+
+from app.errors import NotFoundError, ValidationError
 from app.services.template_service import TemplateService
-from app.errors import ValidationError, NotFoundError
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 

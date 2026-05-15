@@ -5,8 +5,7 @@ from app.core.constants import ACCESS_TOKEN_COOKIE
 from app.core.database import get_db
 from app.core.security import decode_access_token
 from app.enums.user_role import UserRole
-from app.errors import AuthenticationError, PermissionError
-from app.errors import messages
+from app.errors import AuthenticationError, PermissionError, messages
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 

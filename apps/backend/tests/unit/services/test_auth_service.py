@@ -1,9 +1,10 @@
-import pytest
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from app.services.auth_service import AuthService
+import pytest
+
 from app.errors import AuthenticationError
+from app.services.auth_service import AuthService
 
 
 @pytest.fixture
@@ -86,7 +87,7 @@ class TestRefresh:
     ):
         mock_refresh_token = MagicMock()
         mock_refresh_token.user_id = MagicMock()
-        mock_refresh_token.expires_at = datetime.now(timezone.utc) + timedelta(days=1)
+        mock_refresh_token.expires_at = datetime.now(UTC) + timedelta(days=1)
 
         with patch(
             "app.services.auth_service.refresh_token_repository",
@@ -121,7 +122,7 @@ class TestRefresh:
         self, service, mock_db
     ):
         mock_refresh_token = MagicMock()
-        mock_refresh_token.expires_at = datetime.now(timezone.utc) - timedelta(days=1)
+        mock_refresh_token.expires_at = datetime.now(UTC) - timedelta(days=1)
 
         with patch(
             "app.services.auth_service.refresh_token_repository",

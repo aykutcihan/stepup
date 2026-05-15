@@ -1,5 +1,6 @@
-import pytest
 from datetime import date, timedelta
+
+import pytest
 
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
 from app.enums.user_role import UserRole

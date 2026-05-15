@@ -1,8 +1,9 @@
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from app.services.department_service import DepartmentService
+import pytest
+
 from app.errors import ValidationError
+from app.services.department_service import DepartmentService
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 
@@ -61,6 +62,7 @@ class TestAssignUserToDepartment:
 
     async def test_assign_department_updates_department_id(self, service, mock_db):
         import uuid
+
         from app.schemas.user import UserUpdate
 
         mock_user = MagicMock()

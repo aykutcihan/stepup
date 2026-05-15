@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 from app.core.dependencies import get_current_user, require_role
 from app.enums.user_role import UserRole

@@ -1,4 +1,5 @@
 import pytest
+
 from app.models.template_task import TemplateTask
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")

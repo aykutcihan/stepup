@@ -1,5 +1,6 @@
 import uuid
 from datetime import date, datetime
+
 from pydantic import BaseModel, ConfigDict
 
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus

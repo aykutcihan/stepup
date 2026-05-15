@@ -1,13 +1,21 @@
-from typing import Optional
 import uuid
 
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.database import get_db
 from app.core.dependencies import require_role
 from app.enums.user_role import UserRole
 from app.models.user import User
-from app.schemas.template import TemplateCreate, TemplateResponse, TemplateUpdate, TaskCreate, TaskUpdate, TaskReorder, TaskResponse
+from app.schemas.template import (
+    TaskCreate,
+    TaskReorder,
+    TaskResponse,
+    TaskUpdate,
+    TemplateCreate,
+    TemplateResponse,
+    TemplateUpdate,
+)
 from app.services.template_service import TemplateService
 
 router = APIRouter()
@@ -24,8 +32,8 @@ async def create_template(
 
 @router.get("/", response_model=list[TemplateResponse])
 async def get_templates(
-    department_id: Optional[uuid.UUID] = Query(None),
-    is_active: Optional[bool] = Query(None),
+    department_id: uuid.UUID | None = Query(None),
+    is_active: bool | None = Query(None),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
 ) -> list[TemplateResponse]:

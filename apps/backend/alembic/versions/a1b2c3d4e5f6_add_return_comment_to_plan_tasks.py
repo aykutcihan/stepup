@@ -5,24 +5,23 @@ Revises: f2a3b4c5d6e7
 Create Date: 2026-05-15 00:00:00.000000
 
 """
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 from alembic import op
-import sqlalchemy as sa
-
 
 revision: str = 'a1b2c3d4e5f6'
-down_revision: Union[str, None] = 'f2a3b4c5d6e7'
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = 'f2a3b4c5d6e7'
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
-    op.add_column(
-        'onboarding_plan_tasks',
-        sa.Column('return_comment', sa.Text, nullable=True),
+    op.execute(
+        "ALTER TABLE onboarding_plan_tasks ADD COLUMN IF NOT EXISTS return_comment TEXT"
     )
 
 
 def downgrade() -> None:
-    op.drop_column('onboarding_plan_tasks', 'return_comment')
+    op.execute(
+        "ALTER TABLE onboarding_plan_tasks DROP COLUMN IF EXISTS return_comment"
+    )

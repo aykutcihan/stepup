@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -26,7 +26,7 @@ class InvitationRepository:
         return result.scalar_one_or_none()
 
     async def get_all(self, db: AsyncSession) -> list[Invitation]:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         result = await db.execute(
             select(Invitation).where(
                 Invitation.used_at.is_(None),

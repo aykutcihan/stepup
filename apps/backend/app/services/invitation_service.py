@@ -1,21 +1,20 @@
+import logging
 import secrets
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.enums.audit_enums import AuditActionType, AuditEntityType
 from app.enums.user_role import UserRole
-from app.errors import NotFoundError, ValidationError
-from app.errors import messages
+from app.errors import NotFoundError, ValidationError, messages
 from app.models.invitation import Invitation
 from app.models.user import User
 from app.repositories.invitation_repository import InvitationRepository
 from app.repositories.user_repository import UserRepository
 from app.services.audit_service import AuditService
 from app.services.email_service import EmailService
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -47,13 +46,13 @@ class InvitationService:
             role=role,
             token=secrets.token_urlsafe(32),
             invited_by=invited_by,
-            expires_at=datetime.now(timezone.utc) + timedelta(days=INVITATION_EXPIRY_DAYS),
+            expires_at=datetime.now(UTC) + timedelta(days=INVITATION_EXPIRY_DAYS),
             department_id=department_id,
         )
         await invitation_repository.create(db, invitation)
         await db.commit()
         await db.refresh(invitation)
-        await audit_service.log(db, actor_id=invited_by, action="user.invited", entity_type="invitation", entity_id=invitation.id, detail=email)
+        await audit_service.log(db, actor_id=invited_by, action=AuditActionType.user_invited, entity_type=AuditEntityType.invitation, entity_id=invitation.id, detail=email)
         await db.commit()
 
         try:
@@ -73,7 +72,7 @@ class InvitationService:
         if invitation is None:
             raise NotFoundError(*messages.INVITATION_NOT_FOUND)
 
-        if invitation.expires_at < datetime.now(timezone.utc):
+        if invitation.expires_at < datetime.now(UTC):
             raise ValidationError(*messages.INVITATION_EXPIRED)
 
         if invitation.used_at is not None:
@@ -82,7 +81,7 @@ class InvitationService:
         return invitation
 
     async def mark_invitation_used(self, invitation: Invitation) -> None:
-        invitation.used_at = datetime.now(timezone.utc)
+        invitation.used_at = datetime.now(UTC)
 
     async def register_user_from_invitation(
         self,
@@ -107,11 +106,11 @@ class InvitationService:
             department_id=invitation.department_id,
         )
         db.add(user)
-        invitation.used_at = datetime.now(timezone.utc)
+        invitation.used_at = datetime.now(UTC)
         await db.flush()
         await db.commit()
         await db.refresh(user)
-        await audit_service.log(db, actor_id=user.id, action="user.registered", entity_type="user", entity_id=user.id)
+        await audit_service.log(db, actor_id=user.id, action=AuditActionType.user_registered, entity_type=AuditEntityType.user, entity_id=user.id)
         await db.commit()
         return user
     
@@ -131,7 +130,7 @@ class InvitationService:
             raise ValidationError(*messages.INVITATION_ALREADY_USED)
 
         invitation.token = secrets.token_urlsafe(32)
-        invitation.expires_at = datetime.now(timezone.utc) + timedelta(days=INVITATION_EXPIRY_DAYS)
+        invitation.expires_at = datetime.now(UTC) + timedelta(days=INVITATION_EXPIRY_DAYS)
         await db.commit()
         await db.refresh(invitation)
 

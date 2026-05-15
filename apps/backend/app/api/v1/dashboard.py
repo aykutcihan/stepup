@@ -5,7 +5,11 @@ from app.core.database import get_db
 from app.core.dependencies import require_role
 from app.enums.user_role import UserRole
 from app.models.user import User
-from app.schemas.dashboard import EmployeeDashboardResponse, HRDashboardResponse, ManagerDashboardResponse
+from app.schemas.dashboard import (
+    EmployeeDashboardResponse,
+    HRDashboardResponse,
+    ManagerDashboardResponse,
+)
 from app.services.dashboard_service import DashboardService
 
 router = APIRouter()

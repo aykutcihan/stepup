@@ -4,8 +4,8 @@ import { vi, describe, it, expect, beforeEach } from 'vitest'
 import RequireRole from './RequireRole'
 import { useAuthStore } from '@/stores/authStore'
 
-const mockHrAdmin = { id: '1', email: 'hr@example.com', first_name: 'HR', last_name: 'Admin', role: 'hr_admin' as const }
-const mockEmployee = { id: '2', email: 'emp@example.com', first_name: 'Emp', last_name: 'User', role: 'employee' as const }
+const mockHrAdmin = { id: '1', email: 'hr@example.com', first_name: 'HR', last_name: 'Admin', role: 'hr_admin' as const, is_active: true, department_id: null }
+const mockEmployee = { id: '2', email: 'emp@example.com', first_name: 'Emp', last_name: 'User', role: 'employee' as const, is_active: true, department_id: null }
 
 function renderWithRoutes(roles: ('hr_admin' | 'manager' | 'employee')[]) {
   render(

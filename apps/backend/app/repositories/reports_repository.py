@@ -1,5 +1,6 @@
 from datetime import date
-from sqlalchemy import func, case, and_, cast
+
+from sqlalchemy import and_, case, cast, func
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select

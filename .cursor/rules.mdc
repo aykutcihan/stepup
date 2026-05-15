@@ -1,0 +1,29 @@
+---
+description: StepUp project rules
+globs: ["**/*.ts", "**/*.tsx", "**/*.py"]
+---
+
+# StepUp Cursor Rules
+
+## Backend (FastAPI)
+
+- Router → Service → Repository layer order is mandatory
+- Raise errors using: `NotFoundError`, `ValidationError`, `PermissionError` (`app/errors/__init__.py`)
+- Pull error messages from `app/errors/messages.py`
+- Use `async def` + `await` for all async functions
+- Inject DB session via `Depends(get_db)`
+
+## Frontend (React + TypeScript)
+
+- Import API types from `src/types/api.ts` (`components['schemas']['XxxResponse']`)
+- Make API calls through `src/lib/apiClient.ts`
+- API endpoint URLs come from `src/constants/apiEndpoints.ts`
+- Route paths come from `src/constants/routes.ts`
+- Never use the `any` type
+
+## General
+
+- Write tests (backend: pytest, frontend: vitest)
+- No hardcoded strings – use constants files
+- Do not refactor unrelated code
+- Do not rename files without an explicit instruction

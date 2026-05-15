@@ -1,5 +1,5 @@
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from passlib.context import CryptContext
@@ -105,7 +105,7 @@ class TestRefresh:
         refresh_token = RefreshToken(
             user_id=user.id,
             token=secrets.token_urlsafe(32),
-            expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+            expires_at=datetime.now(UTC) + timedelta(days=7),
         )
         db_session.add(refresh_token)
         await db_session.flush()
