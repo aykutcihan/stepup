@@ -172,6 +172,35 @@ Always pair light and dark variants together. The convention used throughout thi
 
 ---
 
+## Logo Navigation
+
+The "StepUp" logo in the navbar is a `<Link>` that takes the user to their dashboard. The destination is role-based:
+
+| Layout | Destination |
+|--------|-------------|
+| `HRDashboardLayout` | `ROUTES.HR_DASHBOARD` |
+| `DashboardLayout` (Manager) | `ROUTES.MANAGER_DASHBOARD` |
+| `DashboardLayout` (Employee) | `ROUTES.EMPLOYEE_DASHBOARD` |
+
+```tsx
+// HRDashboardLayout — always the same destination
+<Link to={ROUTES.HR_DASHBOARD} className="text-xl font-bold tracking-tight hover:opacity-80 transition-opacity">
+  StepUp
+</Link>
+
+// DashboardLayout — role determines destination
+<Link
+  to={user?.role === USER_ROLES.MANAGER ? ROUTES.MANAGER_DASHBOARD : ROUTES.EMPLOYEE_DASHBOARD}
+  className="text-xl font-bold tracking-tight hover:opacity-80 transition-opacity"
+>
+  StepUp
+</Link>
+```
+
+`user` is read from `useAuthStore` — already present in both layouts, no extra import needed.
+
+---
+
 ## Collapsible Theme Toggle
 
 The theme toggle in the hamburger menu uses a local `showTheme` boolean to expand/collapse the three option buttons. The pattern avoids a separate modal or page — it's an accordion inside the existing dropdown.

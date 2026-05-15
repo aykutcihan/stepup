@@ -48,7 +48,7 @@ export default function HRDashboardLayout() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-gray-900 flex flex-col">
       <nav className="bg-blue-800 dark:bg-gray-950 text-white px-6 py-3 flex items-center justify-between shadow-md">
-        <span className="text-xl font-bold tracking-tight">StepUp</span>
+        <Link to={ROUTES.HR_DASHBOARD} className="text-xl font-bold tracking-tight hover:opacity-80 transition-opacity">StepUp</Link>
         <div className="flex items-center gap-3">
           <div className="relative" ref={menuRef}>
             <button
