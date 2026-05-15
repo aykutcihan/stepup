@@ -22,7 +22,7 @@ vi.mock('@/features/auth/services/authService', () => ({
   logout: mockAuthServiceLogout,
 }))
 
-const mockUser = { id: '1', email: 'hr@example.com', first_name: 'HR', last_name: 'Admin', role: 'hr_admin' as const }
+const mockUser = { id: '1', email: 'hr@example.com', first_name: 'HR', last_name: 'Admin', role: 'hr_admin' as const, is_active: true, department_id: null }
 
 function renderLayout() {
   render(
