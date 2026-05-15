@@ -50,19 +50,26 @@ export function useDepartmentsPage() {
   }
 
   async function handleDeactivate(id: string) {
+    setDepartments((prev) => prev.map((d) => (d.id === id ? { ...d, is_active: false } : d)))
     try {
       const updated = await deactivateDepartment(id)
       setDepartments((prev) => prev.map((d) => (d.id === updated.id ? updated : d)))
       setPageError('')
     } catch (err: unknown) {
+      setDepartments((prev) => prev.map((d) => (d.id === id ? { ...d, is_active: true } : d)))
       const code = (err as { response?: { data?: { error_code?: string } } }).response?.data?.error_code
       setPageError(ERROR_MESSAGES[code ?? ''] ?? 'Something went wrong.')
     }
   }
 
   async function handleReactivate(id: string) {
-    const updated = await reactivateDepartment(id)
-    setDepartments((prev) => prev.map((d) => (d.id === updated.id ? updated : d)))
+    setDepartments((prev) => prev.map((d) => (d.id === id ? { ...d, is_active: true } : d)))
+    try {
+      const updated = await reactivateDepartment(id)
+      setDepartments((prev) => prev.map((d) => (d.id === updated.id ? updated : d)))
+    } catch {
+      setDepartments((prev) => prev.map((d) => (d.id === id ? { ...d, is_active: false } : d)))
+    }
   }
 
   return {
