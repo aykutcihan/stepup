@@ -18,8 +18,19 @@ from app.schemas.onboarding_plan import (
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
 from app.errors import NotFoundError, ValidationError
 from app.errors import messages
+from app.repositories.user_repository import UserRepository
+from app.services.audit_service import AuditService
+from app.services.email_service import EmailService
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+audit_service = AuditService()
+email_service = EmailService()
 
 plan_repository = OnboardingPlanRepository()
+user_repository = UserRepository()
 plan_task_repository = OnboardingPlanTaskRepository()
 template_repository = TemplateRepository()
 template_task_repository = TemplateTaskRepository()
@@ -28,7 +39,7 @@ TERMINAL_STATUSES = {OnboardingPlanTaskStatus.CANCELLED}
 
 
 class OnboardingPlanService:
-    async def create_plan(self, db: AsyncSession, data: OnboardingPlanCreate) -> OnboardingPlan:
+    async def create_plan(self, db: AsyncSession, data: OnboardingPlanCreate, actor_id: uuid.UUID | None = None) -> OnboardingPlan:
         existing = await plan_repository.get_active_by_user(db, data.user_id)
         if existing:
             raise ValidationError(*messages.EMPLOYEE_ALREADY_HAS_ACTIVE_PLAN)
@@ -63,6 +74,18 @@ class OnboardingPlanService:
             ))
 
         await db.commit()
+        if actor_id:
+            await audit_service.log(db, actor_id=actor_id, action="plan.created", entity_type="plan", entity_id=plan.id)
+            await db.commit()
+        try:
+            employee = await user_repository.get_by_id(db, data.user_id)
+            if employee:
+                await email_service.send_plan_started_email(
+                    to_email=employee.email,
+                    first_name=employee.first_name,
+                )
+        except Exception as e:
+            logger.error(f"Failed to send plan_started email: {e}")
         return await plan_repository.get_by_id(db, plan.id)
 
     async def get_plan(self, db: AsyncSession, plan_id: uuid.UUID) -> OnboardingPlan:
@@ -95,7 +118,7 @@ class OnboardingPlanService:
 
         task.deadline = data.deadline
         await db.commit()
-        await db.refresh(task)
+        task = await plan_task_repository.get_by_id(db, task_id)
         return task
 
     async def add_task(self, db: AsyncSession, plan_id: uuid.UUID, data: OnboardingPlanTaskAdd) -> OnboardingPlanTask:
@@ -116,10 +139,11 @@ class OnboardingPlanService:
         )
         await plan_task_repository.create(db, task)
         await db.commit()
-        await db.refresh(task)
+        await db.flush()
+        task = await plan_task_repository.get_by_id(db, task.id)
         return task
 
-    async def cancel_task(self, db: AsyncSession, plan_id: uuid.UUID, task_id: uuid.UUID) -> OnboardingPlanTask:
+    async def cancel_task(self, db: AsyncSession, plan_id: uuid.UUID, task_id: uuid.UUID, actor_id: uuid.UUID | None = None) -> OnboardingPlanTask:
         plan = await plan_repository.get_by_id(db, plan_id)
         if not plan:
             raise NotFoundError(*messages.PLAN_NOT_FOUND)
@@ -133,5 +157,8 @@ class OnboardingPlanService:
 
         task.status = OnboardingPlanTaskStatus.CANCELLED
         await db.commit()
-        await db.refresh(task)
+        task = await plan_task_repository.get_by_id(db, task_id)
+        if actor_id:
+            await audit_service.log(db, actor_id=actor_id, action="plan.task_cancelled", entity_type="task", entity_id=task.id)
+            await db.commit()
         return task

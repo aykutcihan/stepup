@@ -7,4 +7,5 @@ class OnboardingPlanTaskStatus(str, enum.Enum):
     COMPLETED = "completed"
     APPROVED = "approved"
     RETURNED = "returned"
+    OVERDUE = "overdue"
     CANCELLED = "cancelled"

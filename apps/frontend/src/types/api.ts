@@ -660,6 +660,10 @@ export interface components {
              * Format: date
              */
             plan_start_date: string;
+            /** Return Comment */
+            return_comment: string | null;
+            /** Attachments */
+            attachments: components["schemas"]["TaskAttachmentResponse"][];
         };
         /** OnboardingPlanResponse */
         OnboardingPlanResponse: {
@@ -748,12 +752,37 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+            /** Return Comment */
+            return_comment: string | null;
+            /** Attachments */
+            attachments: components["schemas"]["TaskAttachmentResponse"][];
+            /** Comments */
+            comments: components["schemas"]["TaskCommentResponse"][];
         };
         /**
          * OnboardingPlanTaskStatus
          * @enum {string}
          */
-        OnboardingPlanTaskStatus: "not_started" | "in_progress" | "completed" | "approved" | "returned" | "cancelled";
+        OnboardingPlanTaskStatus: "not_started" | "in_progress" | "completed" | "approved" | "returned" | "overdue" | "cancelled";
+        /** TaskAttachmentResponse */
+        TaskAttachmentResponse: {
+            id: string;
+            plan_task_id: string;
+            uploaded_by: string;
+            file_name: string;
+            file_type: string;
+            file_size: number;
+            download_url: string;
+            created_at: string;
+        };
+        /** TaskCommentResponse */
+        TaskCommentResponse: {
+            id: string;
+            plan_task_id: string;
+            user_id: string;
+            content: string;
+            created_at: string;
+        };
         /** OnboardingPlanTaskUpdate */
         OnboardingPlanTaskUpdate: {
             /**

@@ -15,17 +15,28 @@ HR Admin can create, manage, and clone onboarding templates. Templates have orde
 ## Sprint 5 — Plan & Task Workflow
 HR Admin can create onboarding plans for employees from templates. Employees can view their plan and work through tasks. Managers can approve or return completed tasks with feedback. The full task state machine is enforced.
 
-## Sprint 6 — Notifications & Scheduler
-Email notifications are sent at every key workflow stage. APScheduler automatically marks overdue tasks daily and sends deadline reminders 2 days in advance.
+## Sprint 6 — Task Workflow & Manager Review
+Employee can view their onboarding plan and work through tasks. Managers can approve or return completed tasks with mandatory feedback. The full task state machine is enforced.
 
-## Sprint 7 — Dashboards
-All three roles have a dedicated dashboard. Employees see their progress, managers see their team's status and pending approvals, HR Admins see system-wide onboarding health.
+## Sprint 7 — Dashboards & Audit Trail ✅ Done
+All three roles have a dedicated dashboard with real system stats. Every key action is logged in an uneditable audit trail visible and filterable by HR Admins.
 
-## Sprint 8 — Attachments
-Employees can upload documents to tasks. Files are stored in GCP Cloud Storage, validated by MIME type, and accessible to managers via presigned URLs.
+## Sprint 8 — Notifications, Scheduler, Reports & Attachments
+Email notifications are sent at every key workflow stage. APScheduler automatically marks overdue tasks daily and sends deadline reminders. HR Admins have access to basic onboarding reports. Employees can upload documents to tasks stored in GCP Cloud Storage.
 
-## Sprint 9 — Audit Trail & Reports
-Every action in the system is logged in the audit trail. HR Admins can filter and export audit data. Basic onboarding reports are available with CSV export.
+- ✅ US-016 Email Notifications
+- ⬜ US-017 Automated Scheduler (deferred to Sprint 9)
+- ⬜ US-020 Admin Reports (deferred to Sprint 9)
+- ⬜ US-014b File Upload (deferred to Sprint 9)
 
-## Sprint 10 — Quality & Polish
-All list endpoints are paginated. Seed data creates a realistic demo dataset. Health check endpoint is in place. Full E2E regression passes in CI pipeline.
+## Sprint 9 — Scheduler, Reports & Quality
+APScheduler marks overdue tasks daily and sends deadline reminders. HR Admin reports are live. Seed data covers all features. Quality polish and remaining US-021 work.
+
+- ✅ US-017 Automated Scheduler (APScheduler lifespan, mark_overdue_tasks, send_deadline_reminders, OVERDUE enum)
+- ✅ US-020 Admin Reports & Export (3 endpoints, CSV export, ReportsPage with date filter)
+- ✅ Comprehensive seed data (alice, bob, manager2, Product template, 3 plans, 17 audit logs)
+- ✅ US-014b File Upload & Comments (GCS bucket, TaskAttachment, TaskComment, signed URLs, EmployeePlanPage panel)
+- ⬜ US-021 Technical Quality & Polish
+
+## Sprint 10 — Final Polish
+All list endpoints are paginated. Full E2E regression suite passes in CI. README and Swagger polished for demo. US-021 quality & polish.

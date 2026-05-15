@@ -23,11 +23,14 @@ services:
       SENDGRID_API_KEY: ${SENDGRID_API_KEY}
       SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      GCS_BUCKET_NAME: ${GCS_BUCKET_NAME}
+      GOOGLE_APPLICATION_CREDENTIALS: ${GOOGLE_APPLICATION_CREDENTIALS}
       LOGIN_RATE_LIMIT: "1000/minute"
     ports:
       - "8000:8000"
     volumes:
       - ./apps/backend:/app
+      - ./gcs-key.json:/app/gcs-key.json:ro
     depends_on:
       - db
 

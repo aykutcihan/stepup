@@ -9,9 +9,11 @@ from app.models.user import User
 from app.repositories.refresh_token_repository import RefreshTokenRepository
 from app.repositories.user_repository import UserRepository
 from app.schemas.user import UserUpdate, UserProfileUpdate
+from app.services.audit_service import AuditService
 
 user_repository = UserRepository()
 refresh_token_repository = RefreshTokenRepository()
+audit_service = AuditService()
 
 
 class UserService:
@@ -30,6 +32,7 @@ class UserService:
         db: AsyncSession,
         user_id: uuid.UUID,
         data: UserUpdate,
+        actor_id: uuid.UUID | None = None,
     ) -> User:
         user = await user_repository.get_by_id(db, user_id)
         if not user:
@@ -41,6 +44,9 @@ class UserService:
             user.role = data.role
 
         await db.commit()
+        if actor_id:
+            await audit_service.log(db, actor_id=actor_id, action="user.updated", entity_type="user", entity_id=user_id)
+            await db.commit()
         return await user_repository.get_by_id(db, user_id)
 
     async def update_my_profile(
@@ -73,11 +79,14 @@ class UserService:
         user.is_active = False
         await refresh_token_repository.delete_by_user_id(db, user_id)
         await db.commit()
+        await audit_service.log(db, actor_id=current_user_id, action="user.deactivated", entity_type="user", entity_id=user_id)
+        await db.commit()
 
     async def reactivate_user(
         self,
         db: AsyncSession,
         user_id: uuid.UUID,
+        actor_id: uuid.UUID | None = None,
     ) -> User:
         user = await user_repository.get_by_id(db, user_id)
         if not user:
@@ -85,4 +94,7 @@ class UserService:
 
         user.is_active = True
         await db.commit()
+        if actor_id:
+            await audit_service.log(db, actor_id=actor_id, action="user.reactivated", entity_type="user", entity_id=user_id)
+            await db.commit()
         return await user_repository.get_by_id(db, user_id)

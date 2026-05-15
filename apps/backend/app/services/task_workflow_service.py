@@ -10,14 +10,26 @@ from app.models.onboarding_plan_task import OnboardingPlanTask
 from app.models.user import User
 from app.repositories.onboarding_plan_repository import OnboardingPlanRepository
 from app.repositories.onboarding_plan_task_repository import OnboardingPlanTaskRepository
+from app.repositories.user_repository import UserRepository
+from app.schemas.attachment import TaskAttachmentResponse
 from app.schemas.onboarding_plan import ApprovalTaskResponse, ReturnTask
+from app.services.audit_service import AuditService
+from app.services.email_service import EmailService
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 plan_repository = OnboardingPlanRepository()
 plan_task_repository = OnboardingPlanTaskRepository()
+user_repository = UserRepository()
+audit_service = AuditService()
+email_service = EmailService()
 
-VALID_TRANSITIONS = {
-    OnboardingPlanTaskStatus.NOT_STARTED: OnboardingPlanTaskStatus.IN_PROGRESS,
-    OnboardingPlanTaskStatus.IN_PROGRESS: OnboardingPlanTaskStatus.COMPLETED,
+VALID_TRANSITIONS: dict[OnboardingPlanTaskStatus, set[OnboardingPlanTaskStatus]] = {
+    OnboardingPlanTaskStatus.NOT_STARTED: {OnboardingPlanTaskStatus.IN_PROGRESS},
+    OnboardingPlanTaskStatus.IN_PROGRESS: {OnboardingPlanTaskStatus.COMPLETED},
+    OnboardingPlanTaskStatus.OVERDUE: {OnboardingPlanTaskStatus.IN_PROGRESS, OnboardingPlanTaskStatus.COMPLETED},
 }
 
 
@@ -35,7 +47,9 @@ class TaskWorkflowService:
         self._assert_transition(task, OnboardingPlanTaskStatus.IN_PROGRESS)
         task.status = OnboardingPlanTaskStatus.IN_PROGRESS
         await db.commit()
-        await db.refresh(task)
+        task = await plan_task_repository.get_by_id(db, task_id)
+        await audit_service.log(db, actor_id=current_user.id, action="task.started", entity_type="task", entity_id=task.id)
+        await db.commit()
         return task
 
     async def complete_task(
@@ -45,7 +59,23 @@ class TaskWorkflowService:
         self._assert_transition(task, OnboardingPlanTaskStatus.COMPLETED)
         task.status = OnboardingPlanTaskStatus.COMPLETED
         await db.commit()
-        await db.refresh(task)
+        task = await plan_task_repository.get_by_id(db, task_id)
+        await audit_service.log(db, actor_id=current_user.id, action="task.completed", entity_type="task", entity_id=task.id)
+        await db.commit()
+        try:
+            plan = await plan_repository.get_by_id(db, task.plan_id)
+            if plan:
+                manager = await user_repository.get_by_id(db, plan.manager_id)
+                employee_name = f"{current_user.first_name} {current_user.last_name}"
+                if manager:
+                    await email_service.send_task_completed_email(
+                        to_email=manager.email,
+                        manager_first_name=manager.first_name,
+                        employee_name=employee_name,
+                        task_title=task.title,
+                    )
+        except Exception as e:
+            logger.error(f"Failed to send task_completed email: {e}")
         return task
 
     async def get_pending_approvals(
@@ -68,6 +98,8 @@ class TaskWorkflowService:
                         created_at=task.created_at,
                         employee_name=f"{plan.employee.first_name} {plan.employee.last_name}",
                         plan_start_date=plan.start_date,
+                        return_comment=task.return_comment,
+                        attachments=[TaskAttachmentResponse.model_validate(a) for a in task.attachments if a.deleted_at is None],
                     ))
         return result
 
@@ -79,7 +111,21 @@ class TaskWorkflowService:
             raise ValidationError(*messages.TASK_NOT_APPROVABLE)
         task.status = OnboardingPlanTaskStatus.APPROVED
         await db.commit()
-        await db.refresh(task)
+        task = await plan_task_repository.get_by_id(db, task_id)
+        await audit_service.log(db, actor_id=current_user.id, action="task.approved", entity_type="task", entity_id=task.id)
+        await db.commit()
+        try:
+            plan = await plan_repository.get_by_id(db, task.plan_id)
+            if plan:
+                employee = await user_repository.get_by_id(db, plan.user_id)
+                if employee:
+                    await email_service.send_task_approved_email(
+                        to_email=employee.email,
+                        first_name=employee.first_name,
+                        task_title=task.title,
+                    )
+        except Exception as e:
+            logger.error(f"Failed to send task_approved email: {e}")
         return task
 
     async def return_task(
@@ -93,7 +139,22 @@ class TaskWorkflowService:
         task.status = OnboardingPlanTaskStatus.IN_PROGRESS
         task.return_comment = data.content
         await db.commit()
-        await db.refresh(task)
+        task = await plan_task_repository.get_by_id(db, task_id)
+        await audit_service.log(db, actor_id=current_user.id, action="task.returned", entity_type="task", entity_id=task.id, detail=data.content)
+        await db.commit()
+        try:
+            plan = await plan_repository.get_by_id(db, task.plan_id)
+            if plan:
+                employee = await user_repository.get_by_id(db, plan.user_id)
+                if employee:
+                    await email_service.send_task_returned_email(
+                        to_email=employee.email,
+                        first_name=employee.first_name,
+                        task_title=task.title,
+                        comment=data.content,
+                    )
+        except Exception as e:
+            logger.error(f"Failed to send task_returned email: {e}")
         return task
 
     async def _get_task_for_manager(
@@ -121,5 +182,5 @@ class TaskWorkflowService:
     def _assert_transition(
         self, task: OnboardingPlanTask, target: OnboardingPlanTaskStatus
     ) -> None:
-        if VALID_TRANSITIONS.get(task.status) != target:
+        if target not in VALID_TRANSITIONS.get(task.status, set()):
             raise ValidationError(*messages.INVALID_TASK_TRANSITION)

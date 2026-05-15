@@ -22,6 +22,8 @@ import PlanDetailPage from '@/features/plan/pages/PlanDetailPage'
 import EmployeePlanPage from '@/features/plan/pages/EmployeePlanPage'
 import ManagerApprovalsPage from '@/features/plan/pages/ManagerApprovalsPage'
 import ManagerTaskReviewPage from '@/features/plan/pages/ManagerTaskReviewPage'
+import AuditLogPage from '@/features/audit/pages/AuditLogPage'
+import ReportsPage from '@/features/reports/pages/ReportsPage'
 
 
 export default function App() {
@@ -44,6 +46,8 @@ export default function App() {
           <Route path="/hr/templates/:id" element={<TemplateDetailPage />} />
           <Route path={ROUTES.HR_PLAN_NEW} element={<CreatePlanPage />} />
           <Route path="/hr/plans/:id" element={<PlanDetailPage />} />
+          <Route path={ROUTES.HR_AUDIT} element={<AuditLogPage />} />
+          <Route path={ROUTES.HR_REPORTS} element={<ReportsPage />} />
         </Route>
       </Route>
 

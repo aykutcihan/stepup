@@ -40,9 +40,25 @@ export const API = {
     COMPLETE: (id: string) => `/api/v1/tasks/${id}/complete`,
     APPROVE: (id: string) => `/api/v1/tasks/${id}/approve`,
     RETURN: (id: string) => `/api/v1/tasks/${id}/return`,
+    UPLOAD_ATTACHMENT: (id: string) => `/api/v1/tasks/${id}/attachments`,
+    DELETE_ATTACHMENT: (taskId: string, attId: string) => `/api/v1/tasks/${taskId}/attachments/${attId}`,
+    ADD_COMMENT: (id: string) => `/api/v1/tasks/${id}/comments`,
   },
   MANAGER: {
     APPROVALS: '/api/v1/manager/approvals',
+  },
+  AUDIT: {
+    LIST: '/api/v1/audit/',
+  },
+  DASHBOARD: {
+    HR: '/api/v1/dashboard/hr',
+    MANAGER: '/api/v1/dashboard/manager',
+    EMPLOYEE: '/api/v1/dashboard/employee',
+  },
+  REPORTS: {
+    COMPLETION_TIME: '/api/v1/reports/completion-time',
+    TASK_COMPLETION_RATES: '/api/v1/reports/task-completion-rates',
+    BOTTLENECKS: '/api/v1/reports/bottlenecks',
   },
   TEMPLATES: {
     LIST: '/api/v1/templates/',

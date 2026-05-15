@@ -122,6 +122,26 @@ export default function HRDashboardLayout() {
             >
               Plans
             </NavLink>
+            <NavLink
+              to={ROUTES.HR_AUDIT}
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
+                }`
+              }
+            >
+              Audit Trail
+            </NavLink>
+            <NavLink
+              to={ROUTES.HR_REPORTS}
+              className={({ isActive }) =>
+                `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
+                }`
+              }
+            >
+              Reports
+            </NavLink>
           </nav>
         </aside>
 

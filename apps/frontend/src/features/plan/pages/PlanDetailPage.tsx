@@ -1,6 +1,29 @@
 import { Link } from 'react-router-dom'
 import { usePlanDetailPage } from '@/features/plan/hooks/usePlanDetailPage'
 import { ROUTES } from '@/constants/routes'
+import type { components } from '@/types/api'
+
+type OnboardingPlanTaskStatus = components['schemas']['OnboardingPlanTaskStatus']
+
+const STATUS_LABELS: Record<OnboardingPlanTaskStatus, string> = {
+  not_started: 'Not started',
+  in_progress: 'In progress',
+  completed: 'Completed',
+  approved: 'Approved',
+  returned: 'Returned',
+  overdue: 'Overdue',
+  cancelled: 'Cancelled',
+}
+
+const STATUS_STYLES: Record<OnboardingPlanTaskStatus, string> = {
+  not_started: 'bg-gray-100 text-gray-500 border-gray-200',
+  in_progress: 'bg-amber-50 text-amber-700 border-amber-100',
+  completed: 'bg-green-50 text-green-700 border-green-100',
+  approved: 'bg-green-100 text-green-800 border-green-200',
+  returned: 'bg-red-50 text-red-700 border-red-100',
+  overdue: 'bg-red-100 text-red-800 border-red-200',
+  cancelled: 'bg-gray-100 text-gray-400 border-gray-200',
+}
 
 export default function PlanDetailPage() {
   const {
@@ -27,8 +50,8 @@ export default function PlanDetailPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
-        <Link to={ROUTES.HR_PLAN_NEW} className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
-          ← Plans
+        <Link to={ROUTES.HR_DASHBOARD} className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+          ← Dashboard
         </Link>
         <span className="text-gray-300">/</span>
         <h2 className="text-xl font-semibold text-gray-900">Onboarding Plan</h2>
@@ -106,12 +129,8 @@ export default function PlanDetailPage() {
                     <span className={`text-sm font-medium ${task.status === 'cancelled' ? 'line-through text-gray-400' : 'text-gray-900'}`}>
                       {task.title}
                     </span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${
-                      task.status === 'cancelled'
-                        ? 'bg-gray-100 text-gray-500 border-gray-200'
-                        : 'bg-blue-50 text-blue-700 border-blue-100'
-                    }`}>
-                      {task.status === 'not_started' ? 'Not started' : 'Cancelled'}
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${STATUS_STYLES[task.status]}`}>
+                      {STATUS_LABELS[task.status]}
                     </span>
                     <span className={`text-xs font-medium ${task.is_required ? 'text-blue-600' : 'text-gray-400'}`}>
                       {task.is_required ? 'Required' : 'Optional'}

@@ -2,7 +2,7 @@
 
 > Employee onboarding management platform
 
-StepUp streamlines the process of onboarding new employees — structured task assignment, transparent progress tracking, and manager approval workflows, all in one place.
+StepUp replaces email chains and spreadsheets with a structured onboarding workflow — task assignment, progress tracking, manager approvals, file uploads, automated reminders, and analytics in one place.
 
 ---
 
@@ -23,20 +23,53 @@ StepUp streamlines the process of onboarding new employees — structured task a
 
 ---
 
+## Features
+
+### HR Admin
+- Invite users by email with role and department pre-assigned
+- Manage departments and user accounts (deactivate, reactivate)
+- Create and manage onboarding templates per department (tasks, deadlines, required/optional)
+- Clone templates between departments
+- Create onboarding plans for employees from active templates
+- Adjust plans after creation (deadlines, cancel tasks, add tasks)
+- Role-based dashboard with org-wide stats
+- Audit trail — full history of all system actions, filterable
+- Reports — avg completion time by department, task rates by template, bottleneck analysis — all exportable to CSV
+
+### Manager
+- Dashboard with team onboarding status and pending approval count
+- Review completed tasks — approve or return with mandatory feedback
+- Notifications when employees complete tasks
+
+### Employee
+- View assigned onboarding plan and task list
+- Start and complete tasks (state machine enforced)
+- Upload files per task (PDF, DOCX, PNG, JPEG — max 10 MB) stored in GCP Cloud Storage
+- Add comments to tasks
+- View manager feedback on returned tasks
+- Notifications on plan start, task approved/returned, deadline reminders
+
+### System (automated)
+- APScheduler marks tasks as Overdue daily when deadline passes
+- Deadline reminder emails sent 2 days before due date
+- Overdue tasks remain actionable — employee and manager notified
+
+---
+
 ## Status
 
 | Sprint | Theme | Status |
 |---|---|---|
-| Sprint 1 | Infrastructure | ✅ Complete |
+| Sprint 1 | Infrastructure & CI/CD | ✅ Complete |
 | Sprint 2 | Authentication & Authorization | ✅ Complete |
-| Sprint 3 | User & Department Management | — |
-| Sprint 4 | Onboarding Template Management | — |
-| Sprint 5 | Onboarding Plan & Task Workflow | — |
-| Sprint 6 | Notifications & Email | — |
-| Sprint 7 | Dashboards | — |
-| Sprint 8 | Attachments | — |
-| Sprint 9 | Audit Trail & Reports | — |
-| Sprint 10 | Quality & Polish | — |
+| Sprint 3 | User & Department Management | ✅ Complete |
+| Sprint 4 | Onboarding Template Management | ✅ Complete |
+| Sprint 5 | Plan Creation & Task Workflow | ✅ Complete |
+| Sprint 6 | Manager Review & UI Polish | ✅ Complete |
+| Sprint 7 | Role-Based Dashboards & Audit Trail | ✅ Complete |
+| Sprint 8 | Email Notifications | ✅ Complete |
+| Sprint 9 | Scheduler, Reports, File Upload & Seed | ✅ Complete |
+| Sprint 10 | Quality & Polish (US-021) | 🔶 In Progress |
 
 Sprint progress is tracked on the [StepUp Board](https://github.com/users/aykutcihan/projects/5).
 
@@ -46,12 +79,20 @@ Sprint progress is tracked on the [StepUp Board](https://github.com/users/aykutc
 
 | Layer | Technology |
 |---|---|
-| **Backend** | Python 3.11, FastAPI, SQLAlchemy 2.0, Alembic |
+| **Backend** | Python 3.11, FastAPI, SQLAlchemy 2.0 (async), Alembic |
 | **Database** | PostgreSQL 15 |
-| **Frontend** | React 18, TypeScript, Tailwind CSS |
-| **Infrastructure** | Docker, GCP Cloud Run, GCP Cloud SQL, GCP Secret Manager |
+| **Auth** | JWT (HttpOnly cookies), bcrypt, refresh token rotation |
+| **Email** | SendGrid |
+| **File Storage** | GCP Cloud Storage (signed URLs) |
+| **Scheduler** | APScheduler (runs inside FastAPI lifespan) |
+| **Rate Limiting** | slowapi |
+| **Frontend** | React 18, TypeScript, Tailwind CSS, Zustand, Axios |
+| **Testing (BE)** | pytest, httpx (unit + integration) |
+| **Testing (FE)** | Vitest, React Testing Library |
+| **Testing (E2E)** | Playwright |
+| **Infrastructure** | Docker, GCP Cloud Run, GCP Cloud SQL, GCP Cloud Storage, GCP Secret Manager |
 | **CI/CD** | GitHub Actions |
-| **Package Manager** | pnpm (monorepo with Turborepo) |
+| **Monorepo** | Turborepo + pnpm |
 
 ---
 
@@ -62,31 +103,35 @@ stepup/
   apps/
     backend/          # FastAPI application
       app/
-        api/          # Route handlers
-        core/         # Config, database, limiter
+        api/          # Route handlers (v1/)
+        core/         # Config, database, dependencies, limiter
+        enums/        # Shared enum types
+        errors/       # Exception classes, messages, handlers
         models/       # SQLAlchemy models
-        services/     # Business logic
         repositories/ # Database queries
-        schemas/      # Pydantic schemas
+        schemas/      # Pydantic request/response schemas
+        services/     # Business logic
       alembic/        # Database migrations
-      scripts/        # Seed and utility scripts
-      tests/          # Unit and integration tests
-    frontend/         # React 18 + TypeScript application
+      scripts/        # Seed script
+      tests/
+        unit/         # Unit tests (services)
+        integration/  # API endpoint tests
+    frontend/         # React 18 + TypeScript
       src/
         app/          # App entry, routing
         components/   # Shared UI components
-        constants/    # Routes, API endpoints, messages
-        features/     # Feature-based modules (auth, invitation, users)
-        lib/          # API client
-        stores/       # Zustand stores
-        types/        # Generated API types
-      tests/
-        e2e/          # Playwright E2E tests
+        constants/    # Routes, API endpoints, error codes, roles
+        features/     # Feature modules (auth, plan, template, audit, reports…)
+        layouts/      # Dashboard layouts per role
+        lib/          # Axios client + interceptor
+        stores/       # Zustand auth store
+        types/        # api.ts (OpenAPI-aligned type definitions)
+      tests/e2e/      # Playwright E2E tests
   docs/
     adr/              # Architecture Decision Records
+    guides/           # Technical guides (FastAPI, Alembic, Docker, testing…)
     postmortems/      # Debug and incident records
-    guides/           # Technical guides
-    scrum/            # Sprint planning and retrospectives
+    scrum/            # Sprint goals, reviews, retrospectives
   docker-compose.yml
   turbo.json
 ```
@@ -103,8 +148,6 @@ stepup/
 
 ### First-time setup
 
-Run these once after cloning the repository.
-
 ```bash
 # 1. Install frontend dependencies
 pnpm install
@@ -119,14 +162,14 @@ docker-compose build
 docker-compose run --rm backend alembic upgrade head
 
 # 5. Seed the database
-docker-compose run --rm backend python scripts/seed.py
+docker-compose run --rm seeder
 ```
 
-Steps 4 and 5 automatically start the database container if it is not already running.
+> **File upload (optional):** To test file upload locally, place a GCP service account key at `gcs-key.json` in the project root and set `GCS_BUCKET_NAME` in `.env`. Without this, the app works fully except for the file upload feature.
 
 ### Scenario 1 — Full Docker
 
-Everything runs in Docker. Use this when you want a quick start or a clean environment.
+Everything runs in Docker.
 
 ```bash
 docker-compose up db backend frontend
@@ -141,7 +184,7 @@ docker-compose up db backend frontend
 
 ### Scenario 2 — Frontend Local
 
-Database and backend run in Docker. Frontend runs locally for faster hot reload.
+Database and backend in Docker, frontend runs locally for faster hot reload.
 
 **Terminal 1:**
 ```bash
@@ -158,58 +201,63 @@ pnpm --filter frontend dev
 | Frontend | http://localhost:5173 |
 | Backend API | http://localhost:8000 |
 | Swagger UI | http://localhost:8000/docs |
-| Database | localhost:5433 |
 
-> Port 5433 is used instead of the default 5432 to avoid conflicts with a locally installed PostgreSQL.
+> Port 5433 is used instead of 5432 to avoid conflicts with a locally installed PostgreSQL.
 
-### Test users
+### Seed data
 
-| Email | Password | Role |
-|---|---|---|
-| admin@stepup.com | Admin1234! | HR Admin |
-| manager@stepup.com | Manager1234! | Manager |
-| employee@stepup.com | Employee1234! | Employee |
+The seeder creates a realistic dataset covering all task states and features:
+
+| User | Role | Department | Plan state |
+|---|---|---|---|
+| admin@stepup.com | HR Admin | Human Resources | — |
+| manager@stepup.com | Manager | Engineering | — |
+| manager2@stepup.com | Manager | Product | — |
+| employee@stepup.com | Employee | Engineering | In progress (mix of statuses) |
+| alice@stepup.com | Employee | Engineering | Completed (all approved) |
+| bob@stepup.com | Employee | Product | Stuck (returned + overdue tasks) |
 
 ---
 
-## E2E Tests
+## Running Tests
 
-### Docker (CI / pre-push)
-
-Runs in an isolated container — same environment as CI. Slower due to Vite cold start (~5 min for full suite).
+### Backend
 
 ```bash
-# Run all E2E tests
-docker-compose run --rm playwright sh -c "pnpm install && pnpm e2e"
+# Unit tests
+docker-compose run --rm backend pytest tests/unit/ -v
 
-# Run a specific test file
-docker-compose run --rm playwright sh -c "pnpm install && pnpm exec playwright test tests/e2e/login.spec.ts"
+# Integration tests (requires running db)
+docker-compose run --rm backend pytest tests/integration/ -v
+
+# All tests
+docker-compose run --rm backend pytest --tb=short -q
 ```
 
-The `seeder` service runs automatically as part of the Playwright dependency chain.
-
-### Local (during development)
-
-Runs against the local Vite dev server. Much faster (~1-2 min) since Vite is already warm.
-
-**Prerequisite:** Scenario 2 must be running (db, backend, and `pnpm --filter frontend dev`).
+### Frontend
 
 ```bash
-# First-time only: install browser binary
-pnpm --filter frontend exec playwright install chromium
+# Unit + component tests
+pnpm --filter frontend test
 
-# Run all E2E tests
+# Watch mode
+pnpm --filter frontend test:watch
+```
+
+### E2E (Playwright)
+
+```bash
+# Docker (CI / pre-push) — full isolated run
+docker-compose run --rm playwright sh -c "pnpm install && pnpm e2e"
+
+# Local (faster, requires Scenario 2 running)
+pnpm --filter frontend exec playwright install chromium   # first time only
 pnpm --filter frontend e2e:local
-
-# Run a specific test file
-pnpm --filter frontend exec playwright test --config apps/frontend/playwright.config.local.ts tests/e2e/login.spec.ts
 ```
 
 | | Docker | Local |
 |---|---|---|
 | Speed | ~5 min | ~1-2 min |
-| Workers | 1 | 2 |
-| Test timeout | 120s | 30s |
 | Use when | CI, pre-push | Active development |
 
 ---
@@ -219,9 +267,6 @@ pnpm --filter frontend exec playwright test --config apps/frontend/playwright.co
 ```bash
 # Run database migrations
 docker-compose run --rm backend alembic upgrade head
-
-# Seed the database
-docker-compose run --rm backend python scripts/seed.py
 
 # Create a new migration after model changes
 docker-compose run --rm backend alembic revision --autogenerate -m "description"
@@ -235,9 +280,6 @@ docker-compose logs -f backend
 # Rebuild backend image (after requirements.txt changes)
 docker-compose build backend
 
-# Run backend tests
-docker-compose run --rm backend pytest --tb=short -q
-
 # Run frontend unit tests
 pnpm --filter frontend test
 ```
@@ -248,27 +290,22 @@ pnpm --filter frontend test
 
 | Document | Description |
 |---|---|
-| [`docs/product-vision.md`](./docs/product-vision.md) | Full product specification, user roles, workflows |
+| [`docs/product-vision.md`](./docs/product-vision.md) | Product specification, user roles, workflow, roadmap |
 | [`docs/adr/`](./docs/adr/) | Architecture Decision Records |
+| [`docs/guides/`](./docs/guides/) | Technical guides (FastAPI, Alembic, Docker, testing, conventions) |
+| [`docs/scrum/`](./docs/scrum/) | Sprint goals, reviews, retrospectives |
 | [`docs/postmortems/`](./docs/postmortems/) | Debug and incident records |
-| [`docs/guides/`](./docs/guides/) | Technical guides (FastAPI, Docker, Git, Alembic, etc.) |
-| [`docs/scrum/`](./docs/scrum/) | Sprint goals, refinement notes, reviews, retrospectives |
 
 ---
 
 ## Branch Strategy
 
 ```
-main           → production (stable, merged at sprint end)
-develop        → integration branch
-feature/be-    → backend feature work  (feature/be-us-004-department)
-feature/fe-    → frontend feature work (feature/fe-us-004-department)
-fix/           → bug fixes
-test/be-       → backend tests  (test/be-us-001-invitation-service)
-test/fe-       → frontend tests (test/fe-us-001-invite-form)
+main       → production (stable, merged at sprint end)
+develop    → integration branch (all PRs target this)
+feature/   → feature work  (feature/us-020-admin-reports)
+fix/       → bug fixes
 ```
 
-BE and FE are developed on separate branches per user story, allowing independent PRs and reviews.
-
-All changes go through Pull Requests into `develop`.
+All changes go through Pull Requests into `develop`.  
 `develop` is merged into `main` at the end of each sprint.

@@ -578,7 +578,8 @@ onboarding_plans    → id, user_id, template_id, manager_id,
 
 onboarding_plan_tasks → id, plan_id, template_task_id, title,
                         description, status, deadline,
-                        is_required, order, deleted_at, created_at
+                        is_required, order, return_comment,
+                        deleted_at, created_at
 
 task_comments       → id, plan_task_id, user_id, content, created_at
 
@@ -749,21 +750,27 @@ ADR-007: Structured logging to GCP Cloud Logging
 - ✅ UI polish: user dropdown menu, template creation, clickable cards, role-specific profile routes
 - ⬜ US-014b (file upload) deferred to Sprint 8
 
-### Sprint 7 — Notifications, Scheduler & Dashboards
-- Email notifications via SendGrid (plan started, task completed, approved, returned, deadline reminder)
-- APScheduler: daily overdue detection + deadline reminders
-- Employee dashboard (progress, tasks by status, upcoming deadlines)
-- Manager dashboard (team overview, pending approvals, overdue alerts)
-- HR Admin dashboard (system-wide stats, avg completion time)
+### Sprint 7 — Dashboards & Audit Trail ✅ Done
+- ✅ Role-based dashboards: HR Admin (active users, plans, departments, pending approvals), Manager (active plans, pending approvals, team size), Employee (progress bar, task breakdown, next deadline)
+- ✅ Audit trail: all key actions logged (user invited/registered/deactivated, plan created, task started/completed/approved/returned), HR Admin filter page
+- ✅ Bug fixes: deactivated user login rejection, login form error display, return_comment persistence, playwright baseURL env var
 
-### Sprint 7 — Audit Trail, Reports & Quality
-- Audit trail (complete, uneditable, filterable, paginated)
-- Admin reports + CSV export
-- Pagination on all list endpoints
-- Health check endpoint + request ID middleware
-- Full E2E regression suite (Playwright)
-- README + Swagger polish
-- Demo seed data finalized
+### Sprint 8 — Notifications ✅ Done
+- ✅ Email notifications via SendGrid — plan started (employee), task completed (manager), task approved/returned (employee)
+
+### Sprint 9 — Scheduler, Reports, Seed & File Upload ✅ Done
+- ✅ APScheduler wired into FastAPI lifespan — `mark_overdue_tasks` (00:05 UTC) and `send_deadline_reminders` (00:00 UTC) run daily
+- ✅ `OVERDUE` task status added — tasks past deadline auto-marked; employee and manager emailed; overdue tasks remain actionable
+- ✅ Admin reports — 3 endpoints (completion time by dept, task rates by template, bottlenecks) + CSV export + `ReportsPage` with date range filter
+- ✅ Comprehensive seed data — 6 users, 3 templates, 10 template tasks, 3 plans with realistic task statuses, 17 audit log entries
+- ✅ Fixed broken `audit_logs` migration chain
+- ✅ File upload & comments (US-014b) — GCS bucket (`stepup-494114-attachments`, europe-west4), `TaskAttachment` + `TaskComment` models, signed URL download, MIME/size validation, expandable task panel in `EmployeePlanPage`
+
+### Sprint 10 — Final Polish
+- ✅ US-021 Technical quality & polish — critical plan flow bug fixes, API response completeness, UI consistency
+- ⬜ List endpoint pagination
+- ⬜ Full E2E regression suite passing in CI
+- ⬜ README and Swagger polish for demo
 
 ### Bonus (If Time Allows)
 - Multi-tenancy (organization_id on all tables)
@@ -835,6 +842,11 @@ A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
 | 1.2 | 2026-05-03 | Updated error handling to app/errors/ package, updated monorepo structure |
 | 1.3 | 2026-05-12 | Sprints 2–4 marked done, Sprint 5 in progress; added reactivate to user management; updated onboarding_plans schema to match implementation |
 | 1.4 | 2026-05-14 | Sprint 5 done, Sprint 6 done; task workflow and manager review complete; department added to invitation; US-014b deferred to Sprint 8; sprint numbering adjusted |
+| 1.5 | 2026-05-14 | Sprint 7 done; role-based dashboards (US-018) and audit trail (US-019) complete; bug fixes (auth is_active, login error display, return_comment, playwright config); Sprint 8 scope updated |
+| 1.6 | 2026-05-14 | US-016 email notifications done; plan started, task completed/approved/returned emails added via SendGrid |
+| 1.7 | 2026-05-14 | Sprint 9 done; US-017 scheduler (OVERDUE status + APScheduler lifespan + 2 daily jobs), US-020 reports (3 endpoints + CSV + ReportsPage), comprehensive seed data, audit_log migration fix; Sprint 8 closed, Sprint 9 added, Sprint 10 scoped |
+| 1.8 | 2026-05-14 | US-014b done; GCS bucket created, TaskAttachment + TaskComment models, signed URL downloads, EmployeePlanPage expandable panel; Sprint 9 updated, Sprint 10 reduced to US-021 only |
+| 1.9 | 2026-05-15 | Sprint 10 US-021 done; return_comment added to DB schema; Sprint 10 remaining items (pagination, E2E, README) marked pending |
 
 **Review Frequency:** After each sprint  
 **Status:** Living document — will evolve throughout the project
