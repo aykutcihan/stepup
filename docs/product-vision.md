@@ -767,7 +767,10 @@ ADR-007: Structured logging to GCP Cloud Logging
 - ✅ File upload & comments (US-014b) — GCS bucket (`stepup-494114-attachments`, europe-west4), `TaskAttachment` + `TaskComment` models, signed URL download, MIME/size validation, expandable task panel in `EmployeePlanPage`
 
 ### Sprint 10 — Final Polish
-- ✅ Technical quality & polish (US-021) — critical plan flow bug fixes, API response completeness, UI consistency
+- ✅ US-021 Technical quality & polish — critical plan flow bug fixes, API response completeness, UI consistency
+- ⬜ List endpoint pagination
+- ⬜ Full E2E regression suite passing in CI
+- ⬜ README and Swagger polish for demo
 
 ### Bonus (If Time Allows)
 - Multi-tenancy (organization_id on all tables)
@@ -843,7 +846,7 @@ A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
 | 1.6 | 2026-05-14 | US-016 email notifications done; plan started, task completed/approved/returned emails added via SendGrid |
 | 1.7 | 2026-05-14 | Sprint 9 done; US-017 scheduler (OVERDUE status + APScheduler lifespan + 2 daily jobs), US-020 reports (3 endpoints + CSV + ReportsPage), comprehensive seed data, audit_log migration fix; Sprint 8 closed, Sprint 9 added, Sprint 10 scoped |
 | 1.8 | 2026-05-14 | US-014b done; GCS bucket created, TaskAttachment + TaskComment models, signed URL downloads, EmployeePlanPage expandable panel; Sprint 9 updated, Sprint 10 reduced to US-021 only |
-| 1.9 | 2026-05-15 | Sprint 10 US-021 done; critical bug fixes: return_comment DB column added, attachments/comments in API responses, manager review shows attachments, employee sees manager feedback, overdue button logic, PlanDetailPage navigation, error handling; DB schema updated |
+| 1.9 | 2026-05-15 | Sprint 10 US-021 done; return_comment added to DB schema; Sprint 10 remaining items (pagination, E2E, README) marked pending |
 
 **Review Frequency:** After each sprint  
 **Status:** Living document — will evolve throughout the project
