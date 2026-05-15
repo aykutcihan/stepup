@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.enums.audit_enums import AuditActionType, AuditEntityType
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
 from app.errors import NotFoundError, ValidationError, messages
 from app.models.onboarding_plan import OnboardingPlan
@@ -75,7 +76,7 @@ class OnboardingPlanService:
 
         await db.commit()
         if actor_id:
-            await audit_service.log(db, actor_id=actor_id, action="plan.created", entity_type="plan", entity_id=plan.id)
+            await audit_service.log(db, actor_id=actor_id, action=AuditActionType.plan_created, entity_type=AuditEntityType.plan, entity_id=plan.id)
             await db.commit()
         try:
             employee = await user_repository.get_by_id(db, data.user_id)
@@ -158,6 +159,6 @@ class OnboardingPlanService:
         await db.commit()
         await db.refresh(task)
         if actor_id:
-            await audit_service.log(db, actor_id=actor_id, action="plan.task_cancelled", entity_type="task", entity_id=task.id)
+            await audit_service.log(db, actor_id=actor_id, action=AuditActionType.plan_task_cancelled, entity_type=AuditEntityType.task, entity_id=task.id)
             await db.commit()
         return task
