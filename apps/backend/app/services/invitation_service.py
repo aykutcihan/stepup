@@ -13,6 +13,7 @@ from app.models.invitation import Invitation
 from app.models.user import User
 from app.repositories.invitation_repository import InvitationRepository
 from app.repositories.user_repository import UserRepository
+from app.schemas.invitation import InvitationListResponse, InvitationResponse
 from app.services.audit_service import AuditService
 from app.services.email_service import EmailService
 
@@ -114,8 +115,18 @@ class InvitationService:
         await db.commit()
         return user
     
-    async def get_invitations(self, db: AsyncSession) -> list[Invitation]:
-        return await invitation_repository.get_all(db)
+    async def get_invitations(self, db: AsyncSession, page: int = 1, page_size: int = 20) -> InvitationListResponse:
+        items, total = await invitation_repository.get_all(db, page=page, page_size=page_size)
+        total_pages = (total + page_size - 1) // page_size
+        return InvitationListResponse(
+            items=[InvitationResponse.model_validate(i) for i in items],
+            total=total,
+            page=page,
+            page_size=page_size,
+            total_pages=total_pages,
+            has_next=page * page_size < total,
+            has_prev=page > 1,
+        )
 
     async def resend_invitation(
         self,
