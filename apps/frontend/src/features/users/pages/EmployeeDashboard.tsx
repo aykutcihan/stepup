@@ -6,9 +6,9 @@ import { useEmployeeDashboard } from '@/features/dashboard/hooks/useEmployeeDash
 
 function StatCard({ label, value }: { label: string; value: string | number | undefined }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-5">
-      <p className="text-sm text-gray-500">{label}</p>
-      <p className="text-2xl font-semibold text-gray-900 mt-1">{value ?? '—'}</p>
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm px-6 py-5">
+      <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
+      <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mt-1">{value ?? '—'}</p>
     </div>
   )
 }
@@ -23,30 +23,30 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-8 py-8">
-        <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-          <span className="text-blue-700 text-xl font-bold">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm px-8 py-8">
+        <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center mb-4">
+          <span className="text-blue-700 dark:text-blue-400 text-xl font-bold">
             {user?.first_name?.[0]}{user?.last_name?.[0]}
           </span>
         </div>
-        <h2 className="text-xl font-semibold text-gray-900">Welcome, {user?.first_name}</h2>
-        <p className="text-sm text-gray-500 mt-1">You're signed in as Employee.</p>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Welcome, {user?.first_name}</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">You're signed in as Employee.</p>
       </div>
 
       {stats && stats.total_tasks > 0 ? (
         <>
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-5">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm px-6 py-5">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-medium text-gray-700">Plan Progress</p>
-              <p className="text-sm font-semibold text-gray-900">{progressPct}%</p>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Plan Progress</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{progressPct}%</p>
             </div>
-            <div className="w-full bg-gray-100 rounded-full h-2">
+            <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2">
               <div
                 className="bg-blue-600 h-2 rounded-full transition-all"
                 style={{ width: `${progressPct}%` }}
               />
             </div>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
               {stats.approved_tasks} of {stats.total_tasks} tasks approved
             </p>
           </div>
@@ -61,16 +61,16 @@ export default function EmployeeDashboard() {
           </div>
         </>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-5">
-          <p className="text-sm text-gray-400">No active onboarding plan assigned.</p>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm px-6 py-5">
+          <p className="text-sm text-gray-400 dark:text-gray-500">No active onboarding plan assigned.</p>
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-5">
-        <h3 className="text-sm font-medium text-gray-700 mb-3">Quick links</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm px-6 py-5">
+        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Quick links</h3>
         <Link
           to={ROUTES.EMPLOYEE_PLAN}
-          className="inline-flex items-center gap-2 text-sm text-blue-700 hover:text-blue-900 font-medium transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 font-medium transition-colors"
         >
           My Onboarding Plan →
         </Link>

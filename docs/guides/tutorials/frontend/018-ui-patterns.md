@@ -151,9 +151,59 @@ Used to show active/inactive state consistently across all list pages:
 ```tsx
 <span className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium border ${
   item.is_active
-    ? 'bg-green-50 text-green-700 border-green-100'
-    : 'bg-gray-100 text-gray-500 border-gray-200'
+    ? 'bg-green-50 text-green-700 border-green-100 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800'
+    : 'bg-gray-100 text-gray-500 border-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600'
 }`}>
   {item.is_active ? 'Active' : 'Inactive'}
 </span>
 ```
+
+Always pair light and dark variants together. The convention used throughout this project:
+
+| Light | Dark |
+|---|---|
+| `bg-white` | `dark:bg-gray-800` |
+| `bg-gray-50` | `dark:bg-gray-700/50` |
+| `text-gray-900` | `dark:text-gray-100` |
+| `text-gray-600` | `dark:text-gray-400` |
+| `border-gray-200` | `dark:border-gray-700` |
+| `hover:bg-gray-50` | `dark:hover:bg-gray-700/50` |
+| `divide-gray-100` | `dark:divide-gray-700` |
+
+---
+
+## Collapsible Theme Toggle
+
+The theme toggle in the hamburger menu uses a local `showTheme` boolean to expand/collapse the three option buttons. The pattern avoids a separate modal or page — it's an accordion inside the existing dropdown.
+
+```tsx
+const [showTheme, setShowTheme] = useState(false)
+const { theme, setTheme } = useThemeStore()
+
+// Inside the dropdown:
+<button
+  onClick={() => setShowTheme((v) => !v)}
+  className="w-full text-left px-4 py-2 text-sm ..."
+>
+  <span>Theme</span>
+  <span>{showTheme ? '▲' : '▼'}</span>
+</button>
+
+{showTheme && (
+  <div className="px-3 pb-2 flex gap-1">
+    {(['light', 'dark', 'system'] as const).map((opt) => (
+      <button
+        key={opt}
+        onClick={() => { setTheme(opt); setShowTheme(false) }}
+        className={theme === opt ? 'bg-blue-600 text-white ...' : '...'}
+      >
+        {opt}
+      </button>
+    ))}
+  </div>
+)}
+```
+
+- Selecting an option immediately applies the theme AND closes the panel
+- The active option is highlighted with `bg-blue-600 text-white`
+- `setTheme` writes to `localStorage` and updates the `.dark` class on `<html>` synchronously

@@ -56,6 +56,28 @@ Clicking a task title expands an inline panel (attachments + upload input + comm
 
 Max size: 10 MB
 
+## US-198 — Dark / Light / System Theme ✅ Done
+
+Delivered on `feature/us-198-theme-support` branching from `develop`.
+
+### What was built
+
+- **Three-way theme toggle** (Light / Dark / System) in the hamburger menu on all layouts
+- Theme collapses under a "Theme ▼" row — clicking expands the 3 options; selecting one closes the panel
+- **`themeStore`** (Zustand, no persist middleware) reads/writes `localStorage` key `stepup-theme` directly in `setTheme` — synchronous apply, no async rehydration race conditions
+- **`ThemeProvider`** wraps the app in `main.tsx`; `useEffect([theme])` re-applies the class whenever the store changes; OS media query listener active only in System mode
+- **`index.html` inline script** applies the correct class before React mounts to prevent flash of wrong theme; also clears the old zustand-persist JSON format from localStorage if present
+- **`tailwind.config.js`**: `darkMode: 'class'` — requires Vite/PostCSS restart to pick up on first use
+- All pages fully dark-mode styled: layouts, dashboards, tables, cards, forms, modals, badges
+
+### Root cause of light mode not working (postmortem)
+
+Vite was started before `darkMode: 'class'` was added to `tailwind.config.js`. PostCSS/Tailwind had cached the CSS without class-based dark mode — all `dark:` variants used `@media (prefers-color-scheme: dark)`. Restarting the frontend container forced a CSS rebuild. After restart, removing the `.dark` class from `<html>` immediately switched the page to light mode.
+
+Debug overlay (`ThemeProvider` renders `html.class` + `store theme`) was used to confirm the class was empty but the page was still dark — confirming a CSS/build issue, not a JavaScript issue.
+
+---
+
 ## Notes
 - `gcs-key.json` is gitignored via `*.json` pattern (with exceptions for `package.json`, `tsconfig*.json`, `turbo.json`)
 - `GOOGLE_APPLICATION_CREDENTIALS` env var points to `/app/gcs-key.json` inside the container

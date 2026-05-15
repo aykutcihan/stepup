@@ -49,6 +49,9 @@ StepUp replaces email chains and spreadsheets with a structured onboarding workf
 - View manager feedback on returned tasks
 - Notifications on plan start, task approved/returned, deadline reminders
 
+### UI
+- Dark / Light / System theme toggle in the hamburger menu — persists across reloads
+
 ### System (automated)
 - APScheduler marks tasks as Overdue daily when deadline passes
 - Deadline reminder emails sent 2 days before due date
@@ -124,7 +127,7 @@ stepup/
         features/     # Feature modules (auth, plan, template, audit, reports…)
         layouts/      # Dashboard layouts per role
         lib/          # Axios client + interceptor
-        stores/       # Zustand auth store
+        stores/       # Zustand stores (authStore, themeStore)
         types/        # api.ts (OpenAPI-aligned type definitions)
       tests/e2e/      # Playwright E2E tests
   docs/

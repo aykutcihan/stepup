@@ -71,6 +71,71 @@ clearUser()
 
 ---
 
+## Second Store: themeStore
+
+The project has a second Zustand store for theme selection (`src/stores/themeStore.ts`). It is a good example of Zustand used for non-auth global state.
+
+```typescript
+import { create } from 'zustand'
+
+export type Theme = 'light' | 'dark' | 'system'
+
+const KEY = 'stepup-theme'
+
+export function readTheme(): Theme {
+  try {
+    const v = localStorage.getItem(KEY)
+    if (v === 'light' || v === 'dark' || v === 'system') return v
+  } catch {}
+  return 'system'
+}
+
+export function applyTheme(theme: Theme) {
+  const isDark =
+    theme === 'dark' ||
+    (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  if (isDark) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
+}
+
+export const useThemeStore = create<ThemeState>()((set) => ({
+  theme: readTheme(),
+  setTheme: (theme) => {
+    localStorage.setItem(KEY, theme)
+    applyTheme(theme)
+    set({ theme })
+  },
+}))
+```
+
+**Key design decisions:**
+
+- No `persist` middleware — localStorage is read/written directly inside `setTheme`. This avoids the async rehydration race condition that `persist`'s `onRehydrateStorage` introduces.
+- `applyTheme` is called synchronously before `set()` — the DOM class changes immediately on click, before React re-renders.
+- `readTheme()` validates the stored value strictly (`'light' | 'dark' | 'system'`) — any other value (including stale JSON from a previous format) falls back to `'system'`.
+
+**Usage in layouts:**
+
+```typescript
+const { theme, setTheme } = useThemeStore()
+
+// Render 3 buttons, highlight the active one
+{THEME_OPTIONS.map((opt) => (
+  <button
+    key={opt.value}
+    onClick={() => setTheme(opt.value)}
+    className={theme === opt.value ? 'bg-blue-600 text-white' : '...'}
+  >
+    {opt.label}
+  </button>
+))}
+```
+
+---
+
 ## Important: Clear on Logout
 
 Zustand state persists across route changes but is lost when the browser tab closes.

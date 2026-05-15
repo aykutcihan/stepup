@@ -40,3 +40,6 @@ APScheduler marks overdue tasks daily and sends deadline reminders. HR Admin rep
 
 ## Sprint 10 — Final Polish
 All list endpoints are paginated. Full E2E regression suite passes in CI. README and Swagger polished for demo. US-021 quality & polish.
+
+## Feature Branch: US-198 — Theme Toggle
+Users can switch between Light, Dark, and System theme from the hamburger menu. The selection persists across page reloads. All pages and layouts are fully styled for dark mode.
