@@ -77,7 +77,7 @@ export default function DashboardLayout() {
                   onClick={() => setShowTheme((v) => !v)}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-between"
                 >
-                  <span>Theme</span>
+                  <span>Appearance</span>
                   <span className="text-xs text-gray-400 dark:text-gray-500">{showTheme ? '▲' : '▼'}</span>
                 </button>
 

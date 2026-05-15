@@ -35,23 +35,44 @@ export function useUsersPage() {
   }
 
   async function handleAssignDepartment(userId: string, departmentId: string) {
-    const updated = await updateUser(userId, { department_id: departmentId || null })
-    setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)))
+    const prev = users.find((u) => u.id === userId)?.department_id ?? null
+    setUsers((all) => all.map((u) => (u.id === userId ? { ...u, department_id: departmentId || null } : u)))
+    try {
+      const updated = await updateUser(userId, { department_id: departmentId || null })
+      setUsers((all) => all.map((u) => (u.id === updated.id ? updated : u)))
+    } catch {
+      setUsers((all) => all.map((u) => (u.id === userId ? { ...u, department_id: prev } : u)))
+    }
   }
 
   async function handleChangeRole(userId: string, role: UserRole) {
-    const updated = await updateUser(userId, { role })
-    setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)))
+    const prev = users.find((u) => u.id === userId)?.role
+    setUsers((all) => all.map((u) => (u.id === userId ? { ...u, role } : u)))
+    try {
+      const updated = await updateUser(userId, { role })
+      setUsers((all) => all.map((u) => (u.id === updated.id ? updated : u)))
+    } catch {
+      if (prev) setUsers((all) => all.map((u) => (u.id === userId ? { ...u, role: prev } : u)))
+    }
   }
 
   async function handleDeactivate(userId: string) {
-    await deactivateUser(userId)
-    setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, is_active: false } : u)))
+    setUsers((all) => all.map((u) => (u.id === userId ? { ...u, is_active: false } : u)))
+    try {
+      await deactivateUser(userId)
+    } catch {
+      setUsers((all) => all.map((u) => (u.id === userId ? { ...u, is_active: true } : u)))
+    }
   }
 
   async function handleReactivate(userId: string) {
-    const updated = await reactivateUser(userId)
-    setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)))
+    setUsers((all) => all.map((u) => (u.id === userId ? { ...u, is_active: true } : u)))
+    try {
+      const updated = await reactivateUser(userId)
+      setUsers((all) => all.map((u) => (u.id === updated.id ? updated : u)))
+    } catch {
+      setUsers((all) => all.map((u) => (u.id === userId ? { ...u, is_active: false } : u)))
+    }
   }
 
   return {
