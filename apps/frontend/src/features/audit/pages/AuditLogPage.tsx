@@ -162,6 +162,7 @@ export default function AuditLogPage() {
             <thead>
               <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
                 <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5 rounded-tl-xl">Date</th>
+                <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5">Actor</th>
                 <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5">Action</th>
                 <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5">Entity</th>
                 <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5 rounded-tr-xl">Detail</th>
@@ -172,6 +173,9 @@ export default function AuditLogPage() {
                 <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-gray-700/50 transition-colors">
                   <td className="px-5 py-3 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                     {format(new Date(log.created_at), 'dd MMM yyyy HH:mm')}
+                  </td>
+                  <td className="px-5 py-3 text-gray-700 dark:text-gray-300 text-xs font-medium whitespace-nowrap">
+                    {log.actor_name}
                   </td>
                   <td className="px-5 py-3">
                     <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${ACTION_COLORS[log.action]}`}>
