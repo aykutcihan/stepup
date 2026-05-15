@@ -48,14 +48,15 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run tests
+      - name: Lint (ruff)
         working-directory: apps/backend
         run: |
-          if [ -d "tests" ] && [ "$(ls -A tests)" ]; then
-            python -m pytest --tb=short -q
-          else
-            echo "No tests found, skipping..."
-          fi
+          pip install ruff
+          ruff check .
+
+      - name: Run tests
+        working-directory: apps/backend
+        run: python -m pytest --tb=short -q
 
   test-frontend:
     runs-on: ubuntu-latest
