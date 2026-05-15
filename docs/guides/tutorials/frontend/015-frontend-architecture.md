@@ -14,6 +14,7 @@ Individual tutorials explain each tool in isolation. This document shows how the
 | Axios + `apiClient` | HTTP requests to the backend | 009 |
 | Axios Interceptor | Catch 401 errors, refresh token, retry silently | 013 |
 | Zustand (`useAuthStore`) | Global state — logged-in user info accessible everywhere | 014 |
+| Zustand (`useThemeStore`) | Global state — selected theme (light/dark/system), persisted in localStorage | 014 |
 | React Router (`useNavigate`) | Navigate to a different page after an action | 012 |
 | React Router (`useParams`) | Read dynamic URL segments (e.g. `/templates/:id`) | 012 |
 
@@ -59,7 +60,8 @@ src/
 │   ├── App.tsx             ← route definitions
 │   └── useAuthInit.ts      ← auth state bootstrap on page load
 ├── stores/
-│   └── authStore.ts        ← Zustand: global user state
+│   ├── authStore.ts        ← Zustand: global user state
+│   └── themeStore.ts       ← Zustand: theme selection (light/dark/system)
 ├── layouts/
 │   ├── DashboardLayout.tsx     ← shared layout for Manager + Employee
 │   └── HRDashboardLayout.tsx   ← HR Admin layout with sidebar
@@ -199,6 +201,7 @@ This is achieved by wrapping each role's route group with its own layout route. 
 | Form input values | `useState` (local, lives in the form component) |
 | Error message on a page | `useState` (local, lives on that page) |
 | Logged-in user info (name, role) | Zustand (global, needed in Navbar, Router, protected pages) |
+| Selected theme (light/dark/system) | Zustand (global, needed in every layout and ThemeProvider) |
 
 Rule: if only one component needs it → `useState`. If multiple unrelated components need it → Zustand.
 
