@@ -2,6 +2,7 @@ import uuid
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
 from app.models.onboarding_plan import OnboardingPlan
@@ -15,7 +16,12 @@ class OnboardingPlanTaskRepository:
 
     async def get_by_id(self, db: AsyncSession, task_id: uuid.UUID) -> OnboardingPlanTask | None:
         result = await db.execute(
-            select(OnboardingPlanTask).where(
+            select(OnboardingPlanTask)
+            .options(
+                selectinload(OnboardingPlanTask.attachments),
+                selectinload(OnboardingPlanTask.comments),
+            )
+            .where(
                 OnboardingPlanTask.id == task_id,
                 OnboardingPlanTask.deleted_at.is_(None),
             )

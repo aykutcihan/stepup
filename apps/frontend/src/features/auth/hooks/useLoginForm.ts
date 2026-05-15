@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -18,9 +19,11 @@ export function useLoginForm() {
   const setUser = useAuthStore((state) => state.setUser)
 
   const errorCode = searchParams.get('error')
-  const pageError = errorCode ? (ERROR_MESSAGES[errorCode] ?? 'Something went wrong.') : ''
+  const [submitError, setSubmitError] = useState('')
+  const pageError = submitError || (errorCode ? (ERROR_MESSAGES[errorCode] ?? 'Something went wrong.') : '')
 
   async function onSubmit(data: LoginFormData) {
+    setSubmitError('')
     try {
       await login(data)
       const user = await getMe()
@@ -29,7 +32,7 @@ export function useLoginForm() {
       else if (user.role === USER_ROLES.MANAGER) navigate(ROUTES.MANAGER_DASHBOARD)
       else navigate(ROUTES.EMPLOYEE_DASHBOARD)
     } catch (err) {
-      console.error(getErrorMessage(err))
+      setSubmitError(getErrorMessage(err))
     }
   }
 

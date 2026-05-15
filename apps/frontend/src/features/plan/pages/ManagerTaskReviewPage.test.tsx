@@ -34,6 +34,8 @@ const mockTask = {
   created_at: '',
   employee_name: 'John Employee',
   plan_start_date: '2026-06-01',
+  return_comment: null,
+  attachments: [],
 }
 
 function renderPage() {

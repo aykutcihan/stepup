@@ -4,6 +4,7 @@ from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict
 
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
+from app.schemas.attachment import TaskAttachmentResponse, TaskCommentResponse
 
 
 class ReturnTask(BaseModel):
@@ -22,6 +23,8 @@ class ApprovalTaskResponse(BaseModel):
     created_at: datetime
     employee_name: str
     plan_start_date: date
+    return_comment: str | None = None
+    attachments: list[TaskAttachmentResponse] = []
 
 
 class OnboardingPlanCreate(BaseModel):
@@ -57,6 +60,9 @@ class OnboardingPlanTaskResponse(BaseModel):
     is_required: bool
     order: int
     created_at: datetime
+    return_comment: str | None = None
+    attachments: list[TaskAttachmentResponse] = []
+    comments: list[TaskCommentResponse] = []
 
     model_config = ConfigDict(from_attributes=True)
 

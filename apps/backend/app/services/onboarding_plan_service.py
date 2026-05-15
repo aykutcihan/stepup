@@ -119,7 +119,7 @@ class OnboardingPlanService:
 
         task.deadline = data.deadline
         await db.commit()
-        await db.refresh(task)
+        task = await plan_task_repository.get_by_id(db, task_id)
         return task
 
     async def add_task(self, db: AsyncSession, plan_id: uuid.UUID, data: OnboardingPlanTaskAdd) -> OnboardingPlanTask:
@@ -140,7 +140,8 @@ class OnboardingPlanService:
         )
         await plan_task_repository.create(db, task)
         await db.commit()
-        await db.refresh(task)
+        await db.flush()
+        task = await plan_task_repository.get_by_id(db, task.id)
         return task
 
     async def cancel_task(self, db: AsyncSession, plan_id: uuid.UUID, task_id: uuid.UUID, actor_id: uuid.UUID | None = None) -> OnboardingPlanTask:
@@ -157,7 +158,7 @@ class OnboardingPlanService:
 
         task.status = OnboardingPlanTaskStatus.CANCELLED
         await db.commit()
-        await db.refresh(task)
+        task = await plan_task_repository.get_by_id(db, task_id)
         if actor_id:
             await audit_service.log(db, actor_id=actor_id, action=AuditActionType.plan_task_cancelled, entity_type=AuditEntityType.task, entity_id=task.id)
             await db.commit()

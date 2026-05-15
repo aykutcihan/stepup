@@ -578,7 +578,8 @@ onboarding_plans    → id, user_id, template_id, manager_id,
 
 onboarding_plan_tasks → id, plan_id, template_task_id, title,
                         description, status, deadline,
-                        is_required, order, deleted_at, created_at
+                        is_required, order, return_comment,
+                        deleted_at, created_at
 
 task_comments       → id, plan_task_id, user_id, content, created_at
 
@@ -766,7 +767,10 @@ ADR-007: Structured logging to GCP Cloud Logging
 - ✅ File upload & comments (US-014b) — GCS bucket (`stepup-494114-attachments`, europe-west4), `TaskAttachment` + `TaskComment` models, signed URL download, MIME/size validation, expandable task panel in `EmployeePlanPage`
 
 ### Sprint 10 — Final Polish
-- ⬜ Technical quality & polish (US-021)
+- ✅ US-021 Technical quality & polish — critical plan flow bug fixes, API response completeness, UI consistency
+- ⬜ List endpoint pagination
+- ⬜ Full E2E regression suite passing in CI
+- ⬜ README and Swagger polish for demo
 
 ### Bonus (If Time Allows)
 - Multi-tenancy (organization_id on all tables)

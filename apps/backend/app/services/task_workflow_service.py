@@ -14,6 +14,7 @@ from app.repositories.onboarding_plan_task_repository import (
     OnboardingPlanTaskRepository,
 )
 from app.repositories.user_repository import UserRepository
+from app.schemas.attachment import TaskAttachmentResponse
 from app.schemas.onboarding_plan import ApprovalTaskResponse, ReturnTask
 from app.services.audit_service import AuditService
 from app.services.email_service import EmailService
@@ -47,7 +48,7 @@ class TaskWorkflowService:
         self._assert_transition(task, OnboardingPlanTaskStatus.IN_PROGRESS)
         task.status = OnboardingPlanTaskStatus.IN_PROGRESS
         await db.commit()
-        await db.refresh(task)
+        await db.refresh(task, ['attachments', 'comments'])
         await audit_service.log(db, actor_id=current_user.id, action=AuditActionType.task_started, entity_type=AuditEntityType.task, entity_id=task.id)
         await db.commit()
         return task
@@ -59,7 +60,7 @@ class TaskWorkflowService:
         self._assert_transition(task, OnboardingPlanTaskStatus.COMPLETED)
         task.status = OnboardingPlanTaskStatus.COMPLETED
         await db.commit()
-        await db.refresh(task)
+        await db.refresh(task, ['attachments', 'comments'])
         await audit_service.log(db, actor_id=current_user.id, action=AuditActionType.task_completed, entity_type=AuditEntityType.task, entity_id=task.id)
         await db.commit()
         try:
@@ -98,6 +99,8 @@ class TaskWorkflowService:
                         created_at=task.created_at,
                         employee_name=f"{plan.employee.first_name} {plan.employee.last_name}",
                         plan_start_date=plan.start_date,
+                        return_comment=task.return_comment,
+                        attachments=[TaskAttachmentResponse.model_validate(a) for a in task.attachments if a.deleted_at is None],
                     ))
         return result
 
@@ -109,7 +112,7 @@ class TaskWorkflowService:
             raise ValidationError(*messages.TASK_NOT_APPROVABLE)
         task.status = OnboardingPlanTaskStatus.APPROVED
         await db.commit()
-        await db.refresh(task)
+        await db.refresh(task, ['attachments', 'comments'])
         await audit_service.log(db, actor_id=current_user.id, action=AuditActionType.task_approved, entity_type=AuditEntityType.task, entity_id=task.id)
         await db.commit()
         try:
@@ -137,7 +140,7 @@ class TaskWorkflowService:
         task.status = OnboardingPlanTaskStatus.IN_PROGRESS
         task.return_comment = data.content
         await db.commit()
-        await db.refresh(task)
+        await db.refresh(task, ['attachments', 'comments'])
         await audit_service.log(db, actor_id=current_user.id, action=AuditActionType.task_returned, entity_type=AuditEntityType.task, entity_id=task.id, detail=data.content)
         await db.commit()
         try:
