@@ -96,7 +96,7 @@ export default function HRDashboardLayout() {
                 </button>
 
                 {showTheme && (
-                  <div className="px-3 pb-2 flex gap-1">
+                  <div className="px-3 py-2 flex gap-1 border-t border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
                     {THEME_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
@@ -104,7 +104,7 @@ export default function HRDashboardLayout() {
                         className={`flex-1 text-xs py-1.5 rounded-lg font-medium transition-colors ${
                           theme === opt.value
                             ? 'bg-blue-600 text-white'
-                            : 'text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+                            : 'text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-600 hover:bg-gray-100 dark:hover:bg-gray-500'
                         }`}
                       >
                         {opt.label}
@@ -122,7 +122,7 @@ export default function HRDashboardLayout() {
                 </button>
 
                 {showLanguage && (
-                  <div className="px-3 pb-2 flex gap-1">
+                  <div className="px-3 py-2 flex gap-1 border-t border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
                     {LANGUAGE_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
@@ -130,7 +130,7 @@ export default function HRDashboardLayout() {
                         className={`flex-1 text-xs py-1.5 rounded-lg font-medium transition-colors ${
                           language === opt.value
                             ? 'bg-blue-600 text-white'
-                            : 'text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+                            : 'text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-600 hover:bg-gray-100 dark:hover:bg-gray-500'
                         }`}
                       >
                         {opt.label}
