@@ -97,7 +97,7 @@ export default function DashboardLayout() {
                     {THEME_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
-                        onClick={() => { setTheme(opt.value); setShowTheme(false) }}
+                        onClick={() => setTheme(opt.value)}
                         className={`flex-1 text-xs py-1.5 rounded-lg font-medium transition-colors ${
                           theme === opt.value
                             ? 'bg-blue-600 text-white'
@@ -123,7 +123,7 @@ export default function DashboardLayout() {
                     {LANGUAGE_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
-                        onClick={() => { setLanguage(opt.value); setShowLanguage(false) }}
+                        onClick={() => setLanguage(opt.value)}
                         className={`flex-1 text-xs py-1.5 rounded-lg font-medium transition-colors ${
                           language === opt.value
                             ? 'bg-blue-600 text-white'
