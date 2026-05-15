@@ -18,7 +18,7 @@
     "e2e:local": "playwright test --config playwright.config.local.ts"
   },
   "dependencies": {
-    "@hookform/resolvers": "^3.9.1",
+    "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-query": "^5.62.0",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
