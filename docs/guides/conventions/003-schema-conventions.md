@@ -12,6 +12,7 @@ This guide defines how Pydantic schemas are named and structured in this project
 | `Create` | POST request body | When creating a new resource |
 | `Update` | PATCH request body | When partially updating a resource — all fields are `Optional` |
 | `Response` | Data returned to the client | Every endpoint that returns data |
+| `ListResponse` | Paginated collection returned to the client | Every `GET /` list endpoint |
 | `Request` | POST request body for actions | When the operation is an action, not a resource creation (e.g. login, register) |
 
 ---
@@ -116,6 +117,59 @@ app/schemas/
     invitation.py   → InvitationCreate, InvitationResponse
     user.py         → UserCreate, UserUpdate, UserResponse
     token.py        → TokenResponse, RefreshTokenRequest
+```
+
+---
+
+## Pagination — ListResponse
+
+All `GET /` list endpoints return a `ListResponse` envelope, never a bare list.
+This ensures the client always has page metadata without breaking changes later.
+
+```python
+class UserListResponse(BaseModel):
+    items: list[UserResponse]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+    has_next: bool
+    has_prev: bool
+```
+
+The route accepts `page` and `page_size` as query params:
+
+```python
+@router.get("/", response_model=UserListResponse)
+async def get_users(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    ...
+```
+
+The service builds the response:
+
+```python
+items, total = await repository.get_all(db, page=page, page_size=page_size)
+total_pages = (total + page_size - 1) // page_size
+return UserListResponse(
+    items=[UserResponse.model_validate(i) for i in items],
+    total=total,
+    page=page,
+    page_size=page_size,
+    total_pages=total_pages,
+    has_next=page * page_size < total,
+    has_prev=page > 1,
+)
+```
+
+Frontend services unwrap `.items` so hooks and components stay unchanged:
+
+```typescript
+export async function getUsers(): Promise<UserResponse[]> {
+  const res = await apiClient.get(API.USERS.LIST)
+  return res.data.items
+}
 ```
 
 ---
