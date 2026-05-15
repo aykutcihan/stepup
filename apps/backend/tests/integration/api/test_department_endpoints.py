@@ -112,8 +112,34 @@ class TestGetDepartments:
 
         assert response.status_code == 200
         data = response.json()
-        assert isinstance(data, list)
-        assert any(d["name"] == "Finance" for d in data)
+        assert "items" in data
+        assert any(d["name"] == "Finance" for d in data["items"])
+
+    async def test_get_departments_returns_pagination_metadata(
+        self, authenticated_client
+    ):
+        response = await authenticated_client.get("/api/v1/departments/?page=1&page_size=10")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["page"] == 1
+        assert data["page_size"] == 10
+        assert "total" in data
+        assert data["has_prev"] is False
+
+    async def test_get_departments_page_size_above_limit_returns_422(
+        self, authenticated_client
+    ):
+        response = await authenticated_client.get("/api/v1/departments/?page_size=101")
+
+        assert response.status_code == 422
+
+    async def test_get_departments_page_zero_returns_422(
+        self, authenticated_client
+    ):
+        response = await authenticated_client.get("/api/v1/departments/?page=0")
+
+        assert response.status_code == 422
 
 
 class TestPostDepartment:
