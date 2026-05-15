@@ -48,7 +48,7 @@ class TaskWorkflowService:
         self._assert_transition(task, OnboardingPlanTaskStatus.IN_PROGRESS)
         task.status = OnboardingPlanTaskStatus.IN_PROGRESS
         await db.commit()
-        await db.refresh(task)
+        await db.refresh(task, ['attachments', 'comments'])
         await audit_service.log(db, actor_id=current_user.id, action=AuditActionType.task_started, entity_type=AuditEntityType.task, entity_id=task.id)
         await db.commit()
         return task
@@ -60,7 +60,7 @@ class TaskWorkflowService:
         self._assert_transition(task, OnboardingPlanTaskStatus.COMPLETED)
         task.status = OnboardingPlanTaskStatus.COMPLETED
         await db.commit()
-        await db.refresh(task)
+        await db.refresh(task, ['attachments', 'comments'])
         await audit_service.log(db, actor_id=current_user.id, action=AuditActionType.task_completed, entity_type=AuditEntityType.task, entity_id=task.id)
         await db.commit()
         try:
@@ -112,7 +112,7 @@ class TaskWorkflowService:
             raise ValidationError(*messages.TASK_NOT_APPROVABLE)
         task.status = OnboardingPlanTaskStatus.APPROVED
         await db.commit()
-        await db.refresh(task)
+        await db.refresh(task, ['attachments', 'comments'])
         await audit_service.log(db, actor_id=current_user.id, action=AuditActionType.task_approved, entity_type=AuditEntityType.task, entity_id=task.id)
         await db.commit()
         try:
@@ -140,7 +140,7 @@ class TaskWorkflowService:
         task.status = OnboardingPlanTaskStatus.IN_PROGRESS
         task.return_comment = data.content
         await db.commit()
-        await db.refresh(task)
+        await db.refresh(task, ['attachments', 'comments'])
         await audit_service.log(db, actor_id=current_user.id, action=AuditActionType.task_returned, entity_type=AuditEntityType.task, entity_id=task.id, detail=data.content)
         await db.commit()
         try:
