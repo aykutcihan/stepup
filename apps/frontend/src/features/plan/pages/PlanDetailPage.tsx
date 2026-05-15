@@ -1,6 +1,29 @@
 import { Link } from 'react-router-dom'
 import { usePlanDetailPage } from '@/features/plan/hooks/usePlanDetailPage'
 import { ROUTES } from '@/constants/routes'
+import type { components } from '@/types/api'
+
+type OnboardingPlanTaskStatus = components['schemas']['OnboardingPlanTaskStatus']
+
+const STATUS_LABELS: Record<OnboardingPlanTaskStatus, string> = {
+  not_started: 'Not started',
+  in_progress: 'In progress',
+  completed: 'Completed',
+  approved: 'Approved',
+  returned: 'Returned',
+  overdue: 'Overdue',
+  cancelled: 'Cancelled',
+}
+
+const STATUS_STYLES: Record<OnboardingPlanTaskStatus, string> = {
+  not_started: 'bg-gray-100 text-gray-500 border-gray-200',
+  in_progress: 'bg-amber-50 text-amber-700 border-amber-100',
+  completed: 'bg-green-50 text-green-700 border-green-100',
+  approved: 'bg-green-100 text-green-800 border-green-200',
+  returned: 'bg-red-50 text-red-700 border-red-100',
+  overdue: 'bg-red-100 text-red-800 border-red-200',
+  cancelled: 'bg-gray-100 text-gray-400 border-gray-200',
+}
 
 const inputCls = 'w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3.5 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
 const btnSm = 'text-xs border border-gray-200 dark:border-gray-600 px-2.5 py-1 rounded-lg transition-colors'
@@ -94,12 +117,8 @@ export default function PlanDetailPage() {
                     <span className={`text-sm font-medium ${task.status === 'cancelled' ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-900 dark:text-gray-100'}`}>
                       {task.title}
                     </span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${
-                      task.status === 'cancelled'
-                        ? 'bg-gray-100 text-gray-500 border-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600'
-                        : 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800'
-                    }`}>
-                      {task.status === 'not_started' ? 'Not started' : 'Cancelled'}
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${STATUS_STYLES[task.status]}`}>
+                      {STATUS_LABELS[task.status]}
                     </span>
                     <span className={`text-xs font-medium ${task.is_required ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'}`}>
                       {task.is_required ? 'Required' : 'Optional'}

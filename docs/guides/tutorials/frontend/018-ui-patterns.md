@@ -144,7 +144,7 @@ Used when a single field needs to be editable without opening a separate page or
 
 ---
 
-## Status Badge
+## Status Badge — Boolean (Active / Inactive)
 
 Used to show active/inactive state consistently across all list pages:
 
@@ -236,3 +236,47 @@ const { theme, setTheme } = useThemeStore()
 - Selecting an option immediately applies the theme AND closes the panel
 - The active option is highlighted with `bg-blue-600 text-white`
 - `setTheme` writes to `localStorage` and updates the `.dark` class on `<html>` synchronously
+
+---
+
+## Status Badge — Enum (Multiple States)
+
+Used when a field has more than two possible values and each needs its own colour. Declaring the labels and styles as `Record<EnumType, string>` outside the component gives TypeScript exhaustiveness — if a new enum value is added and the record is not updated, the build fails.
+
+```tsx
+import type { components } from '@/types/api'
+
+type OnboardingPlanTaskStatus = components['schemas']['OnboardingPlanTaskStatus']
+
+const STATUS_LABELS: Record<OnboardingPlanTaskStatus, string> = {
+  not_started: 'Not started',
+  in_progress: 'In progress',
+  completed: 'Completed',
+  approved: 'Approved',
+  returned: 'Returned',
+  overdue: 'Overdue',
+  cancelled: 'Cancelled',
+}
+
+const STATUS_STYLES: Record<OnboardingPlanTaskStatus, string> = {
+  not_started: 'bg-gray-100 text-gray-500 border-gray-200',
+  in_progress: 'bg-amber-50 text-amber-700 border-amber-100',
+  completed: 'bg-green-50 text-green-700 border-green-100',
+  approved: 'bg-green-100 text-green-800 border-green-200',
+  returned: 'bg-red-50 text-red-700 border-red-100',
+  overdue: 'bg-red-100 text-red-800 border-red-200',
+  cancelled: 'bg-gray-100 text-gray-400 border-gray-200',
+}
+```
+
+Usage in JSX:
+
+```tsx
+<span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${STATUS_STYLES[task.status]}`}>
+  {STATUS_LABELS[task.status]}
+</span>
+```
+
+### Why not a switch or if/else
+
+A `Record` makes the full mapping visible at a glance. Adding a new status is a two-line change (label + style) with no branching logic to touch. TypeScript enforces completeness — a missing key is a compile error.

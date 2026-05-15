@@ -660,6 +660,10 @@ export interface components {
              * Format: date
              */
             plan_start_date: string;
+            /** Return Comment */
+            return_comment: string | null;
+            /** Attachments */
+            attachments: components["schemas"]["TaskAttachmentResponse"][];
         };
         /** OnboardingPlanResponse */
         OnboardingPlanResponse: {
@@ -748,6 +752,12 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+            /** Return Comment */
+            return_comment: string | null;
+            /** Attachments */
+            attachments: components["schemas"]["TaskAttachmentResponse"][];
+            /** Comments */
+            comments: components["schemas"]["TaskCommentResponse"][];
         };
         /**
          * OnboardingPlanTaskStatus

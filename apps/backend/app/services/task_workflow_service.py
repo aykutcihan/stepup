@@ -14,6 +14,7 @@ from app.repositories.onboarding_plan_task_repository import (
     OnboardingPlanTaskRepository,
 )
 from app.repositories.user_repository import UserRepository
+from app.schemas.attachment import TaskAttachmentResponse
 from app.schemas.onboarding_plan import ApprovalTaskResponse, ReturnTask
 from app.services.audit_service import AuditService
 from app.services.email_service import EmailService
@@ -98,6 +99,8 @@ class TaskWorkflowService:
                         created_at=task.created_at,
                         employee_name=f"{plan.employee.first_name} {plan.employee.last_name}",
                         plan_start_date=plan.start_date,
+                        return_comment=task.return_comment,
+                        attachments=[TaskAttachmentResponse.model_validate(a) for a in task.attachments if a.deleted_at is None],
                     ))
         return result
 

@@ -83,6 +83,35 @@ The generated `src/types/api.ts` is committed to the repository — every develo
 
 ---
 
+## When the Backend Is Not Running — Manual Update
+
+If the backend cannot start (e.g. a broken Docker image, missing env vars, infrastructure outage), the generate command is unavailable. In that case, add the new fields directly to `src/types/api.ts` by hand and commit them. The file is just TypeScript — it can be edited like any other source file.
+
+Find the schema by name (`Ctrl+F` for the Python class name) and add the missing fields:
+
+```typescript
+// Before — backend schema added return_comment but types weren't regenerated
+OnboardingPlanTaskResponse: {
+    id: string;
+    title: string;
+    // ...
+};
+
+// After — manually added
+OnboardingPlanTaskResponse: {
+    id: string;
+    title: string;
+    // ...
+    return_comment: string | null;
+    attachments: components["schemas"]["TaskAttachmentResponse"][];
+    comments: components["schemas"]["TaskCommentResponse"][];
+};
+```
+
+Once the backend is running again, regenerate with the command above and commit the result. The manual edit and the generated output should be identical — if they differ, the generate command wins.
+
+---
+
 ## What NOT to Do
 
 Do not write manual TypeScript types that mirror BE schemas:
