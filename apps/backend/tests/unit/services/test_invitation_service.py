@@ -1,9 +1,10 @@
-import pytest
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
-from datetime import datetime, timedelta, timezone
 
-from app.services.invitation_service import InvitationService
+import pytest
+
 from app.errors import NotFoundError, ValidationError
+from app.services.invitation_service import InvitationService
 
 
 @pytest.fixture
@@ -24,7 +25,7 @@ class TestValidateInvitation:
         self, service, mock_db
     ):
         mock_invitation = MagicMock()
-        mock_invitation.expires_at = datetime.now(timezone.utc) + timedelta(days=1)
+        mock_invitation.expires_at = datetime.now(UTC) + timedelta(days=1)
         mock_invitation.used_at = None
 
         with patch(
@@ -53,7 +54,7 @@ class TestValidateInvitation:
         self, service, mock_db
     ):
         mock_invitation = MagicMock()
-        mock_invitation.expires_at = datetime.now(timezone.utc) - timedelta(days=1)
+        mock_invitation.expires_at = datetime.now(UTC) - timedelta(days=1)
         mock_invitation.used_at = None
 
         with patch(
@@ -69,8 +70,8 @@ class TestValidateInvitation:
         self, service, mock_db
     ):
         mock_invitation = MagicMock()
-        mock_invitation.expires_at = datetime.now(timezone.utc) + timedelta(days=1)
-        mock_invitation.used_at = datetime.now(timezone.utc) - timedelta(days=1)
+        mock_invitation.expires_at = datetime.now(UTC) + timedelta(days=1)
+        mock_invitation.used_at = datetime.now(UTC) - timedelta(days=1)
 
         with patch(
             "app.services.invitation_service.invitation_repository",
@@ -240,7 +241,7 @@ class TestResendInvitation:
         self, service, mock_db
     ):
         mock_invitation = MagicMock()
-        mock_invitation.used_at = datetime.now(timezone.utc) - timedelta(days=1)
+        mock_invitation.used_at = datetime.now(UTC) - timedelta(days=1)
 
         with patch(
             "app.services.invitation_service.invitation_repository",

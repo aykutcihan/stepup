@@ -1,11 +1,12 @@
 import uuid
-import pytest
 from datetime import date
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from app.services.onboarding_plan_service import OnboardingPlanService
+import pytest
+
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
-from app.errors import ValidationError, NotFoundError
+from app.errors import ValidationError
+from app.services.onboarding_plan_service import OnboardingPlanService
 
 pytestmark = pytest.mark.asyncio(loop_scope="session")
 

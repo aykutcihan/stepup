@@ -1,8 +1,8 @@
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
+from unittest.mock import AsyncMock, patch
 
 import pytest
-from unittest.mock import AsyncMock, patch
 
 from app.enums.user_role import UserRole
 from app.models.invitation import Invitation
@@ -72,7 +72,7 @@ class TestValidateInvitation:
             role=UserRole.EMPLOYEE,
             token=secrets.token_urlsafe(32),
             invited_by=hr_admin_user.id,
-            expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+            expires_at=datetime.now(UTC) + timedelta(days=7),
         )
         db_session.add(invitation)
         await db_session.flush()
@@ -131,7 +131,7 @@ class TestResendInvitation:
                 role=UserRole.EMPLOYEE,
                 token=secrets.token_urlsafe(32),
                 invited_by=hr_admin_user.id,
-                expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+                expires_at=datetime.now(UTC) + timedelta(days=7),
             )
             db_session.add(invitation)
             await db_session.flush()

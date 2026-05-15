@@ -1,7 +1,8 @@
-import pytest
-from datetime import date, timedelta
-from unittest.mock import AsyncMock, MagicMock, patch, call
 import uuid
+from datetime import date, timedelta
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
 from app.services.scheduler_service import mark_overdue_tasks, send_deadline_reminders
