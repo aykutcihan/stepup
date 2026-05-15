@@ -9,6 +9,7 @@ from app.enums.audit_enums import AuditActionType, AuditEntityType
 class AuditLogResponse(BaseModel):
     id: uuid.UUID
     actor_id: uuid.UUID
+    actor_name: str
     action: AuditActionType
     entity_type: AuditEntityType
     entity_id: uuid.UUID
