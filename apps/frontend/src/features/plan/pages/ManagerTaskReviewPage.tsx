@@ -1,6 +1,15 @@
 import { Link } from 'react-router-dom'
 import { useManagerTaskReviewPage } from '@/features/plan/hooks/useManagerTaskReviewPage'
 import { ROUTES } from '@/constants/routes'
+import type { components } from '@/types/api'
+
+type ApprovalTaskResponse = components['schemas']['ApprovalTaskResponse']
+type TaskAttachmentResponse = components['schemas']['TaskAttachmentResponse']
+
+interface TaskWithExtras extends ApprovalTaskResponse {
+  attachments?: TaskAttachmentResponse[]
+  return_comment?: string
+}
 
 export default function ManagerTaskReviewPage() {
   const {
@@ -47,11 +56,11 @@ export default function ManagerTaskReviewPage() {
             {task.is_required ? 'Yes' : 'No'}
           </span>
         </div>
-        {(task as any).attachments?.length > 0 && (
+        {(task as TaskWithExtras).attachments?.length ? (
           <div className="flex gap-2 text-sm">
             <span className="text-gray-500 dark:text-gray-400 w-28 shrink-0">Attachments</span>
             <ul className="space-y-1">
-              {(task as any).attachments.map((att: any) => (
+              {(task as TaskWithExtras).attachments?.map((att) => (
                 <li key={att.id}>
                   <a href={att.download_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
                     {att.file_name}
@@ -60,11 +69,11 @@ export default function ManagerTaskReviewPage() {
               ))}
             </ul>
           </div>
-        )}
-        {(task as any).return_comment && (
+        ) : null}
+        {(task as TaskWithExtras).return_comment && (
           <div className="flex gap-2 text-sm">
             <span className="text-gray-500 dark:text-gray-400 w-28 shrink-0">Last feedback</span>
-            <span className="text-gray-700 dark:text-gray-300 italic">{(task as any).return_comment}</span>
+            <span className="text-gray-700 dark:text-gray-300 italic">{(task as TaskWithExtras).return_comment}</span>
           </div>
         )}
       </div>
