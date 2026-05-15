@@ -578,7 +578,8 @@ onboarding_plans    → id, user_id, template_id, manager_id,
 
 onboarding_plan_tasks → id, plan_id, template_task_id, title,
                         description, status, deadline,
-                        is_required, order, deleted_at, created_at
+                        is_required, order, return_comment,
+                        deleted_at, created_at
 
 task_comments       → id, plan_task_id, user_id, content, created_at
 
@@ -766,7 +767,15 @@ ADR-007: Structured logging to GCP Cloud Logging
 - ✅ File upload & comments (US-014b) — GCS bucket (`stepup-494114-attachments`, europe-west4), `TaskAttachment` + `TaskComment` models, signed URL download, MIME/size validation, expandable task panel in `EmployeePlanPage`
 
 ### Sprint 10 — Final Polish
-- ⬜ Technical quality & polish (US-021)
+- ✅ Critical bug fixes (US-021 — Technical quality & polish)
+  - `return_comment` column was missing from DB — manager feedback silently lost on task return; model + migration added
+  - `attachments` and `comments` missing from API responses — page reload lost uploaded files; Pydantic schema updated, `TaskAttachmentResponse` now serialises from ORM via `model_validator`
+  - Manager review page could not see employee attachments — `ApprovalTaskResponse` extended
+  - Employee could not see manager feedback — `return_comment` rendered in `EmployeePlanPage`
+  - Overdue task showed both Start and Complete buttons simultaneously — FE button logic fixed
+  - `PlanDetailPage` back link pointed to create-plan form; task status badge only showed two states
+  - `handleApprove` had no error handling — silent failure removed task from list on API error
+  - `OnboardingPlanTaskRepository.get_by_id` now eager-loads `attachments` and `comments` to prevent `MissingGreenlet` errors on async serialisation
 
 ### Bonus (If Time Allows)
 - Multi-tenancy (organization_id on all tables)
@@ -842,6 +851,7 @@ A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
 | 1.6 | 2026-05-14 | US-016 email notifications done; plan started, task completed/approved/returned emails added via SendGrid |
 | 1.7 | 2026-05-14 | Sprint 9 done; US-017 scheduler (OVERDUE status + APScheduler lifespan + 2 daily jobs), US-020 reports (3 endpoints + CSV + ReportsPage), comprehensive seed data, audit_log migration fix; Sprint 8 closed, Sprint 9 added, Sprint 10 scoped |
 | 1.8 | 2026-05-14 | US-014b done; GCS bucket created, TaskAttachment + TaskComment models, signed URL downloads, EmployeePlanPage expandable panel; Sprint 9 updated, Sprint 10 reduced to US-021 only |
+| 1.9 | 2026-05-15 | Sprint 10 US-021 done; critical bug fixes: return_comment DB column added, attachments/comments in API responses, manager review shows attachments, employee sees manager feedback, overdue button logic, PlanDetailPage navigation, error handling; DB schema updated |
 
 **Review Frequency:** After each sprint  
 **Status:** Living document — will evolve throughout the project
