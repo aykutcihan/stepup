@@ -856,6 +856,7 @@ A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
 | 1.8 | 2026-05-14 | US-014b done; GCS bucket created, TaskAttachment + TaskComment models, signed URL downloads, EmployeePlanPage expandable panel; Sprint 9 updated, Sprint 10 reduced to US-021 only |
 | 1.9 | 2026-05-15 | Sprint 10 US-021 done; return_comment added to DB schema; Sprint 10 remaining items (pagination, E2E, README) marked pending |
 | 2.0 | 2026-05-15 | US-198 done; Dark/Light/System theme toggle added to hamburger menu; all pages dark-mode styled; ThemeProvider + themeStore implemented |
+| 2.1 | 2026-05-15 | Audit log refactored: AuditActionType + AuditEntityType enums, advanced filters (action, entity_type, actor_id, date_from, date_to), pagination; CI/CD pipeline restructured: deploy-production.yml (Cloud Run) added, deploy-staging auto-trigger removed |
 
 **Review Frequency:** After each sprint  
 **Status:** Living document — will evolve throughout the project
