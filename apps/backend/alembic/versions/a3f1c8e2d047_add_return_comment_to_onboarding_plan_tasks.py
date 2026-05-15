@@ -7,8 +7,6 @@ Create Date: 2026-05-14 10:00:00.000000
 """
 from collections.abc import Sequence
 
-import sqlalchemy as sa
-
 from alembic import op
 
 revision: str = 'a3f1c8e2d047'
@@ -18,8 +16,12 @@ depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
-    op.add_column('onboarding_plan_tasks', sa.Column('return_comment', sa.Text(), nullable=True))
+    op.execute(
+        "ALTER TABLE onboarding_plan_tasks ADD COLUMN IF NOT EXISTS return_comment TEXT"
+    )
 
 
 def downgrade() -> None:
-    op.drop_column('onboarding_plan_tasks', 'return_comment')
+    op.execute(
+        "ALTER TABLE onboarding_plan_tasks DROP COLUMN IF EXISTS return_comment"
+    )
