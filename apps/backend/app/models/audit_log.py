@@ -3,12 +3,12 @@ from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey, Text
 from sqlalchemy import Enum as SAEnum
-from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
-from app.models.base import Base
 from app.enums.audit_enums import AuditActionType, AuditEntityType
+from app.models.base import Base
 
 
 class AuditLog(Base):

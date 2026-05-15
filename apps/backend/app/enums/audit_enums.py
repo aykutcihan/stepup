@@ -1,7 +1,7 @@
 import enum
 
 
-class AuditActionType(str, enum.Enum):
+class AuditActionType(enum.StrEnum):
     user_invited = "user.invited"
     user_registered = "user.registered"
     user_deactivated = "user.deactivated"
@@ -17,7 +17,7 @@ class AuditActionType(str, enum.Enum):
     task_returned = "task.returned"
 
 
-class AuditEntityType(str, enum.Enum):
+class AuditEntityType(enum.StrEnum):
     user = "user"
     invitation = "invitation"
     plan = "plan"
