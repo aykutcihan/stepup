@@ -7,6 +7,7 @@ import { useThemeStore, type Theme } from '@/stores/themeStore'
 import { useLanguageStore, type Language } from '@/stores/languageStore'
 import { useTranslation } from '@/i18n/useTranslation'
 import { ROUTES } from '@/constants/routes'
+import { StepUpLogo } from '@/components/StepUpLogo'
 
 export default function HRDashboardLayout() {
   const user = useAuthStore((state) => state.user)
@@ -59,7 +60,10 @@ export default function HRDashboardLayout() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-gray-900 flex flex-col">
       <nav className="bg-blue-800 dark:bg-gray-950 text-white px-6 py-3 flex items-center justify-between shadow-md">
-        <Link to={ROUTES.HR_DASHBOARD} className="text-xl font-bold tracking-tight hover:opacity-80 transition-opacity">StepUp</Link>
+        <Link to={ROUTES.HR_DASHBOARD} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+          <StepUpLogo className="h-5 w-auto text-white" />
+          <span className="text-xl font-bold tracking-tight">StepUp</span>
+        </Link>
         <div className="flex items-center gap-3">
           <div className="relative" ref={menuRef}>
             <button

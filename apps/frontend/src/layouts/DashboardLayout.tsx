@@ -8,6 +8,7 @@ import { useLanguageStore, type Language } from '@/stores/languageStore'
 import { useTranslation } from '@/i18n/useTranslation'
 import { ROUTES } from '@/constants/routes'
 import { USER_ROLES } from '@/constants/userRoles'
+import { StepUpLogo } from '@/components/StepUpLogo'
 
 export default function DashboardLayout() {
   const user = useAuthStore((state) => state.user)
@@ -55,8 +56,11 @@ export default function DashboardLayout() {
       <nav className="bg-blue-800 dark:bg-gray-950 text-white px-6 py-3 flex items-center justify-between shadow-md">
         <Link
           to={user?.role === USER_ROLES.MANAGER ? ROUTES.MANAGER_DASHBOARD : ROUTES.EMPLOYEE_DASHBOARD}
-          className="text-xl font-bold tracking-tight hover:opacity-80 transition-opacity"
-        >StepUp</Link>
+          className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
+        >
+          <StepUpLogo className="h-5 w-auto text-white" />
+          <span className="text-xl font-bold tracking-tight">StepUp</span>
+        </Link>
         <div className="flex items-center gap-3">
           <div className="relative" ref={menuRef}>
             <button
