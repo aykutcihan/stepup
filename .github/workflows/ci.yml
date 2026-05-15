@@ -54,6 +54,12 @@ jobs:
           pip install ruff
           ruff check .
 
+      - name: Run migrations
+        working-directory: apps/backend
+        run: python -m alembic upgrade head
+        env:
+          DATABASE_URL: postgresql+asyncpg://stepup:stepup123@localhost:5432/stepup_test
+
       - name: Run tests
         working-directory: apps/backend
         run: python -m pytest --tb=short -q
