@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -9,6 +9,7 @@ from app.enums.user_role import UserRole
 from app.models.user import User
 from app.schemas.department import (
     DepartmentCreate,
+    DepartmentListResponse,
     DepartmentResponse,
     DepartmentUpdate,
 )
@@ -18,13 +19,14 @@ router = APIRouter()
 department_service = DepartmentService()
 
 
-@router.get("/", response_model=list[DepartmentResponse])
+@router.get("/", response_model=DepartmentListResponse)
 async def get_departments(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
-) -> list[DepartmentResponse]:
-    departments = await department_service.get_all_departments(db=db)
-    return [DepartmentResponse.model_validate(d) for d in departments]
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+) -> DepartmentListResponse:
+    return await department_service.get_all_departments(db=db, page=page, page_size=page_size)
 
 
 @router.patch("/{department_id}/reactivate", response_model=DepartmentResponse)

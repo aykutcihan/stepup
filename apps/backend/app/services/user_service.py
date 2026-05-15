@@ -8,7 +8,12 @@ from app.errors import NotFoundError, ValidationError, messages
 from app.models.user import User
 from app.repositories.refresh_token_repository import RefreshTokenRepository
 from app.repositories.user_repository import UserRepository
-from app.schemas.user import UserProfileUpdate, UserUpdate
+from app.schemas.user import (
+    UserListResponse,
+    UserProfileUpdate,
+    UserResponse,
+    UserUpdate,
+)
 from app.services.audit_service import AuditService
 
 user_repository = UserRepository()
@@ -24,8 +29,22 @@ class UserService:
         role: UserRole | None = None,
         department_id: uuid.UUID | None = None,
         is_active: bool | None = None,
-    ) -> list:
-        return await user_repository.get_all(db, role=role, department_id=department_id, is_active=is_active)
+        page: int = 1,
+        page_size: int = 20,
+    ) -> UserListResponse:
+        items, total = await user_repository.get_all(
+            db, role=role, department_id=department_id, is_active=is_active, page=page, page_size=page_size
+        )
+        total_pages = (total + page_size - 1) // page_size
+        return UserListResponse(
+            items=[UserResponse.model_validate(u) for u in items],
+            total=total,
+            page=page,
+            page_size=page_size,
+            total_pages=total_pages,
+            has_next=page * page_size < total,
+            has_prev=page > 1,
+        )
 
     async def update_user(
         self,

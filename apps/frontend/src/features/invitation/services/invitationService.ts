@@ -18,7 +18,7 @@ export async function createInvitation(data: InvitationCreate): Promise<Invitati
 
 export async function getInvitations(): Promise<InvitationResponse[]> {
   const res = await apiClient.get(API.INVITATIONS.LIST)
-  return res.data
+  return res.data.items
 }
 
 export async function resendInvitation(id: string): Promise<InvitationResponse> {

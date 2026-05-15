@@ -6,7 +6,12 @@ from app.errors import NotFoundError, ValidationError, messages
 from app.models.department import Department
 from app.repositories.department_repository import DepartmentRepository
 from app.repositories.user_repository import UserRepository
-from app.schemas.department import DepartmentCreate, DepartmentUpdate
+from app.schemas.department import (
+    DepartmentCreate,
+    DepartmentListResponse,
+    DepartmentResponse,
+    DepartmentUpdate,
+)
 
 department_repository = DepartmentRepository()
 user_repository = UserRepository()
@@ -38,8 +43,18 @@ class DepartmentService:
         await db.refresh(department)
         return department
 
-    async def get_all_departments(self, db: AsyncSession) -> list[Department]:
-        return await department_repository.get_all(db)
+    async def get_all_departments(self, db: AsyncSession, page: int = 1, page_size: int = 20) -> DepartmentListResponse:
+        items, total = await department_repository.get_all(db, page=page, page_size=page_size)
+        total_pages = (total + page_size - 1) // page_size
+        return DepartmentListResponse(
+            items=[DepartmentResponse.model_validate(d) for d in items],
+            total=total,
+            page=page,
+            page_size=page_size,
+            total_pages=total_pages,
+            has_next=page * page_size < total,
+            has_prev=page > 1,
+        )
 
     async def update_department(
         self, db: AsyncSession, department_id: uuid.UUID, data: DepartmentUpdate

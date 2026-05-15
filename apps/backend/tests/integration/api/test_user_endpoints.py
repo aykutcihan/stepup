@@ -159,7 +159,10 @@ class TestGetUsers:
         response = await authenticated_client.get("/api/v1/users/")
 
         assert response.status_code == 200
-        assert isinstance(response.json(), list)
+        data = response.json()
+        assert "items" in data
+        assert "total" in data
+        assert isinstance(data["items"], list)
 
     async def test_get_users_returns_401_when_not_authenticated(
         self, client
@@ -184,7 +187,7 @@ class TestGetUsers:
 
         assert response.status_code == 200
         data = response.json()
-        assert all(u["role"] == "manager" for u in data)
+        assert all(u["role"] == "manager" for u in data["items"])
 
     async def test_get_users_filters_by_is_active(self, authenticated_client, db_session):
         user = User(
@@ -202,7 +205,27 @@ class TestGetUsers:
 
         assert response.status_code == 200
         data = response.json()
-        assert all(u["is_active"] is False for u in data)
+        assert all(u["is_active"] is False for u in data["items"])
+
+    async def test_get_users_returns_pagination_metadata(self, authenticated_client):
+        response = await authenticated_client.get("/api/v1/users/?page=1&page_size=10")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["page"] == 1
+        assert data["page_size"] == 10
+        assert "total_pages" in data
+        assert data["has_prev"] is False
+
+    async def test_get_users_page_size_above_limit_returns_422(self, authenticated_client):
+        response = await authenticated_client.get("/api/v1/users/?page_size=101")
+
+        assert response.status_code == 422
+
+    async def test_get_users_page_zero_returns_422(self, authenticated_client):
+        response = await authenticated_client.get("/api/v1/users/?page=0")
+
+        assert response.status_code == 422
 
     async def test_get_users_returns_403_for_employee(
         self, db_session, client

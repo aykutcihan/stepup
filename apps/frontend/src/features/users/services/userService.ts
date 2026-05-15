@@ -13,7 +13,7 @@ export async function updateMe(data: UserProfileUpdate): Promise<UserResponse> {
 
 export async function getUsers(): Promise<UserResponse[]> {
   const res = await apiClient.get(API.USERS.LIST)
-  return res.data
+  return res.data.items
 }
 
 export async function updateUser(id: string, data: UserUpdate): Promise<UserResponse> {

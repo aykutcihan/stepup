@@ -44,14 +44,10 @@ class AuditLogRepository:
         total = count_result.scalar_one()
 
         offset = (page - 1) * page_size
-        query = (
-            select(AuditLog)
-            .order_by(AuditLog.created_at.desc())
-            .limit(page_size)
-            .offset(offset)
-        )
+        query = select(AuditLog)
         if filters:
             query = query.where(and_(*filters))
+        query = query.order_by(AuditLog.created_at.desc()).limit(page_size).offset(offset)
 
         result = await db.execute(query)
         items = list(result.scalars().all())
