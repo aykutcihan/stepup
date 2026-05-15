@@ -8,7 +8,12 @@ from app.errors import NotFoundError, ValidationError, messages
 from app.models.user import User
 from app.repositories.refresh_token_repository import RefreshTokenRepository
 from app.repositories.user_repository import UserRepository
-from app.schemas.user import UserListResponse, UserProfileUpdate, UserResponse, UserUpdate
+from app.schemas.user import (
+    UserListResponse,
+    UserProfileUpdate,
+    UserResponse,
+    UserUpdate,
+)
 from app.services.audit_service import AuditService
 
 user_repository = UserRepository()

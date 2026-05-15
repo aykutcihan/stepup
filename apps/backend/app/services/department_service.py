@@ -6,7 +6,12 @@ from app.errors import NotFoundError, ValidationError, messages
 from app.models.department import Department
 from app.repositories.department_repository import DepartmentRepository
 from app.repositories.user_repository import UserRepository
-from app.schemas.department import DepartmentCreate, DepartmentListResponse, DepartmentResponse, DepartmentUpdate
+from app.schemas.department import (
+    DepartmentCreate,
+    DepartmentListResponse,
+    DepartmentResponse,
+    DepartmentUpdate,
+)
 
 department_repository = DepartmentRepository()
 user_repository = UserRepository()

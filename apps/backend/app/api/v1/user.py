@@ -7,7 +7,12 @@ from app.core.database import get_db
 from app.core.dependencies import get_current_user, require_role
 from app.enums.user_role import UserRole
 from app.models.user import User
-from app.schemas.user import UserListResponse, UserProfileUpdate, UserResponse, UserUpdate
+from app.schemas.user import (
+    UserListResponse,
+    UserProfileUpdate,
+    UserResponse,
+    UserUpdate,
+)
 from app.services.user_service import UserService
 
 router = APIRouter()
