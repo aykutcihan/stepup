@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
 import { useAuditLog } from '@/features/audit/hooks/useAuditLog'
+import { useTranslation } from '@/i18n/useTranslation'
 import type { AuditActionType, AuditEntityType } from '@/features/audit/services/auditService'
 
 const ACTION_LABELS: Record<AuditActionType, string> = {
@@ -55,6 +56,7 @@ const ENTITY_OPTIONS: { value: AuditEntityType | ''; label: string }[] = [
 ]
 
 export default function AuditLogPage() {
+  const t = useTranslation()
   const [selectedAction, setSelectedAction] = useState<AuditActionType | ''>('')
   const [selectedEntityType, setSelectedEntityType] = useState<AuditEntityType | ''>('')
   const [dateFrom, setDateFrom] = useState('')
@@ -80,8 +82,8 @@ export default function AuditLogPage() {
     <div className="max-w-5xl mx-auto">
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Audit Trail</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">System activity log for all key actions.</p>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{t.audit.title}</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{t.audit.subtitle}</p>
         </div>
       </div>
 
@@ -89,7 +91,7 @@ export default function AuditLogPage() {
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm px-5 py-4 mb-4">
         <div className="flex flex-wrap gap-3 items-end">
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500 dark:text-gray-400">Action</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">{t.audit.filters.action}</label>
             <select
               value={selectedAction}
               onChange={(e) => setSelectedAction(e.target.value as AuditActionType | '')}
@@ -102,7 +104,7 @@ export default function AuditLogPage() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500 dark:text-gray-400">Entity</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">{t.audit.filters.entity}</label>
             <select
               value={selectedEntityType}
               onChange={(e) => setSelectedEntityType(e.target.value as AuditEntityType | '')}
@@ -115,7 +117,7 @@ export default function AuditLogPage() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500 dark:text-gray-400">From</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">{t.audit.filters.from}</label>
             <input
               type="date"
               value={dateFrom}
@@ -125,7 +127,7 @@ export default function AuditLogPage() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500 dark:text-gray-400">To</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">{t.audit.filters.to}</label>
             <input
               type="date"
               value={dateTo}
@@ -139,14 +141,14 @@ export default function AuditLogPage() {
               onClick={handleClearFilters}
               className="px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
             >
-              Clear filters
+              {t.audit.filters.clearFilters}
             </button>
           )}
         </div>
 
         {!loading && (
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
-            {total} {total === 1 ? 'entry' : 'entries'} found
+            {t.audit.entries(total)}
           </p>
         )}
       </div>
@@ -154,18 +156,18 @@ export default function AuditLogPage() {
       {/* Table */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
         {loading ? (
-          <p className="text-sm text-gray-400 dark:text-gray-500 px-5 py-4">Loading...</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 px-5 py-4">{t.audit.loading}</p>
         ) : logs.length === 0 ? (
-          <p className="text-sm text-gray-400 dark:text-gray-500 px-5 py-4">No audit logs found.</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 px-5 py-4">{t.audit.noLogs}</p>
         ) : (
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
-                <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5 rounded-tl-xl">Date</th>
-                <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5">Actor</th>
-                <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5">Action</th>
-                <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5">Entity</th>
-                <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5 rounded-tr-xl">Detail</th>
+                <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5 rounded-tl-xl">{t.audit.columns.date}</th>
+                <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5">{t.audit.columns.actor}</th>
+                <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5">{t.audit.columns.action}</th>
+                <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5">{t.audit.columns.entity}</th>
+                <th className="text-left text-xs font-medium text-gray-600 dark:text-gray-400 px-5 py-3.5 rounded-tr-xl">{t.audit.columns.detail}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
