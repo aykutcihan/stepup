@@ -1,7 +1,7 @@
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import func, select
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.invitation import Invitation
@@ -33,13 +33,13 @@ class InvitationRepository:
         ]
 
         count_result = await db.execute(
-            select(func.count()).select_from(Invitation).where(*filters)
+            select(func.count()).select_from(Invitation).where(and_(*filters))
         )
         total = count_result.scalar_one()
 
         query = (
             select(Invitation)
-            .where(*filters)
+            .where(and_(*filters))
             .order_by(Invitation.created_at.desc())
             .limit(page_size)
             .offset((page - 1) * page_size)

@@ -19,6 +19,7 @@ export type AuditEntityType = 'user' | 'invitation' | 'plan' | 'task'
 export interface AuditLog {
   id: string
   actor_id: string
+  actor_name: string
   action: AuditActionType
   entity_type: AuditEntityType
   entity_id: string
