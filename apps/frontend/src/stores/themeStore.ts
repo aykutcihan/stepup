@@ -4,7 +4,7 @@ export type Theme = 'light' | 'dark' | 'system'
 
 const KEY = 'stepup-theme'
 
-function readTheme(): Theme {
+export function readTheme(): Theme {
   try {
     const v = localStorage.getItem(KEY)
     if (v === 'light' || v === 'dark' || v === 'system') return v
@@ -16,16 +16,13 @@ export function applyTheme(theme: Theme) {
   const isDark =
     theme === 'dark' ||
     (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-  document.documentElement.classList.toggle('dark', isDark)
+
+  if (isDark) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
 }
-
-// Apply immediately when this module loads (before React mounts)
-applyTheme(readTheme())
-
-// Keep dark class in sync when OS preference changes and theme is 'system'
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-  if (readTheme() === 'system') applyTheme('system')
-})
 
 interface ThemeState {
   theme: Theme
