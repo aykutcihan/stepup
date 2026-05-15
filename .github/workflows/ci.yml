@@ -67,7 +67,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3
@@ -78,6 +78,18 @@ jobs:
         working-directory: apps/frontend
         run: pnpm install
 
+      - name: Type check
+        working-directory: apps/frontend
+        run: pnpm exec tsc --noEmit
+
+      - name: Lint
+        working-directory: apps/frontend
+        run: pnpm lint
+
       - name: Run tests
         working-directory: apps/frontend
         run: pnpm test
+
+      - name: Build
+        working-directory: apps/frontend
+        run: pnpm build
