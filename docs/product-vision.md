@@ -770,9 +770,17 @@ ADR-007: Structured logging to GCP Cloud Logging
 
 ### Bonus (If Time Allows)
 - Multi-tenancy (organization_id on all tables)
-- Dutch + English language support (i18n)
+- Dutch + English language support (i18n) — backlog #197
 - Webhook system for external integrations
 - Full-text search on tasks and templates (PostgreSQL tsvector)
+
+### Feature Branch: US-198 — Dark / Light / System Theme ✅ Done
+- Three-way theme toggle (Light / Dark / System) in hamburger menu
+- `darkMode: 'class'` in Tailwind config; `.dark` class applied to `<html>` root
+- `themeStore` (Zustand) persists selection to `localStorage`
+- `ThemeProvider` applies theme on mount and on every store change; handles OS media query listener for System mode
+- All pages and layouts fully dark-mode styled
+- Theme selection persists across page reloads
 
 ---
 
@@ -842,6 +850,8 @@ A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
 | 1.6 | 2026-05-14 | US-016 email notifications done; plan started, task completed/approved/returned emails added via SendGrid |
 | 1.7 | 2026-05-14 | Sprint 9 done; US-017 scheduler (OVERDUE status + APScheduler lifespan + 2 daily jobs), US-020 reports (3 endpoints + CSV + ReportsPage), comprehensive seed data, audit_log migration fix; Sprint 8 closed, Sprint 9 added, Sprint 10 scoped |
 | 1.8 | 2026-05-14 | US-014b done; GCS bucket created, TaskAttachment + TaskComment models, signed URL downloads, EmployeePlanPage expandable panel; Sprint 9 updated, Sprint 10 reduced to US-021 only |
+| 1.9 | 2026-05-15 | Sprint 10 US-021 done; return_comment added to DB schema; Sprint 10 remaining items (pagination, E2E, README) marked pending |
+| 2.0 | 2026-05-15 | US-198 done; Dark/Light/System theme toggle added to hamburger menu; all pages dark-mode styled; ThemeProvider + themeStore implemented |
 
 **Review Frequency:** After each sprint  
 **Status:** Living document — will evolve throughout the project
