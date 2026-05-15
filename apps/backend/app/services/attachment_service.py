@@ -49,6 +49,7 @@ class AttachmentService:
         content = await file.read()
         if len(content) > MAX_FILE_SIZE:
             raise ValidationError(*messages.FILE_TOO_LARGE)
+        storage_service.validate_file_signature(content, file.content_type)
 
         object_name = f"tasks/{task_id}/{uuid.uuid4()}_{file.filename}"
         storage_service.upload(content, object_name, file.content_type)
