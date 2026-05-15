@@ -10,7 +10,7 @@ const DEFAULT_PAGE_SIZE = 50
 
 export function useAuditLog(filters: AuditLogFilters = {}) {
   const [data, setData] = useState<AuditLogListResponse | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   const filtersKey = JSON.stringify(filters)
 
