@@ -767,15 +767,7 @@ ADR-007: Structured logging to GCP Cloud Logging
 - ✅ File upload & comments (US-014b) — GCS bucket (`stepup-494114-attachments`, europe-west4), `TaskAttachment` + `TaskComment` models, signed URL download, MIME/size validation, expandable task panel in `EmployeePlanPage`
 
 ### Sprint 10 — Final Polish
-- ✅ Critical bug fixes (US-021 — Technical quality & polish)
-  - `return_comment` column was missing from DB — manager feedback silently lost on task return; model + migration added
-  - `attachments` and `comments` missing from API responses — page reload lost uploaded files; Pydantic schema updated, `TaskAttachmentResponse` now serialises from ORM via `model_validator`
-  - Manager review page could not see employee attachments — `ApprovalTaskResponse` extended
-  - Employee could not see manager feedback — `return_comment` rendered in `EmployeePlanPage`
-  - Overdue task showed both Start and Complete buttons simultaneously — FE button logic fixed
-  - `PlanDetailPage` back link pointed to create-plan form; task status badge only showed two states
-  - `handleApprove` had no error handling — silent failure removed task from list on API error
-  - `OnboardingPlanTaskRepository.get_by_id` now eager-loads `attachments` and `comments` to prevent `MissingGreenlet` errors on async serialisation
+- ✅ Technical quality & polish (US-021) — critical plan flow bug fixes, API response completeness, UI consistency
 
 ### Bonus (If Time Allows)
 - Multi-tenancy (organization_id on all tables)
