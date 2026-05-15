@@ -6,24 +6,14 @@ import type { components } from '@/types/api'
 type OnboardingPlanResponse = components['schemas']['OnboardingPlanResponse']
 type OnboardingPlanTaskResponse = components['schemas']['OnboardingPlanTaskResponse']
 type TaskAttachmentResponse = components['schemas']['TaskAttachmentResponse']
-type TaskCommentResponse = components['schemas']['TaskCommentResponse']
-
-type TaskWithExtras = OnboardingPlanTaskResponse & {
-  attachments: TaskAttachmentResponse[]
-  comments: TaskCommentResponse[]
-}
-
-type PlanWithExtras = Omit<OnboardingPlanResponse, 'tasks'> & {
-  tasks: TaskWithExtras[]
-}
 
 export function useEmployeePlanPage() {
-  const [plan, setPlan] = useState<PlanWithExtras | null>(null)
+  const [plan, setPlan] = useState<OnboardingPlanResponse | null>(null)
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
     getMyPlan()
-      .then((p) => setPlan(p as PlanWithExtras))
+      .then(setPlan)
       .catch(() => setNotFound(true))
   }, [])
 
@@ -58,7 +48,7 @@ export function useEmployeePlanPage() {
     await deleteAttachment(taskId, attachmentId)
     setPlan((prev) =>
       prev
-        ? { ...prev, tasks: prev.tasks.map((t) => t.id === taskId ? { ...t, attachments: t.attachments.filter((a) => a.id !== attachmentId) } : t) }
+        ? { ...prev, tasks: prev.tasks.map((t) => t.id === taskId ? { ...t, attachments: t.attachments.filter((a: TaskAttachmentResponse) => a.id !== attachmentId) } : t) }
         : prev
     )
   }
@@ -73,7 +63,7 @@ export function useEmployeePlanPage() {
   }
 
   const completedCount = plan?.tasks.filter((t) => t.status === 'completed' || t.status === 'approved').length ?? 0
-  const totalCount = plan?.tasks.length ?? 0
+  const totalCount = plan?.tasks.filter((t) => t.status !== 'cancelled').length ?? 0
 
   return {
     plan,

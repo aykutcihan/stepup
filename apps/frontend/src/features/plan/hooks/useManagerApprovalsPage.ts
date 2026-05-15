@@ -19,8 +19,12 @@ export function useManagerApprovalsPage() {
   }, [])
 
   async function handleApprove(taskId: string) {
-    await approveTask(taskId)
-    setTasks((prev) => prev.filter((t) => t.id !== taskId))
+    try {
+      await approveTask(taskId)
+      setTasks((prev) => prev.filter((t) => t.id !== taskId))
+    } catch {
+      // task stays in list on failure
+    }
   }
 
   function handleReview(taskId: string) {

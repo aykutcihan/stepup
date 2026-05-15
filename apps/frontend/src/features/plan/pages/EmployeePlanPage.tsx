@@ -5,6 +5,7 @@ import type { components } from '@/types/api'
 type OnboardingPlanTaskStatus = components['schemas']['OnboardingPlanTaskStatus']
 type TaskAttachmentResponse = components['schemas']['TaskAttachmentResponse']
 type TaskCommentResponse = components['schemas']['TaskCommentResponse']
+type OnboardingPlanTaskResponse = components['schemas']['OnboardingPlanTaskResponse']
 
 const STATUS_LABELS: Record<OnboardingPlanTaskStatus, string> = {
   not_started: 'Not started',
@@ -125,10 +126,10 @@ export default function EmployeePlanPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm divide-y divide-gray-100">
-        {plan.tasks.map((task) => {
+        {plan.tasks.map((task: OnboardingPlanTaskResponse) => {
           const isExpanded = expandedTask === task.id
-          const attachments: TaskAttachmentResponse[] = (task as any).attachments ?? []
-          const comments: TaskCommentResponse[] = (task as any).comments ?? []
+          const attachments: TaskAttachmentResponse[] = task.attachments
+          const comments: TaskCommentResponse[] = task.comments
           const canDelete = task.status !== 'approved' && task.status !== 'cancelled'
 
           return (
@@ -163,7 +164,7 @@ export default function EmployeePlanPage() {
                       Start
                     </button>
                   )}
-                  {(task.status === 'in_progress' || task.status === 'overdue') && (
+                  {task.status === 'in_progress' && (
                     <button
                       onClick={() => handleCompleteTask(task.id)}
                       className="text-xs bg-green-700 hover:bg-green-800 text-white font-medium px-3 py-1.5 rounded-lg transition-colors"
@@ -178,6 +179,12 @@ export default function EmployeePlanPage() {
                 <div className="mt-3 space-y-3 border-t border-gray-100 pt-3">
                   {task.description && (
                     <p className="text-xs text-gray-600">{task.description}</p>
+                  )}
+                  {task.return_comment && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                      <p className="text-xs font-medium text-red-700 mb-0.5">Manager feedback</p>
+                      <p className="text-xs text-red-600">{task.return_comment}</p>
+                    </div>
                   )}
 
                   <div>

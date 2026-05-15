@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
 import { useManagerTaskReviewPage } from '@/features/plan/hooks/useManagerTaskReviewPage'
 import { ROUTES } from '@/constants/routes'
+import type { components } from '@/types/api'
+
+type TaskAttachmentResponse = components['schemas']['TaskAttachmentResponse']
 
 export default function ManagerTaskReviewPage() {
   const {
@@ -54,6 +57,22 @@ export default function ManagerTaskReviewPage() {
           </span>
         </div>
       </div>
+
+      {task.attachments.length > 0 && (
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-6 py-5 mb-4">
+          <p className="text-sm font-medium text-gray-700 mb-2">Attachments</p>
+          <ul className="space-y-1">
+            {task.attachments.map((att: TaskAttachmentResponse) => (
+              <li key={att.id} className="flex items-center gap-2 text-xs text-gray-600">
+                <a href={att.download_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline truncate max-w-xs">
+                  {att.file_name}
+                </a>
+                <span className="text-gray-400">({(att.file_size / 1024).toFixed(0)} KB)</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="flex gap-3">
         <button
