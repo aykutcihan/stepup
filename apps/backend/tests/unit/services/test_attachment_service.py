@@ -67,6 +67,22 @@ class TestUploadAttachment:
                 await service.upload_attachment(db, task.id, file, user)
         assert exc.value.code == "FILE_TOO_LARGE"
 
+    async def test_rejects_file_with_wrong_magic_bytes(self):
+        service = AttachmentService()
+        db = AsyncMock()
+        user = MagicMock()
+        task = _make_task()
+        file = AsyncMock()
+        file.content_type = "application/pdf"
+        file.filename = "evil.pdf"
+        file.read = AsyncMock(return_value=b"MZ\x90\x00" + b"x" * 100)  # EXE magic bytes
+
+        with patch("app.services.attachment_service.plan_task_repository") as repo:
+            repo.get_by_id = AsyncMock(return_value=task)
+            with pytest.raises(ValidationError) as exc:
+                await service.upload_attachment(db, task.id, file, user)
+        assert exc.value.code == "INVALID_FILE_TYPE"
+
     async def test_raises_not_found_for_missing_task(self):
         from app.errors import NotFoundError
         service = AttachmentService()
