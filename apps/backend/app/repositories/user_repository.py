@@ -51,7 +51,9 @@ class UserRepository:
         role: UserRole | None = None,
         department_id: uuid.UUID | None = None,
         is_active: bool | None = None,
-    ) -> list[User]:
+        page: int = 1,
+        page_size: int = 20,
+    ) -> tuple[list[User], int]:
         filters = []
         if role is not None:
             filters.append(User.role == role)
@@ -60,9 +62,16 @@ class UserRepository:
         if is_active is not None:
             filters.append(User.is_active == is_active)
 
+        count_query = select(func.count()).select_from(User)
+        if filters:
+            count_query = count_query.where(and_(*filters))
+        count_result = await db.execute(count_query)
+        total = count_result.scalar_one()
+
         query = select(User).options(joinedload(User.department))
         if filters:
             query = query.where(and_(*filters))
+        query = query.order_by(User.created_at.desc()).limit(page_size).offset((page - 1) * page_size)
         result = await db.execute(query)
-        return list(result.scalars().all())
+        return list(result.scalars().all()), total
 
