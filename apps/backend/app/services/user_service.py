@@ -2,6 +2,7 @@ import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.enums.audit_enums import AuditActionType, AuditEntityType
 from app.enums.user_role import UserRole
 from app.errors import NotFoundError, ValidationError, messages
 from app.models.user import User
@@ -44,7 +45,7 @@ class UserService:
 
         await db.commit()
         if actor_id:
-            await audit_service.log(db, actor_id=actor_id, action="user.updated", entity_type="user", entity_id=user_id)
+            await audit_service.log(db, actor_id=actor_id, action=AuditActionType.user_updated, entity_type=AuditEntityType.user, entity_id=user_id)
             await db.commit()
         return await user_repository.get_by_id(db, user_id)
 
@@ -78,7 +79,7 @@ class UserService:
         user.is_active = False
         await refresh_token_repository.delete_by_user_id(db, user_id)
         await db.commit()
-        await audit_service.log(db, actor_id=current_user_id, action="user.deactivated", entity_type="user", entity_id=user_id)
+        await audit_service.log(db, actor_id=current_user_id, action=AuditActionType.user_deactivated, entity_type=AuditEntityType.user, entity_id=user_id)
         await db.commit()
 
     async def reactivate_user(
@@ -94,6 +95,6 @@ class UserService:
         user.is_active = True
         await db.commit()
         if actor_id:
-            await audit_service.log(db, actor_id=actor_id, action="user.reactivated", entity_type="user", entity_id=user_id)
+            await audit_service.log(db, actor_id=actor_id, action=AuditActionType.user_reactivated, entity_type=AuditEntityType.user, entity_id=user_id)
             await db.commit()
         return await user_repository.get_by_id(db, user_id)

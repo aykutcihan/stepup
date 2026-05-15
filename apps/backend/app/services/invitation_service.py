@@ -6,6 +6,7 @@ from datetime import UTC, datetime, timedelta
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.enums.audit_enums import AuditActionType, AuditEntityType
 from app.enums.user_role import UserRole
 from app.errors import NotFoundError, ValidationError, messages
 from app.models.invitation import Invitation
@@ -51,7 +52,7 @@ class InvitationService:
         await invitation_repository.create(db, invitation)
         await db.commit()
         await db.refresh(invitation)
-        await audit_service.log(db, actor_id=invited_by, action="user.invited", entity_type="invitation", entity_id=invitation.id, detail=email)
+        await audit_service.log(db, actor_id=invited_by, action=AuditActionType.user_invited, entity_type=AuditEntityType.invitation, entity_id=invitation.id, detail=email)
         await db.commit()
 
         try:
@@ -109,7 +110,7 @@ class InvitationService:
         await db.flush()
         await db.commit()
         await db.refresh(user)
-        await audit_service.log(db, actor_id=user.id, action="user.registered", entity_type="user", entity_id=user.id)
+        await audit_service.log(db, actor_id=user.id, action=AuditActionType.user_registered, entity_type=AuditEntityType.user, entity_id=user.id)
         await db.commit()
         return user
     

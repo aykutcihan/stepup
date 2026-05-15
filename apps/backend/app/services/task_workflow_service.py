@@ -3,6 +3,7 @@ import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.enums.audit_enums import AuditActionType, AuditEntityType
 from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
 from app.errors import NotFoundError, ValidationError, messages
 from app.models.onboarding_plan import OnboardingPlan
@@ -47,7 +48,7 @@ class TaskWorkflowService:
         task.status = OnboardingPlanTaskStatus.IN_PROGRESS
         await db.commit()
         await db.refresh(task)
-        await audit_service.log(db, actor_id=current_user.id, action="task.started", entity_type="task", entity_id=task.id)
+        await audit_service.log(db, actor_id=current_user.id, action=AuditActionType.task_started, entity_type=AuditEntityType.task, entity_id=task.id)
         await db.commit()
         return task
 
@@ -59,7 +60,7 @@ class TaskWorkflowService:
         task.status = OnboardingPlanTaskStatus.COMPLETED
         await db.commit()
         await db.refresh(task)
-        await audit_service.log(db, actor_id=current_user.id, action="task.completed", entity_type="task", entity_id=task.id)
+        await audit_service.log(db, actor_id=current_user.id, action=AuditActionType.task_completed, entity_type=AuditEntityType.task, entity_id=task.id)
         await db.commit()
         try:
             plan = await plan_repository.get_by_id(db, task.plan_id)
@@ -109,7 +110,7 @@ class TaskWorkflowService:
         task.status = OnboardingPlanTaskStatus.APPROVED
         await db.commit()
         await db.refresh(task)
-        await audit_service.log(db, actor_id=current_user.id, action="task.approved", entity_type="task", entity_id=task.id)
+        await audit_service.log(db, actor_id=current_user.id, action=AuditActionType.task_approved, entity_type=AuditEntityType.task, entity_id=task.id)
         await db.commit()
         try:
             plan = await plan_repository.get_by_id(db, task.plan_id)
@@ -137,7 +138,7 @@ class TaskWorkflowService:
         task.return_comment = data.content
         await db.commit()
         await db.refresh(task)
-        await audit_service.log(db, actor_id=current_user.id, action="task.returned", entity_type="task", entity_id=task.id, detail=data.content)
+        await audit_service.log(db, actor_id=current_user.id, action=AuditActionType.task_returned, entity_type=AuditEntityType.task, entity_id=task.id, detail=data.content)
         await db.commit()
         try:
             plan = await plan_repository.get_by_id(db, task.plan_id)
