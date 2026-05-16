@@ -74,10 +74,9 @@ class OnboardingPlanService:
                 order=task.order,
             ))
 
-        await db.commit()
         if actor_id:
             await audit_service.log(db, actor_id=actor_id, action=AuditActionType.plan_created, entity_type=AuditEntityType.plan, entity_id=plan.id)
-            await db.commit()
+        await db.commit()
         try:
             employee = await user_repository.get_by_id(db, data.user_id)
             if employee:
@@ -139,8 +138,8 @@ class OnboardingPlanService:
             order=max_order + 1,
         )
         await plan_task_repository.create(db, task)
-        await db.commit()
         await db.flush()
+        await db.commit()
         task = await plan_task_repository.get_by_id(db, task.id)
         return task
 
@@ -157,9 +156,8 @@ class OnboardingPlanService:
             raise ValidationError(*messages.TASK_ALREADY_TERMINAL)
 
         task.status = OnboardingPlanTaskStatus.CANCELLED
+        if actor_id:
+            await audit_service.log(db, actor_id=actor_id, action=AuditActionType.plan_task_cancelled, entity_type=AuditEntityType.task, entity_id=task_id)
         await db.commit()
         task = await plan_task_repository.get_by_id(db, task_id)
-        if actor_id:
-            await audit_service.log(db, actor_id=actor_id, action=AuditActionType.plan_task_cancelled, entity_type=AuditEntityType.task, entity_id=task.id)
-            await db.commit()
         return task

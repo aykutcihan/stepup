@@ -51,10 +51,10 @@ class InvitationService:
             department_id=department_id,
         )
         await invitation_repository.create(db, invitation)
-        await db.commit()
-        await db.refresh(invitation)
+        await db.flush()
         await audit_service.log(db, actor_id=invited_by, action=AuditActionType.user_invited, entity_type=AuditEntityType.invitation, entity_id=invitation.id, detail=email)
         await db.commit()
+        await db.refresh(invitation)
 
         try:
             await email_service.send_invitation_email(
@@ -109,10 +109,9 @@ class InvitationService:
         db.add(user)
         invitation.used_at = datetime.now(UTC)
         await db.flush()
-        await db.commit()
-        await db.refresh(user)
         await audit_service.log(db, actor_id=user.id, action=AuditActionType.user_registered, entity_type=AuditEntityType.user, entity_id=user.id)
         await db.commit()
+        await db.refresh(user)
         return user
     
     async def get_invitations(self, db: AsyncSession, page: int = 1, page_size: int = 20) -> InvitationListResponse:
@@ -132,6 +131,7 @@ class InvitationService:
         self,
         db: AsyncSession,
         invitation_id: uuid.UUID,
+        actor_id: uuid.UUID,
     ) -> Invitation:
         invitation = await invitation_repository.get_by_id(db, invitation_id)
         if not invitation:
@@ -142,6 +142,7 @@ class InvitationService:
 
         invitation.token = secrets.token_urlsafe(32)
         invitation.expires_at = datetime.now(UTC) + timedelta(days=INVITATION_EXPIRY_DAYS)
+        await audit_service.log(db, actor_id=actor_id, action=AuditActionType.user_invitation_resent, entity_type=AuditEntityType.invitation, entity_id=invitation_id, detail=invitation.email)
         await db.commit()
         await db.refresh(invitation)
 

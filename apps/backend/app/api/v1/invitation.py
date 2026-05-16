@@ -52,6 +52,7 @@ async def resend_invitation(
     invitation = await invitation_service.resend_invitation(
         db=db,
         invitation_id=invitation_id,
+        actor_id=current_user.id,
     )
     return InvitationResponse.model_validate(invitation)
 
