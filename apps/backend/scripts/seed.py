@@ -36,25 +36,38 @@ EMPLOYEE_ID  = uuid.UUID("00000000-0000-0000-0000-000000000003")
 ALICE_ID     = uuid.UUID("00000000-0000-0000-0000-000000000004")
 BOB_ID       = uuid.UUID("00000000-0000-0000-0000-000000000005")
 MANAGER2_ID  = uuid.UUID("00000000-0000-0000-0000-000000000006")
+OLIVIA_ID    = uuid.UUID("00000000-0000-0000-0000-000000000007")
+NOAH_ID      = uuid.UUID("00000000-0000-0000-0000-000000000008")
+MIA_ID       = uuid.UUID("00000000-0000-0000-0000-000000000009")
+EMMA_ID      = uuid.UUID("00000000-0000-0000-0000-000000000010")
+LIAM_ID      = uuid.UUID("00000000-0000-0000-0000-000000000011")
+MANAGER3_ID  = uuid.UUID("00000000-0000-0000-0000-000000000012")
 
-DEPT_ENG_ID  = uuid.UUID("00000000-0000-0000-0000-000000000101")
-DEPT_HR_ID   = uuid.UUID("00000000-0000-0000-0000-000000000102")
-DEPT_PROD_ID = uuid.UUID("00000000-0000-0000-0000-000000000103")
+DEPT_ENG_ID   = uuid.UUID("00000000-0000-0000-0000-000000000101")
+DEPT_HR_ID    = uuid.UUID("00000000-0000-0000-0000-000000000102")
+DEPT_PROD_ID  = uuid.UUID("00000000-0000-0000-0000-000000000103")
+DEPT_SALES_ID = uuid.UUID("00000000-0000-0000-0000-000000000104")
 
-TMPL_ENG_ID  = uuid.UUID("00000000-0000-0000-0001-000000000001")
-TMPL_HR_ID   = uuid.UUID("00000000-0000-0000-0001-000000000002")
-TMPL_PROD_ID = uuid.UUID("00000000-0000-0000-0001-000000000003")
+TMPL_ENG_ID   = uuid.UUID("00000000-0000-0000-0001-000000000001")
+TMPL_HR_ID    = uuid.UUID("00000000-0000-0000-0001-000000000002")
+TMPL_PROD_ID  = uuid.UUID("00000000-0000-0000-0001-000000000003")
+TMPL_SALES_ID = uuid.UUID("00000000-0000-0000-0001-000000000004")
 
-PLAN_EMP_ID   = uuid.UUID("00000000-0000-0000-0003-000000000001")
-PLAN_ALICE_ID = uuid.UUID("00000000-0000-0000-0003-000000000002")
-PLAN_BOB_ID   = uuid.UUID("00000000-0000-0000-0003-000000000003")
+PLAN_EMP_ID    = uuid.UUID("00000000-0000-0000-0003-000000000001")
+PLAN_ALICE_ID  = uuid.UUID("00000000-0000-0000-0003-000000000002")
+PLAN_BOB_ID    = uuid.UUID("00000000-0000-0000-0003-000000000003")
+PLAN_OLIVIA_ID = uuid.UUID("00000000-0000-0000-0003-000000000004")
+PLAN_NOAH_ID   = uuid.UUID("00000000-0000-0000-0003-000000000005")
+PLAN_MIA_ID    = uuid.UUID("00000000-0000-0000-0003-000000000006")
+PLAN_EMMA_ID   = uuid.UUID("00000000-0000-0000-0003-000000000007")
 
 # ─── Departments ──────────────────────────────────────────────────────────────
 
 SEED_DEPARTMENTS = [
-    {"id": DEPT_ENG_ID,  "name": "Engineering"},
-    {"id": DEPT_HR_ID,   "name": "Human Resources"},
-    {"id": DEPT_PROD_ID, "name": "Product"},
+    {"id": DEPT_ENG_ID,   "name": "Engineering"},
+    {"id": DEPT_HR_ID,    "name": "Human Resources"},
+    {"id": DEPT_PROD_ID,  "name": "Product"},
+    {"id": DEPT_SALES_ID, "name": "Sales"},
 ]
 
 # ─── Users ────────────────────────────────────────────────────────────────────
@@ -90,14 +103,45 @@ SEED_USERS = [
         "first_name": "Bob", "last_name": "Marley",
         "role": UserRole.EMPLOYEE, "department_id": DEPT_PROD_ID,
     },
+    {
+        "id": OLIVIA_ID, "email": "olivia@demo.com", "password": "Employee1234!",
+        "first_name": "Olivia", "last_name": "Reed",
+        "role": UserRole.EMPLOYEE, "department_id": DEPT_ENG_ID,
+    },
+    {
+        "id": NOAH_ID, "email": "noah@demo.com", "password": "Employee1234!",
+        "first_name": "Noah", "last_name": "Park",
+        "role": UserRole.EMPLOYEE, "department_id": DEPT_PROD_ID,
+    },
+    {
+        "id": MIA_ID, "email": "mia@demo.com", "password": "Employee1234!",
+        "first_name": "Mia", "last_name": "Torres",
+        "role": UserRole.EMPLOYEE, "department_id": DEPT_HR_ID,
+    },
+    {
+        "id": EMMA_ID, "email": "emma@demo.com", "password": "Employee1234!",
+        "first_name": "Emma", "last_name": "Walsh",
+        "role": UserRole.EMPLOYEE, "department_id": DEPT_SALES_ID,
+    },
+    {
+        "id": LIAM_ID, "email": "liam@demo.com", "password": "Employee1234!",
+        "first_name": "Liam", "last_name": "Scott",
+        "role": UserRole.EMPLOYEE, "department_id": DEPT_ENG_ID,
+    },
+    {
+        "id": MANAGER3_ID, "email": "manager3@demo.com", "password": "Employee1234!",
+        "first_name": "Kate", "last_name": "Morgan",
+        "role": UserRole.MANAGER, "department_id": DEPT_SALES_ID,
+    },
 ]
 
 # ─── Templates ────────────────────────────────────────────────────────────────
 
 SEED_TEMPLATES = [
-    {"id": TMPL_ENG_ID,  "name": "Engineering Onboarding", "department_id": DEPT_ENG_ID,  "is_active": True},
-    {"id": TMPL_HR_ID,   "name": "HR Onboarding",          "department_id": DEPT_HR_ID,   "is_active": False},
-    {"id": TMPL_PROD_ID, "name": "Product Onboarding",     "department_id": DEPT_PROD_ID, "is_active": True},
+    {"id": TMPL_ENG_ID,   "name": "Engineering Onboarding", "department_id": DEPT_ENG_ID,   "is_active": True},
+    {"id": TMPL_HR_ID,    "name": "HR Onboarding",          "department_id": DEPT_HR_ID,    "is_active": False},
+    {"id": TMPL_PROD_ID,  "name": "Product Onboarding",     "department_id": DEPT_PROD_ID,  "is_active": True},
+    {"id": TMPL_SALES_ID, "name": "Sales Onboarding",       "department_id": DEPT_SALES_ID, "is_active": True},
 ]
 
 # ─── Template Tasks ───────────────────────────────────────────────────────────
@@ -146,6 +190,31 @@ SEED_TEMPLATE_TASKS = [
         "template_id": TMPL_HR_ID, "order": 3, "deadline_days": 10, "is_required": False,
         "title": "Complete HRIS system training",
         "description": "Finish self-paced training modules for the HR information system.",
+    },
+    # Sales Onboarding
+    {
+        "id": uuid.UUID("00000000-0000-0000-0002-000000000011"),
+        "template_id": TMPL_SALES_ID, "order": 1, "deadline_days": 2, "is_required": True,
+        "title": "Complete sales methodology training",
+        "description": "Finish the SPIN selling framework course on the learning portal.",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0002-000000000012"),
+        "template_id": TMPL_SALES_ID, "order": 2, "deadline_days": 5, "is_required": True,
+        "title": "Shadow 3 customer calls",
+        "description": "Join live sales calls with a senior rep and take structured notes.",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0002-000000000013"),
+        "template_id": TMPL_SALES_ID, "order": 3, "deadline_days": 7, "is_required": True,
+        "title": "Set up CRM and pipeline",
+        "description": "Configure your CRM account, import leads, and set up your first pipeline.",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0002-000000000014"),
+        "template_id": TMPL_SALES_ID, "order": 4, "deadline_days": 14, "is_required": False,
+        "title": "Close your first demo",
+        "description": "Run an end-to-end product demo with a real prospect.",
     },
     # Product Onboarding
     {
@@ -209,14 +278,14 @@ SEED_PLANS = [
                 "title": "Review architecture documentation",
                 "description": "Read system design docs and schedule a walkthrough session with the tech lead.",
                 "deadline": TODAY + timedelta(days=2),
-                "status": OnboardingPlanTaskStatus.IN_PROGRESS,
+                "status": OnboardingPlanTaskStatus.COMPLETED,
                 "is_required": True, "order": 3,
             },
             {
                 "title": "Submit first pull request",
                 "description": "Pick a starter task from the backlog, implement it, and open a PR for review.",
                 "deadline": TODAY - timedelta(days=6),
-                "status": OnboardingPlanTaskStatus.NOT_STARTED,
+                "status": OnboardingPlanTaskStatus.COMPLETED,
                 "is_required": False, "order": 4,
             },
         ],
@@ -285,6 +354,144 @@ SEED_PLANS = [
                 "deadline": TODAY - timedelta(days=1),
                 "status": OnboardingPlanTaskStatus.NOT_STARTED,
                 "is_required": False, "order": 3,
+            },
+        ],
+    },
+    # Plan 4 — olivia@demo.com (Engineering, in progress, mix of statuses)
+    {
+        "id": PLAN_OLIVIA_ID,
+        "user_id": OLIVIA_ID,
+        "template_id": TMPL_ENG_ID,
+        "manager_id": MANAGER_ID,
+        "start_date": TODAY - timedelta(days=15),
+        "tasks": [
+            {
+                "title": "Set up development environment",
+                "description": "Install required tools: Git, Docker, VS Code, and configure local environment variables.",
+                "deadline": TODAY - timedelta(days=14),
+                "status": OnboardingPlanTaskStatus.APPROVED,
+                "is_required": True, "order": 1,
+            },
+            {
+                "title": "Complete security and compliance training",
+                "description": "Finish the mandatory security awareness course on the learning portal.",
+                "deadline": TODAY - timedelta(days=12),
+                "status": OnboardingPlanTaskStatus.COMPLETED,
+                "is_required": True, "order": 2,
+            },
+            {
+                "title": "Review architecture documentation",
+                "description": "Read system design docs and schedule a walkthrough session with the tech lead.",
+                "deadline": TODAY - timedelta(days=5),
+                "status": OnboardingPlanTaskStatus.IN_PROGRESS,
+                "is_required": True, "order": 3,
+            },
+            {
+                "title": "Submit first pull request",
+                "description": "Pick a starter task from the backlog, implement it, and open a PR for review.",
+                "deadline": TODAY + timedelta(days=5),
+                "status": OnboardingPlanTaskStatus.NOT_STARTED,
+                "is_required": False, "order": 4,
+            },
+        ],
+    },
+    # Plan 5 — noah@demo.com (Product, stuck)
+    {
+        "id": PLAN_NOAH_ID,
+        "user_id": NOAH_ID,
+        "template_id": TMPL_PROD_ID,
+        "manager_id": MANAGER2_ID,
+        "start_date": TODAY - timedelta(days=10),
+        "tasks": [
+            {
+                "title": "Meet the product team",
+                "description": "Schedule 1:1s with each product team member and your PM lead.",
+                "deadline": TODAY - timedelta(days=8),
+                "status": OnboardingPlanTaskStatus.RETURNED,
+                "is_required": True, "order": 1,
+            },
+            {
+                "title": "Review product roadmap",
+                "description": "Go through the current and upcoming quarter roadmap with your PM lead.",
+                "deadline": TODAY - timedelta(days=5),
+                "status": OnboardingPlanTaskStatus.RETURNED,
+                "is_required": True, "order": 2,
+            },
+            {
+                "title": "Shadow a customer call",
+                "description": "Join a live customer demo or support call to understand user pain points.",
+                "deadline": TODAY - timedelta(days=1),
+                "status": OnboardingPlanTaskStatus.OVERDUE,
+                "is_required": False, "order": 3,
+            },
+        ],
+    },
+    # Plan 6 — mia@demo.com (HR, just started)
+    {
+        "id": PLAN_MIA_ID,
+        "user_id": MIA_ID,
+        "template_id": TMPL_HR_ID,
+        "manager_id": MANAGER_ID,
+        "start_date": TODAY - timedelta(days=3),
+        "tasks": [
+            {
+                "title": "Review HR policies and handbook",
+                "description": "Read the company handbook and sign the policy acknowledgement form.",
+                "deadline": TODAY + timedelta(days=1),
+                "status": OnboardingPlanTaskStatus.IN_PROGRESS,
+                "is_required": True, "order": 1,
+            },
+            {
+                "title": "Shadow a payroll processing session",
+                "description": "Sit in on the monthly payroll run with a senior HR specialist.",
+                "deadline": TODAY + timedelta(days=7),
+                "status": OnboardingPlanTaskStatus.NOT_STARTED,
+                "is_required": True, "order": 2,
+            },
+            {
+                "title": "Complete HRIS system training",
+                "description": "Finish self-paced training modules for the HR information system.",
+                "deadline": TODAY + timedelta(days=10),
+                "status": OnboardingPlanTaskStatus.NOT_STARTED,
+                "is_required": False, "order": 3,
+            },
+        ],
+    },
+    # Plan 7 — emma@demo.com (Sales, in progress)
+    {
+        "id": PLAN_EMMA_ID,
+        "user_id": EMMA_ID,
+        "template_id": TMPL_SALES_ID,
+        "manager_id": MANAGER3_ID,
+        "start_date": TODAY - timedelta(days=7),
+        "tasks": [
+            {
+                "title": "Complete sales methodology training",
+                "description": "Finish the SPIN selling framework course on the learning portal.",
+                "deadline": TODAY - timedelta(days=5),
+                "status": OnboardingPlanTaskStatus.APPROVED,
+                "is_required": True, "order": 1,
+            },
+            {
+                "title": "Shadow 3 customer calls",
+                "description": "Join live sales calls with a senior rep and take structured notes.",
+                "deadline": TODAY - timedelta(days=2),
+                "status": OnboardingPlanTaskStatus.COMPLETED,
+                "is_required": True, "order": 2,
+            },
+            {
+                "title": "Set up CRM and pipeline",
+                "description": "Configure your CRM account, import leads, and set up your first pipeline.",
+                "deadline": TODAY + timedelta(days=1),
+                "status": OnboardingPlanTaskStatus.IN_PROGRESS,
+                "is_required": True, "order": 3,
+            },
+            {
+                "title": "Close your first demo",
+                "description": "Run an end-to-end product demo with a real prospect.",
+                "deadline": TODAY + timedelta(days=10),
+                "status": OnboardingPlanTaskStatus.NOT_STARTED,
+                "is_required": False, "order": 4,
             },
         ],
     },
@@ -394,6 +601,150 @@ SEED_AUDIT_LOGS = [
         "actor_id": ADMIN_ID, "action": "user.updated",
         "entity_type": "user", "entity_id": EMPLOYEE_ID,
         "detail": "Department updated",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000018"),
+        "actor_id": ADMIN_ID, "action": "user.invited",
+        "entity_type": "invitation", "entity_id": uuid.UUID("00000000-0000-0000-0088-000000000018"),
+        "detail": "olivia@demo.com invited as employee",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000019"),
+        "actor_id": ADMIN_ID, "action": "user.invited",
+        "entity_type": "invitation", "entity_id": uuid.UUID("00000000-0000-0000-0088-000000000019"),
+        "detail": "noah@demo.com invited as employee",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000020"),
+        "actor_id": ADMIN_ID, "action": "user.invited",
+        "entity_type": "invitation", "entity_id": uuid.UUID("00000000-0000-0000-0088-000000000020"),
+        "detail": "mia@demo.com invited as employee",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000021"),
+        "actor_id": ADMIN_ID, "action": "user.invited",
+        "entity_type": "invitation", "entity_id": uuid.UUID("00000000-0000-0000-0088-000000000021"),
+        "detail": "emma@demo.com invited as employee",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000022"),
+        "actor_id": ADMIN_ID, "action": "user.invited",
+        "entity_type": "invitation", "entity_id": uuid.UUID("00000000-0000-0000-0088-000000000022"),
+        "detail": "liam@demo.com invited as employee",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000023"),
+        "actor_id": OLIVIA_ID, "action": "user.registered",
+        "entity_type": "user", "entity_id": OLIVIA_ID,
+        "detail": "Olivia Reed completed registration",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000024"),
+        "actor_id": NOAH_ID, "action": "user.registered",
+        "entity_type": "user", "entity_id": NOAH_ID,
+        "detail": "Noah Park completed registration",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000025"),
+        "actor_id": MIA_ID, "action": "user.registered",
+        "entity_type": "user", "entity_id": MIA_ID,
+        "detail": "Mia Torres completed registration",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000026"),
+        "actor_id": EMMA_ID, "action": "user.registered",
+        "entity_type": "user", "entity_id": EMMA_ID,
+        "detail": "Emma Walsh completed registration",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000027"),
+        "actor_id": ADMIN_ID, "action": "plan.created",
+        "entity_type": "plan", "entity_id": PLAN_OLIVIA_ID,
+        "detail": "Plan created for olivia@demo.com",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000028"),
+        "actor_id": ADMIN_ID, "action": "plan.created",
+        "entity_type": "plan", "entity_id": PLAN_NOAH_ID,
+        "detail": "Plan created for noah@demo.com",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000029"),
+        "actor_id": ADMIN_ID, "action": "plan.created",
+        "entity_type": "plan", "entity_id": PLAN_MIA_ID,
+        "detail": "Plan created for mia@demo.com",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000030"),
+        "actor_id": ADMIN_ID, "action": "plan.created",
+        "entity_type": "plan", "entity_id": PLAN_EMMA_ID,
+        "detail": "Plan created for emma@demo.com",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000031"),
+        "actor_id": OLIVIA_ID, "action": "task.started",
+        "entity_type": "task", "entity_id": uuid.UUID("00000000-0000-0000-0077-000000000010"),
+        "detail": "Set up development environment",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000032"),
+        "actor_id": OLIVIA_ID, "action": "task.completed",
+        "entity_type": "task", "entity_id": uuid.UUID("00000000-0000-0000-0077-000000000010"),
+        "detail": "Set up development environment",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000033"),
+        "actor_id": MANAGER_ID, "action": "task.approved",
+        "entity_type": "task", "entity_id": uuid.UUID("00000000-0000-0000-0077-000000000010"),
+        "detail": "Set up development environment — Olivia",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000034"),
+        "actor_id": NOAH_ID, "action": "task.started",
+        "entity_type": "task", "entity_id": uuid.UUID("00000000-0000-0000-0077-000000000011"),
+        "detail": "Meet the product team",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000035"),
+        "actor_id": NOAH_ID, "action": "task.completed",
+        "entity_type": "task", "entity_id": uuid.UUID("00000000-0000-0000-0077-000000000011"),
+        "detail": "Meet the product team",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000036"),
+        "actor_id": MANAGER2_ID, "action": "task.returned",
+        "entity_type": "task", "entity_id": uuid.UUID("00000000-0000-0000-0077-000000000011"),
+        "detail": "Meet the product team — meeting notes missing",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000037"),
+        "actor_id": EMMA_ID, "action": "task.started",
+        "entity_type": "task", "entity_id": uuid.UUID("00000000-0000-0000-0077-000000000012"),
+        "detail": "Complete sales methodology training",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000038"),
+        "actor_id": EMMA_ID, "action": "task.completed",
+        "entity_type": "task", "entity_id": uuid.UUID("00000000-0000-0000-0077-000000000012"),
+        "detail": "Complete sales methodology training",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000039"),
+        "actor_id": MANAGER3_ID, "action": "task.approved",
+        "entity_type": "task", "entity_id": uuid.UUID("00000000-0000-0000-0077-000000000012"),
+        "detail": "Complete sales methodology training — Emma",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000040"),
+        "actor_id": ADMIN_ID, "action": "user.deactivated",
+        "entity_type": "user", "entity_id": LIAM_ID,
+        "detail": "liam@demo.com deactivated",
+    },
+    {
+        "id": uuid.UUID("00000000-0000-0000-0099-000000000041"),
+        "actor_id": ADMIN_ID, "action": "user.reactivated",
+        "entity_type": "user", "entity_id": LIAM_ID,
+        "detail": "liam@demo.com reactivated",
     },
 ]
 
