@@ -10,7 +10,6 @@ import { ROUTES } from '@/constants/routes'
 import { USER_ROLES } from '@/constants/userRoles'
 import { StepUpLogo } from '@/components/StepUpLogo'
 
-const API_URL = import.meta.env.VITE_API_URL ?? ''
 
 export default function DashboardLayout() {
   const user = useAuthStore((state) => state.user)
@@ -80,7 +79,7 @@ export default function DashboardLayout() {
                 <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full overflow-hidden bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
                     {user?.avatar_url ? (
-                      <img src={`${API_URL}${user.avatar_url}`} alt="Avatar" className="w-full h-full object-cover" />
+                      <img src={user.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-blue-700 dark:text-blue-400 text-xs font-bold">
                         {user?.first_name?.[0]}{user?.last_name?.[0]}
