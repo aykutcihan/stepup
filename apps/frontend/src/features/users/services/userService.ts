@@ -21,6 +21,15 @@ export async function updateUser(id: string, data: UserUpdate): Promise<UserResp
   return res.data
 }
 
+export async function uploadAvatar(file: File): Promise<UserResponse> {
+  const formData = new FormData()
+  formData.append('file', file)
+  const res = await apiClient.post(API.USERS.UPLOAD_AVATAR, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return res.data
+}
+
 export async function deactivateUser(id: string): Promise<void> {
   await apiClient.patch(API.USERS.DEACTIVATE(id))
 }

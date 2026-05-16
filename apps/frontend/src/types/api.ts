@@ -934,6 +934,8 @@ export interface components {
             department_id: string | null;
             /** Department Name */
             department_name?: string | null;
+            /** Avatar Url */
+            avatar_url?: string | null;
         };
         /**
          * UserRole

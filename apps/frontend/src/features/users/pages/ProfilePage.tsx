@@ -1,5 +1,8 @@
+import { Camera, Loader } from 'lucide-react'
 import { useProfilePage } from '@/features/users/hooks/useProfilePage'
 import { ROLE_LABELS } from '@/constants/userRoles'
+
+const API_URL = import.meta.env.VITE_API_URL ?? ''
 
 export default function ProfilePage() {
   const {
@@ -11,7 +14,13 @@ export default function ProfilePage() {
     success,
     pageError,
     handleSave,
+    avatarUploading,
+    fileInputRef,
+    handleAvatarChange,
   } = useProfilePage()
+
+  const avatarSrc = user?.avatar_url ? `${API_URL}${user.avatar_url}` : null
+  const initials = `${user?.first_name?.[0] ?? ''}${user?.last_name?.[0] ?? ''}`
 
   return (
     <div className="max-w-xl mx-auto">
@@ -31,6 +40,39 @@ export default function ProfilePage() {
             {pageError}
           </div>
         )}
+
+        {/* Avatar */}
+        <div className="flex justify-center pb-2">
+          <div className="relative group">
+            <div className="w-24 h-24 rounded-full overflow-hidden bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
+              {avatarSrc ? (
+                <img src={avatarSrc} alt="Profile photo" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-blue-700 dark:text-blue-400 text-2xl font-bold">{initials}</span>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={avatarUploading}
+              className="absolute inset-0 rounded-full flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity disabled:cursor-not-allowed"
+              aria-label="Upload photo"
+            >
+              {avatarUploading ? (
+                <Loader size={20} className="text-white animate-spin" />
+              ) : (
+                <Camera size={20} className="text-white" />
+              )}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={handleAvatarChange}
+            />
+          </div>
+        </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>

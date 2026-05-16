@@ -1,8 +1,10 @@
+import os
 from contextlib import asynccontextmanager
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
@@ -49,6 +51,9 @@ app.add_middleware(
 )
 
 register_error_handlers(app)
+
+os.makedirs("uploads/avatars", exist_ok=True)
+app.mount("/static", StaticFiles(directory="uploads"), name="static")
 
 app.include_router(api_router, prefix="/api/v1")
 
