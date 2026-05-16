@@ -1,7 +1,6 @@
 import uuid
-from pathlib import Path
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -15,11 +14,6 @@ from app.schemas.user import (
     UserUpdate,
 )
 from app.services.user_service import UserService
-
-_ALLOWED_AVATAR_TYPES = {"image/jpeg", "image/png", "image/webp"}
-_AVATAR_EXT_MAP = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp"}
-_AVATARS_DIR = Path("uploads/avatars")
-_MAX_AVATAR_BYTES = 5 * 1024 * 1024
 
 router = APIRouter()
 user_service = UserService()
@@ -53,20 +47,9 @@ async def upload_avatar(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> UserResponse:
-    if file.content_type not in _ALLOWED_AVATAR_TYPES:
-        raise HTTPException(status_code=400, detail="Only JPEG, PNG and WebP images are allowed.")
     content = await file.read()
-    if len(content) > _MAX_AVATAR_BYTES:
-        raise HTTPException(status_code=400, detail="Image must be under 5MB.")
-    _AVATARS_DIR.mkdir(parents=True, exist_ok=True)
-    ext = _AVATAR_EXT_MAP[file.content_type]
-    filename = f"{current_user.id}.{ext}"
-    (_AVATARS_DIR / filename).write_bytes(content)
-    current_user.avatar_url = f"/static/avatars/{filename}"
-    db.add(current_user)
-    await db.commit()
-    await db.refresh(current_user)
-    return UserResponse.model_validate(current_user)
+    user = await user_service.upload_avatar(db, current_user, content, file.content_type or "")
+    return UserResponse.model_validate(user)
 
 
 @router.patch("/me", response_model=UserResponse)

@@ -7,6 +7,8 @@ INVITATION_ALREADY_USED = ("INVITATION_ALREADY_USED", "Invitation has already be
 USER_ALREADY_EXISTS = ("USER_ALREADY_EXISTS", "A user with this email already exists")
 USER_NOT_FOUND = ("USER_NOT_FOUND", "User not found")
 CANNOT_DEACTIVATE_SELF = ("CANNOT_DEACTIVATE_SELF", "You cannot deactivate your own account")
+INVALID_AVATAR_TYPE = ("INVALID_AVATAR_TYPE", "Only JPEG, PNG and WebP images are allowed")
+AVATAR_TOO_LARGE = ("AVATAR_TOO_LARGE", "Image must be under 5MB")
 
 # Authentication
 INVALID_CREDENTIALS = ("INVALID_CREDENTIALS", "Invalid email or password")
