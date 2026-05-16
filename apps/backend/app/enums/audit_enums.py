@@ -3,6 +3,7 @@ import enum
 
 class AuditActionType(enum.StrEnum):
     user_invited = "user.invited"
+    user_invitation_resent = "user.invitation_resent"
     user_registered = "user.registered"
     user_deactivated = "user.deactivated"
     user_reactivated = "user.reactivated"
