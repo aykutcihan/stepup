@@ -5,7 +5,6 @@ import { useAuthStore } from '@/stores/authStore'
 import { ROUTES } from '@/constants/routes'
 import { useManagerDashboard } from '@/features/dashboard/hooks/useManagerDashboard'
 
-const API_URL = import.meta.env.VITE_API_URL ?? ''
 
 type Color = 'blue' | 'emerald' | 'amber'
 
@@ -48,7 +47,7 @@ export default function ManagerDashboard() {
   const user = useAuthStore((state) => state.user)
   const { stats } = useManagerDashboard()
 
-  const avatarSrc = user?.avatar_url ? `${API_URL}${user.avatar_url}` : null
+  const avatarSrc = user?.avatar_url ?? null
   const initials = `${user?.first_name?.[0] ?? ''}${user?.last_name?.[0] ?? ''}`
 
   return (

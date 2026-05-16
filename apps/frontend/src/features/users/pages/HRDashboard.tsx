@@ -3,7 +3,6 @@ import { Users, ClipboardList, Building2, Clock } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { useHRDashboard } from '@/features/dashboard/hooks/useHRDashboard'
 
-const API_URL = import.meta.env.VITE_API_URL ?? ''
 
 type Color = 'blue' | 'emerald' | 'violet' | 'amber'
 
@@ -47,7 +46,7 @@ export default function HRDashboard() {
   const user = useAuthStore((state) => state.user)
   const { stats } = useHRDashboard()
 
-  const avatarSrc = user?.avatar_url ? `${API_URL}${user.avatar_url}` : null
+  const avatarSrc = user?.avatar_url ?? null
   const initials = `${user?.first_name?.[0] ?? ''}${user?.last_name?.[0] ?? ''}`
 
   return (
