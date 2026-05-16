@@ -40,6 +40,7 @@ class OnboardingPlanTaskRepository:
     async def count_completed_across_active_plans(self, db: AsyncSession) -> int:
         result = await db.execute(
             select(func.count())
+            .select_from(OnboardingPlanTask)
             .join(OnboardingPlan, OnboardingPlanTask.plan_id == OnboardingPlan.id)
             .where(
                 OnboardingPlanTask.status == OnboardingPlanTaskStatus.COMPLETED,
@@ -53,6 +54,7 @@ class OnboardingPlanTaskRepository:
     async def count_completed_by_manager(self, db: AsyncSession, manager_id: uuid.UUID) -> int:
         result = await db.execute(
             select(func.count())
+            .select_from(OnboardingPlanTask)
             .join(OnboardingPlan, OnboardingPlanTask.plan_id == OnboardingPlan.id)
             .where(
                 OnboardingPlanTask.status == OnboardingPlanTaskStatus.COMPLETED,
