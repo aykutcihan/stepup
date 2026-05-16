@@ -1,15 +1,16 @@
 """Seed script: inserts 20 varied audit log entries for demo purposes."""
 import asyncio
 import os
+import random
+import sys
 import uuid
 from datetime import UTC, datetime, timedelta
-import random
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.models.audit_log import AuditLog
 from app.enums.audit_enums import AuditActionType, AuditEntityType
+from app.models.audit_log import AuditLog
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 
@@ -58,7 +59,7 @@ async def seed():
             )
             db.add(log)
         await db.commit()
-        print(f"Inserted {len(ENTRIES)} audit log entries.")
+        sys.stdout.write(f"Inserted {len(ENTRIES)} audit log entries.\n")
 
 if __name__ == "__main__":
     asyncio.run(seed())
