@@ -13,7 +13,7 @@ export function useReports(filters: ReportFilters) {
   const [completionTime, setCompletionTime] = useState<DepartmentCompletionRow[]>([])
   const [taskRates, setTaskRates] = useState<TemplateCompletionRow[]>([])
   const [bottlenecks, setBottlenecks] = useState<BottleneckRow[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)

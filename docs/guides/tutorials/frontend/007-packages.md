@@ -97,6 +97,20 @@ const loginSchema = z.object({
 
 Used with `react-hook-form` via `zodResolver`. The schema validates on submit and provides typed form data — `handleSubmit` receives `{ email: string, password: string }`, not untyped form values.
 
+### `lucide-react`
+
+Icon library. Provides SVG icons as React components.
+
+```tsx
+import { Clock, Users, ArrowRight } from 'lucide-react'
+
+<Clock size={20} className="text-amber-600" />
+```
+
+Each icon is a standalone component — only the icons you import are included in the bundle (tree-shakeable). Icons accept `size`, `className`, `strokeWidth`, and standard SVG props.
+
+Used throughout the dashboard stat cards, quick link rows, and the profile photo upload button.
+
 ### `date-fns`
 
 Date utility library. Formats dates for display.

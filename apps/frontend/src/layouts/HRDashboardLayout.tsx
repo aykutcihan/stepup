@@ -4,28 +4,42 @@ import { useNavigate } from 'react-router-dom'
 import { logout } from '@/features/auth/services/authService'
 import { useAuthStore } from '@/stores/authStore'
 import { useThemeStore, type Theme } from '@/stores/themeStore'
+import { useLanguageStore, type Language } from '@/stores/languageStore'
+import { useTranslation } from '@/i18n/useTranslation'
 import { ROUTES } from '@/constants/routes'
+import { StepUpLogo } from '@/components/StepUpLogo'
 
-const THEME_OPTIONS: { value: Theme; label: string }[] = [
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-  { value: 'system', label: 'System' },
-]
+const API_URL = import.meta.env.VITE_API_URL ?? ''
 
 export default function HRDashboardLayout() {
   const user = useAuthStore((state) => state.user)
   const clearUser = useAuthStore((state) => state.clearUser)
   const { theme, setTheme } = useThemeStore()
+  const { language, setLanguage } = useLanguageStore()
+  const t = useTranslation()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [showTheme, setShowTheme] = useState(false)
+  const [showLanguage, setShowLanguage] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+
+  const THEME_OPTIONS: { value: Theme; label: string }[] = [
+    { value: 'light', label: t.theme.light },
+    { value: 'dark', label: t.theme.dark },
+    { value: 'system', label: t.theme.system },
+  ]
+
+  const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
+    { value: 'en', label: t.languages.en },
+    { value: 'nl', label: t.languages.nl },
+  ]
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setOpen(false)
         setShowTheme(false)
+        setShowLanguage(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -48,11 +62,14 @@ export default function HRDashboardLayout() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-gray-900 flex flex-col">
       <nav className="bg-blue-800 dark:bg-gray-950 text-white px-6 py-3 flex items-center justify-between shadow-md">
-        <Link to={ROUTES.HR_DASHBOARD} className="text-xl font-bold tracking-tight hover:opacity-80 transition-opacity">StepUp</Link>
+        <Link to={ROUTES.HR_DASHBOARD} className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+          <StepUpLogo className="h-5 w-auto text-white" />
+          <span className="text-xl font-bold tracking-tight">StepUp</span>
+        </Link>
         <div className="flex items-center gap-3">
           <div className="relative" ref={menuRef}>
             <button
-              onClick={() => { setOpen((v) => !v); setShowTheme(false) }}
+              onClick={() => { setOpen((v) => !v); setShowTheme(false); setShowLanguage(false) }}
               className="flex flex-col justify-center items-center gap-1 w-8 h-8 rounded-lg hover:bg-white/10 transition-colors"
               aria-label="User menu"
             >
@@ -63,9 +80,20 @@ export default function HRDashboardLayout() {
 
             {open && (
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
-                <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
-                  <p className="text-xs font-medium text-gray-900 dark:text-gray-100">{user?.first_name} {user?.last_name}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full overflow-hidden bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
+                    {user?.avatar_url ? (
+                      <img src={`${API_URL}${user.avatar_url}`} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-blue-700 dark:text-blue-400 text-xs font-bold">
+                        {user?.first_name?.[0]}{user?.last_name?.[0]}
+                      </span>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-gray-900 dark:text-gray-100">{user?.first_name} {user?.last_name}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                  </div>
                 </div>
 
                 <Link
@@ -73,27 +101,53 @@ export default function HRDashboardLayout() {
                   onClick={() => setOpen(false)}
                   className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
-                  My Profile
+                  {t.menu.myProfile}
                 </Link>
 
                 <button
-                  onClick={() => setShowTheme((v) => !v)}
+                  onClick={() => { setShowTheme((v) => !v); setShowLanguage(false) }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-between"
                 >
-                  <span>Theme</span>
+                  <span>{t.menu.appearance}</span>
                   <span className="text-xs text-gray-400 dark:text-gray-500">{showTheme ? '▲' : '▼'}</span>
                 </button>
 
                 {showTheme && (
-                  <div className="px-3 pb-2 flex gap-1">
+                  <div className="px-3 py-2 flex gap-1 border-t border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
                     {THEME_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
-                        onClick={() => { setTheme(opt.value); setShowTheme(false) }}
+                        onClick={() => setTheme(opt.value)}
                         className={`flex-1 text-xs py-1.5 rounded-lg font-medium transition-colors ${
                           theme === opt.value
                             ? 'bg-blue-600 text-white'
-                            : 'text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+                            : 'text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-600 hover:bg-gray-100 dark:hover:bg-gray-500'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <button
+                  onClick={() => { setShowLanguage((v) => !v); setShowTheme(false) }}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-between"
+                >
+                  <span>{t.menu.language}</span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">{showLanguage ? '▲' : '▼'}</span>
+                </button>
+
+                {showLanguage && (
+                  <div className="px-3 py-2 flex gap-1 border-t border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+                    {LANGUAGE_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={() => setLanguage(opt.value)}
+                        className={`flex-1 text-xs py-1.5 rounded-lg font-medium transition-colors ${
+                          language === opt.value
+                            ? 'bg-blue-600 text-white'
+                            : 'text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-600 hover:bg-gray-100 dark:hover:bg-gray-500'
                         }`}
                       >
                         {opt.label}
@@ -106,7 +160,7 @@ export default function HRDashboardLayout() {
                   onClick={handleLogout}
                   className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-t border-gray-100 dark:border-gray-700"
                 >
-                  Logout
+                  {t.menu.logout}
                 </button>
               </div>
             )}
@@ -117,13 +171,13 @@ export default function HRDashboardLayout() {
       <div className="flex flex-1">
         <aside className="w-52 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-sm">
           <nav className="flex flex-col p-4 gap-1">
-            <NavLink to={ROUTES.HR_DASHBOARD} className={navLinkClass}>Dashboard</NavLink>
-            <NavLink to={ROUTES.HR_USERS} className={navLinkClass}>Users</NavLink>
-            <NavLink to={ROUTES.HR_DEPARTMENTS} className={navLinkClass}>Departments</NavLink>
-            <NavLink to={ROUTES.HR_TEMPLATES} className={navLinkClass}>Templates</NavLink>
-            <NavLink to={ROUTES.HR_PLAN_NEW} className={navLinkClass}>Plans</NavLink>
-            <NavLink to={ROUTES.HR_AUDIT} className={navLinkClass}>Audit Trail</NavLink>
-            <NavLink to={ROUTES.HR_REPORTS} className={navLinkClass}>Reports</NavLink>
+            <NavLink to={ROUTES.HR_DASHBOARD} className={navLinkClass}>{t.nav.dashboard}</NavLink>
+            <NavLink to={ROUTES.HR_USERS} className={navLinkClass}>{t.nav.users}</NavLink>
+            <NavLink to={ROUTES.HR_DEPARTMENTS} className={navLinkClass}>{t.nav.departments}</NavLink>
+            <NavLink to={ROUTES.HR_TEMPLATES} className={navLinkClass}>{t.nav.templates}</NavLink>
+            <NavLink to={ROUTES.HR_PLAN_NEW} className={navLinkClass}>{t.nav.plans}</NavLink>
+            <NavLink to={ROUTES.HR_AUDIT} className={navLinkClass}>{t.nav.auditTrail}</NavLink>
+            <NavLink to={ROUTES.HR_REPORTS} className={navLinkClass}>{t.nav.reports}</NavLink>
           </nav>
         </aside>
 

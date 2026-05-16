@@ -22,7 +22,7 @@ describe('HRDashboard', () => {
 
   it('displays welcome message with user name', () => {
     renderPage()
-    expect(screen.getByText(/welcome, hr/i)).toBeInTheDocument()
+    expect(screen.getByText(/good (morning|afternoon|evening), hr/i)).toBeInTheDocument()
     expect(screen.getByText(/hr admin/i)).toBeInTheDocument()
   })
 })

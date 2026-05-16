@@ -44,14 +44,15 @@ never the other way around.
 import enum
 
 
-class UserRole(str, enum.Enum):
+class UserRole(enum.StrEnum):
     EMPLOYEE = "employee"
     MANAGER = "manager"
     HR_ADMIN = "hr_admin"
 ```
 
-`str` mixin ensures the enum serializes to a plain string in JSON responses
-and works correctly with SQLAlchemy string columns — no extra conversion needed.
+`enum.StrEnum` (Python 3.11+) is preferred over `(str, enum.Enum)` — it provides
+the same string serialization behaviour with cleaner syntax. Ruff enforces this
+via the `UP042` rule.
 
 ---
 

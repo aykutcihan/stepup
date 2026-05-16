@@ -213,12 +213,16 @@ class TestResendInvitation:
         ) as mock_inv_repo, patch(
             "app.services.invitation_service.email_service",
             autospec=True,
-        ) as mock_email:
+        ) as mock_email, patch(
+            "app.services.invitation_service.audit_service",
+            autospec=True,
+        ) as mock_audit:
 
             mock_inv_repo.get_by_id = AsyncMock(return_value=mock_invitation)
             mock_email.send_invitation_email = AsyncMock()
+            mock_audit.log = AsyncMock()
 
-            result = await service.resend_invitation(mock_db, MagicMock())
+            result = await service.resend_invitation(mock_db, MagicMock(), actor_id=MagicMock())
 
             assert result is not None
 
@@ -234,7 +238,7 @@ class TestResendInvitation:
             mock_inv_repo.get_by_id = AsyncMock(return_value=None)
 
             with pytest.raises(NotFoundError):
-                await service.resend_invitation(mock_db, MagicMock())
+                await service.resend_invitation(mock_db, MagicMock(), actor_id=MagicMock())
 
 
     async def test_resend_invitation_raises_error_when_invitation_is_already_used(
@@ -251,6 +255,6 @@ class TestResendInvitation:
             mock_inv_repo.get_by_id = AsyncMock(return_value=mock_invitation)
 
             with pytest.raises(ValidationError):
-                await service.resend_invitation(mock_db, MagicMock())
+                await service.resend_invitation(mock_db, MagicMock(), actor_id=MagicMock())
 
 

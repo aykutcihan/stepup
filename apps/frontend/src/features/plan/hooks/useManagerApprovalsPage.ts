@@ -9,9 +9,10 @@ type ApprovalTaskResponse = components['schemas']['ApprovalTaskResponse']
 export function useManagerApprovalsPage() {
   const navigate = useNavigate()
   const [tasks, setTasks] = useState<ApprovalTaskResponse[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
+    setIsLoading(true)
     getPendingApprovals()
       .then(setTasks)
       .catch(() => {})

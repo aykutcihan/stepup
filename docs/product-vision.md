@@ -270,7 +270,7 @@ Invalid transitions return HTTP 400 with a descriptive error message.
 - Rate limiting on authentication endpoints (5 requests/minute)
 - CORS restricted to frontend domain only
 - Secrets managed via GCP Secret Manager — no `.env` files in repository
-- File upload validation: MIME type check, size limit (10MB), allowed types only
+- File upload validation: MIME type check + magic bytes validation, size limit (10MB), allowed types only
 - OWASP ZAP security scan before final release
 
 ### Reliability
@@ -772,9 +772,14 @@ ADR-007: Structured logging to GCP Cloud Logging
 - ⬜ Full E2E regression suite passing in CI
 - ⬜ README and Swagger polish for demo
 
+### Feature Branch: Dutch/English Language Support ✅ Done
+- Language switcher (English / Nederlands) in the hamburger menu on all layouts
+- Custom translation system: `languageStore` (Zustand, persists to `localStorage`) + `translations.ts` + `useTranslation()` hook
+- Nav links, page titles, column headers, buttons, and form labels translated for both languages
+- No external library — custom solution chosen to avoid bundle overhead for two languages
+
 ### Bonus (If Time Allows)
 - Multi-tenancy (organization_id on all tables)
-- Dutch + English language support (i18n) — backlog #197
 - Webhook system for external integrations
 - Full-text search on tasks and templates (PostgreSQL tsvector)
 
@@ -856,6 +861,9 @@ A: Not in MVP. Single-level tasks only. Sub-tasks may be considered post-MVP.
 | 1.8 | 2026-05-14 | US-014b done; GCS bucket created, TaskAttachment + TaskComment models, signed URL downloads, EmployeePlanPage expandable panel; Sprint 9 updated, Sprint 10 reduced to US-021 only |
 | 1.9 | 2026-05-15 | Sprint 10 US-021 done; return_comment added to DB schema; Sprint 10 remaining items (pagination, E2E, README) marked pending |
 | 2.0 | 2026-05-15 | US-198 done; Dark/Light/System theme toggle added to hamburger menu; all pages dark-mode styled; ThemeProvider + themeStore implemented |
+| 2.1 | 2026-05-15 | Audit log refactored: AuditActionType + AuditEntityType enums, advanced filters (action, entity_type, actor_id, date_from, date_to), pagination; CI/CD pipeline restructured: deploy-production.yml (Cloud Run) added, deploy-staging auto-trigger removed |
+| 2.2 | 2026-05-15 | CI/CD fully automated: main merge triggers Cloud Run backend deploy + Firebase Hosting frontend deploy; GCP_SA_KEY service account added; Dependabot disabled |
+| 2.3 | 2026-05-16 | Pagination added to users/departments/invitations endpoints; optimistic UI updates for activate/deactivate actions; AuditLogPage dark mode fix; magic bytes validation for file uploads; actor_name added to audit log response; Dutch/English language support added to hamburger menu |
 
 **Review Frequency:** After each sprint  
 **Status:** Living document — will evolve throughout the project

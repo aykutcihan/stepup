@@ -1,7 +1,9 @@
 import { useDepartmentsPage } from '@/features/department/hooks/useDepartmentsPage'
 import KebabMenu from '@/components/KebabMenu'
+import { useTranslation } from '@/i18n/useTranslation'
 
 export default function DepartmentsPage() {
+  const t = useTranslation()
   const {
     departments,
     showAddForm,
@@ -24,14 +26,14 @@ export default function DepartmentsPage() {
     <div className="max-w-3xl mx-auto">
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Departments</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Manage your organisation's departments.</p>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{t.departments.title}</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{t.departments.subtitle}</p>
         </div>
         <button
           onClick={() => setShowAddForm((v) => !v)}
           className="text-sm bg-blue-700 hover:bg-blue-800 text-white font-medium px-4 py-2 rounded-lg transition-colors"
         >
-          {showAddForm ? 'Cancel' : '+ Add Department'}
+          {showAddForm ? t.departments.cancel : t.departments.addDepartment}
         </button>
       </div>
 
@@ -46,14 +48,14 @@ export default function DepartmentsPage() {
           <input
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            placeholder="Department name"
+            placeholder={t.departments.departmentName}
             className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3.5 py-2 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={handleCreate}
             className="bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
           >
-            Add
+            {t.departments.add}
           </button>
         </div>
       )}
@@ -62,9 +64,9 @@ export default function DepartmentsPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50 text-left">
-              <th className="px-5 py-3.5 font-medium text-gray-600 dark:text-gray-400 rounded-tl-xl">Name</th>
-              <th className="px-5 py-3.5 font-medium text-gray-600 dark:text-gray-400">Status</th>
-              <th className="px-5 py-3.5 font-medium text-gray-600 dark:text-gray-400 text-right rounded-tr-xl">Actions</th>
+              <th className="px-5 py-3.5 font-medium text-gray-600 dark:text-gray-400 rounded-tl-xl">{t.departments.columns.name}</th>
+              <th className="px-5 py-3.5 font-medium text-gray-600 dark:text-gray-400">{t.departments.columns.status}</th>
+              <th className="px-5 py-3.5 font-medium text-gray-600 dark:text-gray-400 text-right rounded-tr-xl">{t.departments.columns.actions}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -97,21 +99,21 @@ export default function DepartmentsPage() {
                         onClick={handleUpdate}
                         className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 border border-blue-200 dark:border-blue-700 hover:border-blue-300 px-3 py-1.5 rounded-lg transition-colors"
                       >
-                        Save
+                        {t.departments.save}
                       </button>
                       <button
                         onClick={cancelEdit}
                         className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-600 px-3 py-1.5 rounded-lg transition-colors"
                       >
-                        Cancel
+                        {t.departments.cancel}
                       </button>
                     </div>
                   ) : (
                     <KebabMenu items={[
-                      { label: 'Rename', onClick: () => startEdit(d) },
+                      { label: t.departments.actions.rename, onClick: () => startEdit(d) },
                       d.is_active
-                        ? { label: 'Deactivate', onClick: () => handleDeactivate(d.id), variant: 'danger' }
-                        : { label: 'Reactivate', onClick: () => handleReactivate(d.id), variant: 'success' },
+                        ? { label: t.departments.actions.deactivate, onClick: () => handleDeactivate(d.id), variant: 'danger' }
+                        : { label: t.departments.actions.reactivate, onClick: () => handleReactivate(d.id), variant: 'success' },
                     ]} />
                   )}
                 </td>
@@ -120,7 +122,7 @@ export default function DepartmentsPage() {
             {departments.length === 0 && (
               <tr>
                 <td colSpan={3} className="px-5 py-8 text-center text-gray-400 dark:text-gray-500 text-sm">
-                  No departments yet.
+                  {t.departments.noDepartments}
                 </td>
               </tr>
             )}

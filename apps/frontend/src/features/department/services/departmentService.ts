@@ -8,7 +8,7 @@ type DepartmentResponse = components['schemas']['DepartmentResponse']
 
 export async function getDepartments(): Promise<DepartmentResponse[]> {
   const res = await apiClient.get(API.DEPARTMENTS.LIST)
-  return res.data
+  return res.data.items
 }
 
 export async function createDepartment(data: DepartmentCreate): Promise<DepartmentResponse> {

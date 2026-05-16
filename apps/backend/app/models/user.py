@@ -49,6 +49,10 @@ class User(Base, TimestampMixin):
         nullable=True,
     )
     department: Mapped["Department"] = relationship("Department", back_populates="users")
+    avatar_url: Mapped[str | None] = mapped_column(
+        String(500),
+        nullable=True,
+    )
 
     @property
     def department_name(self) -> str | None:

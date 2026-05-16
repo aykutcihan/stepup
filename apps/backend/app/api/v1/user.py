@@ -1,13 +1,18 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.dependencies import get_current_user, require_role
 from app.enums.user_role import UserRole
 from app.models.user import User
-from app.schemas.user import UserProfileUpdate, UserResponse, UserUpdate
+from app.schemas.user import (
+    UserListResponse,
+    UserProfileUpdate,
+    UserResponse,
+    UserUpdate,
+)
 from app.services.user_service import UserService
 
 router = APIRouter()
@@ -21,16 +26,30 @@ async def get_me(
     return UserResponse.model_validate(current_user)
 
 
-@router.get("/", response_model=list[UserResponse], status_code=200)
+@router.get("/", response_model=UserListResponse, status_code=200)
 async def get_users(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_role(UserRole.HR_ADMIN)),
     role: UserRole | None = Query(None),
     department_id: uuid.UUID | None = Query(None),
     is_active: bool | None = Query(None),
-) -> list[UserResponse]:
-    users = await user_service.get_users(db=db, role=role, department_id=department_id, is_active=is_active)
-    return [UserResponse.model_validate(u) for u in users]
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+) -> UserListResponse:
+    return await user_service.get_users(
+        db=db, role=role, department_id=department_id, is_active=is_active, page=page, page_size=page_size
+    )
+
+
+@router.post("/me/avatar", response_model=UserResponse)
+async def upload_avatar(
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> UserResponse:
+    content = await file.read()
+    user = await user_service.upload_avatar(db, current_user, content, file.content_type or "")
+    return UserResponse.model_validate(user)
 
 
 @router.patch("/me", response_model=UserResponse)

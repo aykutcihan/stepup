@@ -25,3 +25,13 @@ class InvitationValidateResponse(BaseModel):
     email: str
     role: UserRole
 
+
+class InvitationListResponse(BaseModel):
+    items: list[InvitationResponse]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+    has_next: bool
+    has_prev: bool
+

@@ -55,7 +55,19 @@ class AuditService:
         total_pages = (total + page_size - 1) // page_size
 
         return AuditLogListResponse(
-            items=[AuditLogResponse.model_validate(item) for item in items],
+            items=[
+                AuditLogResponse(
+                    id=item.id,
+                    actor_id=item.actor_id,
+                    actor_name=f"{item.actor.first_name} {item.actor.last_name}" if item.actor else str(item.actor_id),
+                    action=item.action,
+                    entity_type=item.entity_type,
+                    entity_id=item.entity_id,
+                    detail=item.detail,
+                    created_at=item.created_at,
+                )
+                for item in items
+            ],
             total=total,
             page=page,
             page_size=page_size,

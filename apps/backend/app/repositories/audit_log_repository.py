@@ -3,6 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from app.enums.audit_enums import AuditActionType, AuditEntityType
 from app.models.audit_log import AuditLog
@@ -44,14 +45,10 @@ class AuditLogRepository:
         total = count_result.scalar_one()
 
         offset = (page - 1) * page_size
-        query = (
-            select(AuditLog)
-            .order_by(AuditLog.created_at.desc())
-            .limit(page_size)
-            .offset(offset)
-        )
+        query = select(AuditLog).options(joinedload(AuditLog.actor))
         if filters:
             query = query.where(and_(*filters))
+        query = query.order_by(AuditLog.created_at.desc()).limit(page_size).offset(offset)
 
         result = await db.execute(query)
         items = list(result.scalars().all())

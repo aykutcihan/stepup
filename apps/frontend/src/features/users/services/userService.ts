@@ -13,11 +13,20 @@ export async function updateMe(data: UserProfileUpdate): Promise<UserResponse> {
 
 export async function getUsers(): Promise<UserResponse[]> {
   const res = await apiClient.get(API.USERS.LIST)
-  return res.data
+  return res.data.items
 }
 
 export async function updateUser(id: string, data: UserUpdate): Promise<UserResponse> {
   const res = await apiClient.patch(API.USERS.UPDATE(id), data)
+  return res.data
+}
+
+export async function uploadAvatar(file: File): Promise<UserResponse> {
+  const formData = new FormData()
+  formData.append('file', file)
+  const res = await apiClient.post(API.USERS.UPLOAD_AVATAR, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
   return res.data
 }
 
