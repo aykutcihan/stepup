@@ -39,6 +39,13 @@ jobs:
           region: ${{ env.REGION }}
           image: ${{ env.IMAGE }}:${{ github.sha }}
 
+      - name: Update migration job image
+        run: |
+          gcloud run jobs update migration-job \
+            --image ${{ env.IMAGE }}:${{ github.sha }} \
+            --region ${{ env.REGION }} \
+            --project ${{ env.PROJECT_ID }}
+
       - name: Run database migrations
         run: |
           gcloud run jobs execute migration-job \
