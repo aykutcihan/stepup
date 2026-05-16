@@ -2,8 +2,6 @@ import { Camera, Loader } from 'lucide-react'
 import { useProfilePage } from '@/features/users/hooks/useProfilePage'
 import { ROLE_LABELS } from '@/constants/userRoles'
 
-const API_URL = import.meta.env.VITE_API_URL ?? ''
-
 export default function ProfilePage() {
   const {
     user,
@@ -19,7 +17,7 @@ export default function ProfilePage() {
     handleAvatarChange,
   } = useProfilePage()
 
-  const avatarSrc = user?.avatar_url ? `${API_URL}${user.avatar_url}` : null
+  const avatarSrc = user?.avatar_url ?? null
   const initials = `${user?.first_name?.[0] ?? ''}${user?.last_name?.[0] ?? ''}`
 
   return (
