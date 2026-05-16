@@ -42,6 +42,31 @@ axios.post(API.AUTH.REGISTER, data)
 
 New entries are added as needed — one US at a time. US-002 will add `AUTH.LOGIN`, `AUTH.LOGOUT`, `AUTH.REFRESH`. Not before.
 
+### File Upload Endpoints
+
+File upload endpoints follow the same pattern but the service call uses `FormData` instead of a plain object:
+
+```typescript
+// apiEndpoints.ts
+USERS: {
+  UPLOAD_AVATAR: '/api/v1/users/me/avatar',
+}
+
+// userService.ts
+export async function uploadAvatar(file: File): Promise<UserResponse> {
+  const formData = new FormData()
+  formData.append('file', file)
+  const res = await apiClient.post(API.USERS.UPLOAD_AVATAR, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return res.data
+}
+```
+
+`FormData` is the browser's built-in container for `multipart/form-data` — the format servers expect for file uploads. The field name (`'file'`) must match the parameter name in the FastAPI endpoint (`file: UploadFile = File(...)`).
+
+The `'Content-Type': 'multipart/form-data'` header tells the server how to parse the body. Without it, axios sends JSON by default and the backend cannot find the file.
+
 ---
 
 ## src/constants/routes.ts

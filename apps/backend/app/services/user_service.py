@@ -1,4 +1,5 @@
 import uuid
+from pathlib import Path
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,6 +16,11 @@ from app.schemas.user import (
     UserUpdate,
 )
 from app.services.audit_service import AuditService
+
+_ALLOWED_AVATAR_TYPES = {"image/jpeg", "image/png", "image/webp"}
+_AVATAR_EXT_MAP = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp"}
+_AVATARS_DIR = Path("uploads/avatars")
+_MAX_AVATAR_BYTES = 5 * 1024 * 1024
 
 user_repository = UserRepository()
 refresh_token_repository = RefreshTokenRepository()
@@ -66,6 +72,26 @@ class UserService:
         if actor_id:
             await audit_service.log(db, actor_id=actor_id, action=AuditActionType.user_updated, entity_type=AuditEntityType.user, entity_id=user_id)
             await db.commit()
+        return await user_repository.get_by_id(db, user_id)
+
+    async def upload_avatar(
+        self,
+        db: AsyncSession,
+        user: User,
+        content: bytes,
+        content_type: str,
+    ) -> User:
+        if content_type not in _ALLOWED_AVATAR_TYPES:
+            raise ValidationError(*messages.INVALID_AVATAR_TYPE)
+        if len(content) > _MAX_AVATAR_BYTES:
+            raise ValidationError(*messages.AVATAR_TOO_LARGE)
+        _AVATARS_DIR.mkdir(parents=True, exist_ok=True)
+        ext = _AVATAR_EXT_MAP[content_type]
+        filename = f"{user.id}.{ext}"
+        (_AVATARS_DIR / filename).write_bytes(content)
+        user.avatar_url = f"/static/avatars/{filename}"
+        user_id = user.id
+        await db.commit()
         return await user_repository.get_by_id(db, user_id)
 
     async def update_my_profile(

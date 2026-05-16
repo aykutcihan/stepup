@@ -9,6 +9,8 @@ import { useTranslation } from '@/i18n/useTranslation'
 import { ROUTES } from '@/constants/routes'
 import { StepUpLogo } from '@/components/StepUpLogo'
 
+const API_URL = import.meta.env.VITE_API_URL ?? ''
+
 export default function HRDashboardLayout() {
   const user = useAuthStore((state) => state.user)
   const clearUser = useAuthStore((state) => state.clearUser)
@@ -78,9 +80,20 @@ export default function HRDashboardLayout() {
 
             {open && (
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
-                <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
-                  <p className="text-xs font-medium text-gray-900 dark:text-gray-100">{user?.first_name} {user?.last_name}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full overflow-hidden bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
+                    {user?.avatar_url ? (
+                      <img src={`${API_URL}${user.avatar_url}`} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-blue-700 dark:text-blue-400 text-xs font-bold">
+                        {user?.first_name?.[0]}{user?.last_name?.[0]}
+                      </span>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-gray-900 dark:text-gray-100">{user?.first_name} {user?.last_name}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                  </div>
                 </div>
 
                 <Link
