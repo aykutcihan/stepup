@@ -19,6 +19,14 @@ router = APIRouter()
 invitation_service = InvitationService()
 
 
+@router.get("/validate", response_model=InvitationValidateResponse)
+async def validate_invitation(
+    token: str,
+    db: AsyncSession = Depends(get_db),
+) -> InvitationValidateResponse:
+    invitation = await invitation_service.validate_invitation(db=db, token=token)
+    return InvitationValidateResponse(email=invitation.email, role=invitation.role)
+
 @router.post("/", response_model=InvitationResponse, status_code=201)
 async def invite_user(
     data: InvitationCreate,
@@ -55,12 +63,4 @@ async def resend_invitation(
         actor_id=current_user.id,
     )
     return InvitationResponse.model_validate(invitation)
-
-@router.get("/validate", response_model=InvitationValidateResponse)
-async def validate_invitation(
-    token: str,
-    db: AsyncSession = Depends(get_db),
-) -> InvitationValidateResponse:
-    invitation = await invitation_service.validate_invitation(db=db, token=token)
-    return InvitationValidateResponse(email=invitation.email, role=invitation.role)
 

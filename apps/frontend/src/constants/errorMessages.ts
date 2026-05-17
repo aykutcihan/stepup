@@ -1,6 +1,7 @@
 export const ERROR_MESSAGES: Record<string, string> = {
   INVITATION_EXPIRED: 'This invitation link has expired.',
   INVITATION_ALREADY_USED: 'This invitation link has already been used.',
+  INVITATION_ALREADY_PENDING: 'An active invitation for this email already exists.',
   USER_ALREADY_EXISTS: 'An account with this email already exists.',
   USER_DEACTIVATED: 'Your account has been deactivated. Please contact your HR Admin.',
   DEPARTMENT_HAS_ACTIVE_USERS: 'Cannot deactivate a department with active users.',
