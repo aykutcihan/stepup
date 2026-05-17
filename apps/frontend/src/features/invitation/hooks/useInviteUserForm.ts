@@ -11,7 +11,7 @@ type InvitationResponse = components['schemas']['InvitationResponse']
 type DepartmentResponse = components['schemas']['DepartmentResponse']
 
 export function useInviteUserForm() {
-  const [pageError, setPageError] = useState('')
+  const [formError, setFormError] = useState('')
   const [success, setSuccess] = useState(false)
   const [invitations, setInvitations] = useState<InvitationResponse[]>([])
   const [departments, setDepartments] = useState<DepartmentResponse[]>([])
@@ -23,7 +23,7 @@ export function useInviteUserForm() {
   useEffect(() => {
     getInvitations()
       .then((data) => setInvitations(data))
-      .catch((err) => setPageError(getErrorMessage(err)))
+      .catch(() => {})
     getDepartments()
       .then((data) => setDepartments(data.filter((d) => d.is_active)))
       .catch(() => {})
@@ -34,20 +34,22 @@ export function useInviteUserForm() {
       await resendInvitation(id)
       getInvitations().then((data) => setInvitations(data))
     } catch (err) {
-      setPageError(getErrorMessage(err))
+      setFormError(getErrorMessage(err))
     }
   }
 
   const onSubmit = async (data: InviteFormData) => {
     try {
+      setFormError('')
+      setSuccess(false)
       await createInvitation(data)
       setSuccess(true)
       reset()
       getInvitations().then((data) => setInvitations(data))
     } catch (err) {
-      setPageError(getErrorMessage(err))
+      setFormError(getErrorMessage(err))
     }
   }
 
-  return { register, handleSubmit, errors, onSubmit, handleResend, invitations, departments, pageError, success }
+  return { register, handleSubmit, errors, onSubmit, handleResend, invitations, departments, pageError: formError, success }
 }
