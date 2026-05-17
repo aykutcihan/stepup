@@ -19,6 +19,19 @@ class InvitationRepository:
         )
         return result.scalar_one_or_none()
     
+    async def get_pending_by_email(self, db: AsyncSession, email: str) -> Invitation | None:
+        now = datetime.now(UTC)
+        result = await db.execute(
+            select(Invitation).where(
+                and_(
+                    Invitation.email == email,
+                    Invitation.used_at.is_(None),
+                    Invitation.expires_at > now,
+                )
+            )
+        )
+        return result.scalar_one_or_none()
+
     async def get_by_id(self, db: AsyncSession, invitation_id: uuid.UUID) -> Invitation | None:
         result = await db.execute(
             select(Invitation).where(Invitation.id == invitation_id)

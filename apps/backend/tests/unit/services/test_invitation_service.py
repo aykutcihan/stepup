@@ -100,6 +100,7 @@ class TestCreateInvitation:
         ) as mock_email:
 
             mock_user_repo.get_by_email = AsyncMock(return_value=None)
+            mock_inv_repo.get_pending_by_email = AsyncMock(return_value=None)
             mock_inv_repo.create = AsyncMock()
             mock_email.send_invitation_email = AsyncMock()
 
@@ -140,6 +141,7 @@ class TestCreateInvitation:
         ) as mock_email:
 
             mock_user_repo.get_by_email = AsyncMock(return_value=None)
+            mock_inv_repo.get_pending_by_email = AsyncMock(return_value=None)
             mock_inv_repo.create = AsyncMock()
             mock_email.send_invitation_email = AsyncMock(side_effect=Exception("SMTP error"))
 
