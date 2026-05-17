@@ -1,5 +1,7 @@
 from datetime import timedelta
 
+import google.auth
+import google.auth.transport.requests
 from google.cloud import storage
 
 from app.core.config import settings
@@ -51,9 +53,22 @@ class StorageService:
             blob.delete()
 
     def signed_url(self, object_name: str, expiration_minutes: int = 60) -> str:
+        credentials, _ = google.auth.default()
+        auth_request = google.auth.transport.requests.Request()
+        credentials.refresh(auth_request)
+
         blob = self._get_bucket().blob(object_name)
+
+        extra: dict = {}
+        email = getattr(credentials, "service_account_email", None)
+        token = getattr(credentials, "token", None)
+        if email and email != "default" and token:
+            extra["service_account_email"] = email
+            extra["access_token"] = token
+
         return blob.generate_signed_url(
             expiration=timedelta(minutes=expiration_minutes),
             method="GET",
             version="v4",
+            **extra,
         )
