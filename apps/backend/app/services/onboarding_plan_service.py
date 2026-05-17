@@ -23,7 +23,7 @@ from app.schemas.onboarding_plan import (
     OnboardingPlanUpdate,
 )
 from app.services.audit_service import AuditService
-from app.services.email_service import EmailService
+from app.services.email import EmailService
 
 logger = logging.getLogger(__name__)
 

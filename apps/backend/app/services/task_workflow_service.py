@@ -17,7 +17,7 @@ from app.repositories.user_repository import UserRepository
 from app.schemas.attachment import TaskAttachmentResponse
 from app.schemas.onboarding_plan import ApprovalTaskResponse, ReturnTask
 from app.services.audit_service import AuditService
-from app.services.email_service import EmailService
+from app.services.email import EmailService
 
 logger = logging.getLogger(__name__)
 

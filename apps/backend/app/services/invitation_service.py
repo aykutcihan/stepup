@@ -15,7 +15,7 @@ from app.repositories.invitation_repository import InvitationRepository
 from app.repositories.user_repository import UserRepository
 from app.schemas.invitation import InvitationListResponse, InvitationResponse
 from app.services.audit_service import AuditService
-from app.services.email_service import EmailService
+from app.services.email import EmailService
 
 logger = logging.getLogger(__name__)
 
