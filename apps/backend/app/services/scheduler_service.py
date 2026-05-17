@@ -8,7 +8,7 @@ from app.enums.onboarding_plan_task_status import OnboardingPlanTaskStatus
 from app.models.onboarding_plan import OnboardingPlan
 from app.models.onboarding_plan_task import OnboardingPlanTask
 from app.models.user import User
-from app.services.email_service import EmailService
+from app.services.email import EmailService
 
 logger = logging.getLogger(__name__)
 email_service = EmailService()
