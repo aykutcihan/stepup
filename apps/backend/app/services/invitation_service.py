@@ -42,6 +42,10 @@ class InvitationService:
         if existing_user:
             raise ValidationError(*messages.USER_ALREADY_EXISTS)
 
+        pending = await invitation_repository.get_pending_by_email(db, email)
+        if pending:
+            raise ValidationError(*messages.INVITATION_ALREADY_PENDING)
+
         invitation = Invitation(
             email=email,
             role=role,
