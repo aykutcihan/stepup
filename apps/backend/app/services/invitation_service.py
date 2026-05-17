@@ -4,7 +4,9 @@ import uuid
 from datetime import UTC, datetime, timedelta
 
 from passlib.context import CryptContext
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.enums.audit_enums import AuditActionType, AuditEntityType
 from app.enums.user_role import UserRole
@@ -115,9 +117,11 @@ class InvitationService:
         await db.flush()
         await audit_service.log(db, actor_id=user.id, action=AuditActionType.user_registered, entity_type=AuditEntityType.user, entity_id=user.id)
         await db.commit()
-        await db.refresh(user)
-        return user
-    
+        result = await db.execute(
+            select(User).where(User.id == user.id).options(selectinload(User.department))
+        )
+        return result.scalar_one()
+
     async def get_invitations(self, db: AsyncSession, page: int = 1, page_size: int = 20) -> InvitationListResponse:
         items, total = await invitation_repository.get_all(db, page=page, page_size=page_size)
         total_pages = (total + page_size - 1) // page_size
