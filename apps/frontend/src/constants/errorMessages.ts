@@ -7,6 +7,8 @@ export const ERROR_MESSAGES: Record<string, string> = {
   USER_NOT_FOUND: 'User not found.',
   USER_DEACTIVATED: 'Your account has been deactivated. Please contact your HR Admin.',
   PERMISSION_DENIED: 'You do not have permission to perform this action.',
+  EMPLOYEE_ALREADY_HAS_ACTIVE_PLAN: 'This employee already has an active onboarding plan.',
+  TEMPLATE_NOT_ACTIVE: 'Template must be active to create a plan.',
   DEPARTMENT_HAS_ACTIVE_USERS: 'Cannot deactivate a department with active users.',
   DEPARTMENT_NOT_FOUND: 'Department not found.',
 }

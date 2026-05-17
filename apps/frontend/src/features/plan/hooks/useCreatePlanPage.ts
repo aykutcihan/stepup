@@ -4,6 +4,7 @@ import { getUsers } from '@/features/users/services/userService'
 import { getTemplates } from '@/features/template/services/templateService'
 import { createPlan } from '@/features/plan/services/planService'
 import { ROUTES } from '@/constants/routes'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 import type { components } from '@/types/api'
 
 type UserResponse = components['schemas']['UserResponse']
@@ -36,8 +37,8 @@ export function useCreatePlanPage() {
     try {
       const plan = await createPlan({ user_id: userId, template_id: templateId, manager_id: managerId, start_date: startDate })
       navigate(ROUTES.HR_PLAN_DETAIL(plan.id))
-    } catch {
-      setError('Failed to create plan.')
+    } catch (err) {
+      setError(getErrorMessage(err))
     } finally {
       setSubmitting(false)
     }
