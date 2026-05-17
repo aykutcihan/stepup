@@ -133,6 +133,7 @@ App reads:  GCP gives the value to the app at runtime
 | `DATABASE_URL` | Full connection string to Cloud SQL |
 | `JWT_SECRET_KEY` | Signs and verifies JWT access tokens |
 | `SENDGRID_API_KEY` | Authenticates with SendGrid email service |
+| `SENDGRID_FROM_EMAIL` | Verified sender email address for SendGrid |
 
 **How to navigate:**
 ```
@@ -167,6 +168,45 @@ Service Account = the application's identity card.
 
 In Cloud Run, this is automatic — the app uses the project's
 default Service Account. No extra configuration needed.
+
+---
+
+## GCS Signed URLs on Cloud Run
+
+When the backend generates download links for file attachments, it uses GCS signed URLs. Signed URL generation requires signing credentials.
+
+**Local development:** ADC points to a service account JSON key file — private key available, signing works automatically.
+
+**Cloud Run:** Credentials come from the GCP metadata server as a token only — no private key. Calling `blob.generate_signed_url()` without explicit credentials raises `AttributeError`.
+
+**Fix — IAM-based signing:**
+
+Pass `service_account_email` and `access_token` to `generate_signed_url`. The GCS library delegates signing to the IAM API:
+
+```python
+credentials, _ = google.auth.default()
+credentials.refresh(google.auth.transport.requests.Request())
+
+blob.generate_signed_url(
+    expiration=timedelta(minutes=60),
+    method="GET",
+    version="v4",
+    service_account_email=credentials.service_account_email,
+    access_token=credentials.token,
+)
+```
+
+**Required IAM role** — the Cloud Run service account must have:
+
+```bash
+gcloud projects add-iam-policy-binding stepup-494114 \
+  --member="serviceAccount:943378472223-compute@developer.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountTokenCreator"
+```
+
+Without this role, the IAM signing call returns 403.
+
+**Cloud Run service account:** `943378472223-compute@developer.gserviceaccount.com`
 
 ---
 

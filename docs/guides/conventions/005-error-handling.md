@@ -136,3 +136,50 @@ Every error response follows this structure:
 1. Add the message tuple to `messages.py` under the relevant domain section
 2. Raise with `raise NotFoundError(*messages.YOUR_NEW_ERROR)` in the service
 3. If a new exception class is needed, add it to `__init__.py` and register a handler in `handlers.py`
+4. Add the error code to the frontend `ERROR_MESSAGES` map (see Frontend section below)
+
+---
+
+## Frontend Error Handling
+
+### `ERROR_MESSAGES` map — `src/constants/errorMessages.ts`
+
+The frontend maps backend `error_code` values to user-facing strings:
+
+```ts
+export const ERROR_MESSAGES: Record<string, string> = {
+  INVITATION_EXPIRED: 'This invitation link has expired.',
+  INVITATION_ALREADY_USED: 'This invitation link has already been used.',
+  INVITATION_ALREADY_PENDING: 'An active invitation for this email already exists.',
+  USER_ALREADY_EXISTS: 'An account with this email already exists.',
+  PERMISSION_DENIED: 'You do not have permission to perform this action.',
+  EMPLOYEE_ALREADY_HAS_ACTIVE_PLAN: 'This employee already has an active onboarding plan.',
+  // ...
+}
+```
+
+**Every new backend error code must have a corresponding entry here.** Without it, users see the generic "Something went wrong. Please try again." fallback.
+
+### `getErrorMessage` — `src/utils/getErrorMessage.ts`
+
+```ts
+export function getErrorMessage(err: unknown): string {
+  const data = (err as { response?: { data?: { error_code?: string; message?: string } } }).response?.data
+  if (data?.error_code && ERROR_MESSAGES[data.error_code]) {
+    return ERROR_MESSAGES[data.error_code]
+  }
+  if (data?.message) {
+    return data.message   // fallback: show backend's human-readable message
+  }
+  return 'Something went wrong. Please try again.'
+}
+```
+
+Resolution order:
+1. `error_code` found in `ERROR_MESSAGES` → localized string
+2. `error_code` not mapped → backend `message` field (raw, but better than generic)
+3. No response data → generic fallback
+
+### Rule
+
+> Every hook or component that calls an API and catches errors must use `getErrorMessage(err)` — never hardcode an error string like `'Failed to create plan.'`.

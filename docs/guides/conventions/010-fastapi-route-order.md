@@ -37,3 +37,33 @@ api_router.include_router(onboarding_plan.router, prefix="/plans")      # GET /{
 ## How This Was Caught
 
 Integration test `test_returns_200_with_tasks` returned 403 instead of 200. The employee client was correctly set up, but the wrong endpoint was matched. Swapping the include order fixed it.
+
+---
+
+## Case 2 — Static vs Parameterized Within the Same Router
+
+The same principle applies inside a single router. A static path segment and a path parameter at the same position must be ordered correctly.
+
+**Example — wrong order:**
+
+```python
+@router.post("/")                           # POST /invitations/
+@router.get("/")                            # GET  /invitations/
+@router.post("/{invitation_id}/resend")     # POST /invitations/{id}/resend
+@router.get("/validate")                    # GET  /invitations/validate  ← shadowed
+```
+
+`GET /invitations/validate` would match `POST /{invitation_id}/resend` before reaching the `/validate` handler — the literal segment `validate` is consumed as `{invitation_id}`.
+
+**Correct order — static routes before parameterized:**
+
+```python
+@router.get("/validate")                    # static first
+@router.post("/")
+@router.get("/")
+@router.post("/{invitation_id}/resend")     # parameterized last
+```
+
+### Rule
+
+> Within a single router, define all routes with literal path segments before routes with path parameters at the same position.
