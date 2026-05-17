@@ -1,6 +1,12 @@
 import { ERROR_MESSAGES } from '@/constants/errorMessages'
 
 export function getErrorMessage(err: unknown): string {
-  const code = (err as { response?: { data?: { error_code?: string } } }).response?.data?.error_code
-  return ERROR_MESSAGES[code ?? ''] ?? 'Something went wrong. Please try again.'
+  const data = (err as { response?: { data?: { error_code?: string; message?: string } } }).response?.data
+  if (data?.error_code && ERROR_MESSAGES[data.error_code]) {
+    return ERROR_MESSAGES[data.error_code]
+  }
+  if (data?.message) {
+    return data.message
+  }
+  return 'Something went wrong. Please try again.'
 }
